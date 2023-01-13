@@ -136,7 +136,7 @@ apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
 # Grab the kernel version
-kernel_version="$(cat linux-orangepi/include/generated/utsrelease.h | sed -e 's/.*"\(.*\)".*/\1/')"
+kernel_version="$(cat linux-orangepi/include/generated/utsrelease.h | sed -e 's/.*"\(.*\)".*/\1/' | sed -e 's/orange-pi.*/orange-pi/g')"
 
 # Install kernel, modules, and headers
 cat << EOF | chroot ${chroot_dir} /bin/bash
