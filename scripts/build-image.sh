@@ -45,8 +45,8 @@ for rootfs in *.rootfs.tar.xz; do
     mkdir -p ${mount_point}
 
     # Setup partition table
-    sudo dd if=/dev/zero of="${disk}" count=4096 bs=512
-    sudo parted --script "${disk}" \
+    dd if=/dev/zero of="${disk}" count=4096 bs=512
+    parted --script "${disk}" \
     mklabel gpt \
     mkpart primary fat32 64MiB 512MiB \
     mkpart primary ext4 512MiB 100%
@@ -62,7 +62,7 @@ for rootfs in *.rootfs.tar.xz; do
     echo 2
     echo 20
     echo w
-    ) | sudo fdisk "${disk}"
+    ) | fdisk "${disk}"
 
     set -eE
 
