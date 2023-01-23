@@ -175,6 +175,17 @@ echo -e "root\nroot" | passwd ubuntu
 echo -e "root\nroot" | passwd
 EOF
 
+# Swapfile
+cat << EOF | chroot ${chroot_dir} /bin/bash
+set -eE 
+trap 'echo Error: in $0 on line $LINENO' ERR
+
+dd if=/dev/zero of=/tmp/swapfile bs=1024 count=2097152
+chmod 600 /tmp/swapfile
+mkswap /tmp/swapfile
+mv /tmp/swapfile /swapfile
+EOF
+
 # DNS
 echo "nameserver 8.8.8.8" > ${chroot_dir}/etc/resolv.conf
 
@@ -230,44 +241,48 @@ network={
 }
 EOF
 
-# Sapfile
-cat << EOF | chroot ${chroot_dir} /bin/bash
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
-
-dd if=/dev/zero of=/tmp/swapfile bs=1024 count=2097152
-chmod 600 /tmp/swapfile
-mkswap /tmp/swapfile
-mv /tmp/swapfile /swapfile
-EOF
-
 # Serial console resize script
-cat > ${chroot_dir}/etc/profile.d/serial-console.sh << 'EOF'
-rsz() {
-    if [[ -t 0 && $# -eq 0 ]]; then
-        local IFS='[;' escape geometry x y
-        echo -en '\e7\e[r\e[999;999H\e[6n\e8'
-		read -t 5 -sd R escape geometry || return 1
-        x="${geometry##*;}"; y="${geometry%%;*}"
-        if [[ "${COLUMNS}" -eq "${x}" && "${LINES}" -eq "${y}" ]]; then 
-			return 0
-        elif [[ "$x" -gt 0 && "$y" -gt 0 ]]; then
-            stty cols "${x}" rows "${y}"
-            return 0
+cat > ${chroot_dir}/etc/profile.d/resize.sh << 'EOF'
+if [ -t 0 -a $# -eq 0 ]; then
+    if [ ! -x @BINDIR@/resize ] ; then
+        if [ -n "$BASH_VERSION" ] ; then
+            # Optimized resize funciton for bash
+            resize() {
+                local x y
+                IFS='[;' read -t 2 -p $(printf '\e7\e[r\e[999;999H\e[6n\e8') -sd R _ y x _
+                [ -n "$y" ] && \
+                echo -e "COLUMNS=$x;\nLINES=$y;\nexport COLUMNS LINES;" && \
+                stty cols $x rows $y
+            }
         else
-            return 1
+            # Portable resize function for ash/bash/dash/ksh
+            # with subshell to avoid local variables
+            resize() {
+                (o=$(stty -g)
+                stty -echo raw min 0 time 2
+                printf '\0337\033[r\033[999;999H\033[6n\0338'
+                if echo R | read -d R x 2> /dev/null; then
+                    IFS='[;R' read -t 2 -d R -r z y x _
+                else
+                    IFS='[;R' read -r _ y x _
+                fi
+                stty "$o"
+                [ -z "$y" ] && y=${z##*[}&&x=${y##*;}&&y=${y%%;*}
+                [ -n "$y" ] && \
+                echo "COLUMNS=$x;"&&echo "LINES=$y;"&&echo "export COLUMNS LINES;"&& \
+                stty cols $x rows $y)
+            }
         fi
-    else
-        echo 'Usage: rsz'
-        return 1
     fi
-}
-
-case $(/usr/bin/tty) in
-    /dev/ttyAMA0|/dev/ttyS0|/dev/ttyGS0|/dev/ttyFIQ0|/dev/ttyLP1)
-        rsz
-        ;;
-esac
+    # Use the EDITOR not being set as a trigger to call resize
+    # and only do this for /dev/tty[A-z] which are typically
+    # serial ports
+    if [ -z "$EDITOR" -a "$SHLVL" = 1 ] ; then
+        case $(tty 2>/dev/null) in
+            /dev/tty[A-z]*) resize >/dev/null;;
+        esac
+    fi
+fi
 EOF
 
 # Expand root filesystem on first boot
