@@ -346,8 +346,74 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 # Desktop packages
 DEBIAN_FRONTEND=noninteractive apt-get -y install ubuntu-desktop
 
+# Firefox has no gpu support 
+DEBIAN_FRONTEND=noninteractive apt-get -y purge firefox
+
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
+EOF
+
+# Copy GPU accelerated packages to the rootfs
+cp -r ../debs ${chroot_dir}/tmp
+
+# Install GPU accelerated packages
+cat << EOF | chroot ${chroot_dir} /bin/bash
+set -eE 
+trap 'echo Error: in $0 on line $LINENO' ERR
+
+# Install dependencies
+DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+libglib2.0-doc libglib2.0-dev liborc-0.4-dev libgl1-mesa-dev libegl1-mesa-dev \
+libgles2-mesa-dev libx11-xcb-dev libqt5core5a libqt5gui5 libqt5gui5 libdrm-tegra0 \
+libqt5quick5 libqt5x11extras5 libjsoncpp-dev libminizip1 libsnappy1v5 \
+libdrm-freedreno1 libdrm-etnaviv1 libpciaccess-dev libsdl2-2.0-0 libdc1394-22 \
+libopenal1 libsndio7.0 libass9 libbs2b0 libflite1 liblilv-0-0 libmysofa1 \
+librubberband2 libvidstab1.1 libzmq5 libdvdnav4 liblua5.2-0 libva-wayland2 \
+libaom0 libcodec2-0.9 libgsm1 libshine3 libx264-155 libx265-179 libxvidcore4 \
+libzvbi0 ocl-icd-libopencl1 libbluray2 libchromaprint1 libgme0 libopenmpt0 \
+libssh-gcrypt-4 libdw1 libunwind8 libcdparanoia0 libgraphene-1.0-0 libxv1 \
+libvisual-0.4-0 libgtk-3-0 libaa1 libavc1394-0 libcaca0 libdv4 libiec61883-0 \
+libjack-jackd2-0 libshout3 libtag1v5  libxdamage1 libwebpdemux2 \
+libxfont2 xserver-common libcdio-cdda2 libcdio-paranoia2 libnspr4 libnss3 \
+libsmbclient libxslt1.1 libqt5opengl5 libqt5widgets5    
+
+# Install packages
+dpkg --force-overwrite --no-debsig --install /tmp/debs/rkaiq/*.deb
+cp -f /tmp/debs/rkaiq/rkaiq_3A_server /usr/bin
+dpkg --force-overwrite --no-debsig --install /tmp/debs/rga/*deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/mpp/*.deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/libmali/*.deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/libv4l/*.deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/gst-rkmpp/*.deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/gstreamer/*.deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/gst-plugins-base1.0/*.deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/gst-plugins-good1.0/*.deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/xserver/*.deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/ffmpeg/*.deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/chromium/*.deb
+cp -f /tmp/debs/chromium/libjpeg.so.62 /usr/lib/aarch64-linux-gnu
+dpkg --force-overwrite --no-debsig --install /tmp/debs/libdrm/*.deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/rktoolkit/*.deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/mpv/*.deb
+dpkg --force-overwrite --no-debsig --install /tmp/debs/rkwifibt/*.deb
+
+# Chromium uses fixed paths for libv4l2.so
+ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
+[ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64
+
+# Remove other dri libs
+cp /usr/lib/aarch64-linux-gnu/dri/{kms_swrast_dri,swrast_dri,rockchip_dri}.so /
+rm -f /usr/lib/aarch64-linux-gnu/dri/*.so
+mv /*.so /usr/lib/aarch64-linux-gnu/dri/
+
+# Hold packages
+for i in /tmp/debs/*/*.deb; do
+    apt-mark hold "\$(basename "\${i}" | cut -d "_" -f1)"
+done
+
+# Clean package cache
+apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
+rm -rf /tmp/*
 EOF
 
 # Umount the temporary API filesystems
