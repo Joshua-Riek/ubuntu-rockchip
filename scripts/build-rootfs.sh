@@ -415,6 +415,64 @@ apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 rm -rf /tmp/*
 EOF
 
+# Compile and install panfrost
+cat << EOF | chroot ${chroot_dir} /bin/bash
+set -eE 
+trap 'echo Error: in $0 on line $LINENO' ERR
+
+# Install dependencies
+DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+python3-mako libexpat1-dev libwayland-egl-backend-dev libxext-dev libxfixes-dev \
+libxcb-glx0-dev libxcb-shm0-dev libxcb-dri2-0-dev libxcb-dri3-dev libxrandr-dev \
+libxcb-present-dev libxshmfence-dev libxxf86vm-dev libwayland-dev libx11-xcb-dev \
+python3-pip
+
+# Install build tools
+pip3 install --no-cache-dir meson==0.54 ninja
+
+# Build libdrm
+git clone --depth 1 --progress -b libdrm-2.4.114 https://gitlab.freedesktop.org/mesa/drm
+mkdir -p drm/build && cd drm/build
+meson && ninja install
+cd ../../ && rm -rf drm
+
+# Build wayland-protocols 
+git clone --depth 1 --progress -b 1.24 https://gitlab.freedesktop.org/wayland/wayland-protocols
+mkdir -p wayland-protocols/build && cd wayland-protocols/build
+meson && ninja install
+cd ../../ && rm -rf wayland-protocols
+
+# Build mesa
+git clone https://gitlab.com/panfork/mesa
+git -C mesa checkout 120202c675749c5ef81ae4c8cdc30019b4de08f4
+mkdir -p mesa/build && cd mesa/build
+meson -Dgallium-drivers=panfrost -Dvulkan-drivers= -Dllvm=disabled --prefix=/opt/panfrost && ninja install
+cd ../../ && rm -rf mesa
+
+# Use panfrost by default
+echo /opt/panfrost/lib/aarch64-linux-gnu | tee /etc/ld.so.conf.d/0-panfrost.conf
+[ -e /etc/ld.so.conf.d/00-aarch64-mali.conf ] && mv /etc/ld.so.conf.d/{00-aarch64-mali.conf,1-aarch64-mali.conf}
+ldconfig
+
+# Hold packages to prevent breaking panfrost
+apt-mark hold libdrm2 libdrm-radeon1 libdrm-nouveau2 libdrm-amdgpu1 libdrm-freedreno1 \
+libdrm-etnaviv1 wayland-protocols libegl-mesa0 libgbm1 libgl1-mesa-dri libglapi-mesa \
+libglx-mesa0
+
+# Remove build tools
+pip3 uninstall --no-cache-dir -y meson==0.54 ninja
+rm -rf /root/.cache/pip
+
+# Remove build dependencies
+DEBIAN_FRONTEND=noninteractive apt-get -y purge \
+python3-mako libexpat1-dev libwayland-egl-backend-dev libxext-dev libxfixes-dev \
+libxcb-glx0-dev libxcb-shm0-dev libxcb-dri2-0-dev libxcb-dri3-dev libxrandr-dev \
+libxcb-present-dev libxshmfence-dev libxxf86vm-dev libwayland-dev python3-pip
+
+# Clean package cache
+apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
+EOF
+
 # Download and update packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
 set -eE 
@@ -429,6 +487,13 @@ DEBIAN_FRONTEND=noninteractive apt-get -y purge firefox
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
+
+# Enable wayland session
+sed -i 's/#WaylandEnable=false/WaylandEnable=true/g' ${chroot_dir}/etc/gdm3/custom.conf
+
+# Use wayland as default desktop session
+echo "[User]" > ${chroot_dir}/var/lib/AccountsService/users/ubuntu 
+echo "XSession=ubuntu-wayland" >> ${chroot_dir}/var/lib/AccountsService/users/ubuntu 
 
 # Umount the temporary API filesystems
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
