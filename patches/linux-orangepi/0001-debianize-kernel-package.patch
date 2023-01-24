@@ -1,16 +1,65 @@
-From 422e0195038f1a1c755e845c527ac28309f95cbb Mon Sep 17 00:00:00 2001
+From 53b542334513f31a381150b7e38c258efac0116c Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
-Date: Mon, 9 Jan 2023 12:18:45 -0500
+Date: Tue, 24 Jan 2023 11:22:00 -0500
 Subject: [PATCH] debianize kernel package
 
 ---
+ Makefile                 |  21 ++---
  arch/arm64/Makefile      |   2 +-
  scripts/package/builddeb | 170 ++++++---------------------------------
  scripts/package/mkdebian |  19 +----
- 3 files changed, 27 insertions(+), 164 deletions(-)
+ scripts/setlocalversion  |  47 +++--------
+ 5 files changed, 46 insertions(+), 213 deletions(-)
 
+diff --git a/Makefile b/Makefile
+index 6bbc15bea0..da51f041ec 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1293,8 +1293,7 @@ targets := vmlinux
+ $(sort $(vmlinux-deps) $(subdir-modorder)): descend ;
+ 
+ filechk_kernel.release = \
+-	echo "$(KERNELVERSION)$$($(CONFIG_SHELL) $(srctree)/scripts/setlocalversion \
+-		$(srctree) $(BRANCH) $(KMI_GENERATION))"
++	echo "$(KERNELVERSION)$$($(CONFIG_SHELL) $(srctree)/scripts/setlocalversion $(srctree))"
+ 
+ # Store (new) KERNELRELEASE string in include/config/kernel.release
+ include/config/kernel.release: FORCE
+@@ -1364,17 +1363,12 @@ endif
+ # needs to be updated, so this check is forced on all builds
+ 
+ uts_len := 64
+-ifneq (,$(BUILD_NUMBER))
+-	UTS_RELEASE=$(KERNELRELEASE)-ab$(BUILD_NUMBER)
+-else
+-	UTS_RELEASE=$(KERNELRELEASE)
+-endif
+ define filechk_utsrelease.h
+-	if [ `echo -n "$(UTS_RELEASE)" | wc -c ` -gt $(uts_len) ]; then \
+-		echo '"$(UTS_RELEASE)" exceeds $(uts_len) characters' >&2;    \
+-		exit 1;                                                       \
+-	fi;                                                             \
+-	echo \#define UTS_RELEASE \"$(UTS_RELEASE)\"
++	if [ `echo -n "$(KERNELRELEASE)" | wc -c ` -gt $(uts_len) ]; then \
++	  echo '"$(KERNELRELEASE)" exceeds $(uts_len) characters' >&2;    \
++	  exit 1;                                                         \
++	fi;                                                               \
++	echo \#define UTS_RELEASE \"$(KERNELRELEASE)\"
+ endef
+ 
+ define filechk_version.h
+@@ -2024,8 +2018,7 @@ checkstack:
+ 	$(PERL) $(srctree)/scripts/checkstack.pl $(CHECKSTACK_ARCH)
+ 
+ kernelrelease:
+-	@echo "$(KERNELVERSION)$$($(CONFIG_SHELL) $(srctree)/scripts/setlocalversion \
+-		$(srctree) $(BRANCH) $(KMI_GENERATION))"
++	@echo "$(KERNELVERSION)$$($(CONFIG_SHELL) $(srctree)/scripts/setlocalversion $(srctree))"
+ 
+ kernelversion:
+ 	@echo $(KERNELVERSION)
 diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
-index b3a57c510..7e2f0c346 100644
+index b3a57c5105..7e2f0c346b 100644
 --- a/arch/arm64/Makefile
 +++ b/arch/arm64/Makefile
 @@ -155,7 +155,7 @@ libs-$(CONFIG_EFI_STUB) += $(objtree)/drivers/firmware/efi/libstub/lib.a
@@ -23,7 +72,7 @@ index b3a57c510..7e2f0c346 100644
  # Don't compile Image in mixed build with "all" target
  ifndef KBUILD_MIXED_TREE
 diff --git a/scripts/package/builddeb b/scripts/package/builddeb
-index 7c7cde930..91a502bb9 100755
+index 7c7cde9304..91a502bb97 100755
 --- a/scripts/package/builddeb
 +++ b/scripts/package/builddeb
 @@ -26,62 +26,31 @@ if_enabled_echo() {
@@ -275,7 +324,7 @@ index 7c7cde930..91a502bb9 100755
  
  create_package "$packagename" "$tmpdir"
 diff --git a/scripts/package/mkdebian b/scripts/package/mkdebian
-index 7c6197efa..357dc56bc 100755
+index 7c6197efa1..357dc56bcf 100755
 --- a/scripts/package/mkdebian
 +++ b/scripts/package/mkdebian
 @@ -94,12 +94,10 @@ else
@@ -336,6 +385,111 @@ index 7c6197efa..357dc56bc 100755
  
  cat <<EOF > debian/rules
  #!$(command -v $MAKE) -f
+diff --git a/scripts/setlocalversion b/scripts/setlocalversion
+index 842936656b..45609dba7d 100755
+--- a/scripts/setlocalversion
++++ b/scripts/setlocalversion
+@@ -11,14 +11,12 @@
+ #
+ 
+ usage() {
+-	echo "Usage: $0 [--save-scmversion] [srctree] [branch] [kmi-generation]" >&2
++	echo "Usage: $0 [--save-scmversion] [srctree]" >&2
+ 	exit 1
+ }
+ 
+ scm_only=false
+ srctree=.
+-android_release=
+-kmi_generation=
+ if test "$1" = "--save-scmversion"; then
+ 	scm_only=true
+ 	shift
+@@ -27,22 +25,6 @@ if test $# -gt 0; then
+ 	srctree=$1
+ 	shift
+ fi
+-if test $# -gt 0; then
+-	# Extract the Android release version. If there is no match, then return 255
+-	# and clear the var $android_release
+-	android_release=`echo "$1" | sed -e '/android[0-9]\{2,\}/!{q255}; \
+-		s/^\(android[0-9]\{2,\}\)-.*/\1/'`
+-	if test $? -ne 0; then
+-		android_release=
+-	fi
+-	shift
+-
+-	if test $# -gt 0; then
+-		kmi_generation=$1
+-		[ $(expr $kmi_generation : '^[0-9]\+$') -eq 0 ] && usage
+-		shift
+-	fi
+-fi
+ if test $# -gt 0 -o ! -d "$srctree"; then
+ 	usage
+ fi
+@@ -62,17 +44,12 @@ scm_version()
+ 	fi
+ 
+ 	# Check for git and a git repo.
+-	if head=$(git rev-parse --verify HEAD 2>/dev/null); then
+-
+-		if [ -n "$android_release" ] && [ -n "$kmi_generation" ]; then
+-			printf '%s' "-$android_release-$kmi_generation"
+-		elif [ -n "$android_release" ]; then
+-			printf '%s' "-$android_release"
+-		fi
++	if test -z "$(git rev-parse --show-cdup 2>/dev/null)" &&
++	   head=$(git rev-parse --verify HEAD 2>/dev/null); then
+ 
+ 		# If we are at a tagged commit (like "v2.6.30-rc6"), we ignore
+ 		# it, because this version is defined in the top level Makefile.
+-		if [ -z "$(git describe --exact-match 2>/dev/null)" ]; then
++		if [ -z "`git describe --exact-match 2>/dev/null`" ]; then
+ 
+ 			# If only the short version is requested, don't bother
+ 			# running further git commands
+@@ -104,7 +81,7 @@ scm_version()
+ 
+ 		# Is this git on svn?
+ 		if git config --get svn-remote.svn.url >/dev/null; then
+-			printf -- '-svn%s' "$(git svn find-rev $head)"
++			printf -- '-svn%s' "`git svn find-rev $head`"
+ 		fi
+ 
+ 		# Check for uncommitted changes.
+@@ -125,15 +102,15 @@ scm_version()
+ 	fi
+ 
+ 	# Check for mercurial and a mercurial repo.
+-	if hgid=$(hg id 2>/dev/null); then
++	if test -d .hg && hgid=`hg id 2>/dev/null`; then
+ 		# Do we have an tagged version?  If so, latesttagdistance == 1
+-		if [ "$(hg log -r . --template '{latesttagdistance}')" = "1" ]; then
+-			id=$(hg log -r . --template '{latesttag}')
++		if [ "`hg log -r . --template '{latesttagdistance}'`" = "1" ]; then
++			id=`hg log -r . --template '{latesttag}'`
+ 			printf '%s%s' -hg "$id"
+ 		else
+-			tag=$(printf '%s' "$hgid" | cut -d' ' -f2)
++			tag=`printf '%s' "$hgid" | cut -d' ' -f2`
+ 			if [ -z "$tag" -o "$tag" = tip ]; then
+-				id=$(printf '%s' "$hgid" | sed 's/[+ ].*//')
++				id=`printf '%s' "$hgid" | sed 's/[+ ].*//'`
+ 				printf '%s%s' -hg "$id"
+ 			fi
+ 		fi
+@@ -149,8 +126,8 @@ scm_version()
+ 	fi
+ 
+ 	# Check for svn and a svn repo.
+-	if rev=$(LANG= LC_ALL= LC_MESSAGES=C svn info 2>/dev/null | grep '^Last Changed Rev'); then
+-		rev=$(echo $rev | awk '{print $NF}')
++	if rev=`LANG= LC_ALL= LC_MESSAGES=C svn info 2>/dev/null | grep '^Last Changed Rev'`; then
++		rev=`echo $rev | awk '{print $NF}'`
+ 		printf -- '-svn%s' "$rev"
+ 
+ 		# All done with svn
 -- 
 2.25.1
 
