@@ -136,7 +136,7 @@ apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
 # Grab the kernel version
-kernel_version="$(cat linux-orangepi/include/generated/utsrelease.h | sed -e 's/.*"\(.*\)".*/\1/' | sed -e 's/orange-pi.*/orange-pi/g')"
+kernel_version="$(sed -e 's/.*"\(.*\)".*/\1/;s/orange-pi.*/orange-pi/g' linux-orangepi/include/generated/utsrelease.h)"
 
 # Install kernel, modules, and headers
 cat << EOF | chroot ${chroot_dir} /bin/bash
@@ -148,7 +148,7 @@ dpkg -i /tmp/linux-{headers,image,libc}-*.deb
 rm -rf /tmp/*
 
 # Generate kernel module dependencies
-depmod -a ${kernel_version}
+depmod -a "\$(basename /lib/modules/*)"
 update-initramfs -c -k ${kernel_version}
 
 # Create kernel and component symlinks
