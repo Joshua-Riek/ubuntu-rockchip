@@ -353,21 +353,6 @@ mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-# Download and update packages
-cat << EOF | chroot ${chroot_dir} /bin/bash
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
-
-# Desktop packages
-DEBIAN_FRONTEND=noninteractive apt-get -y install ubuntu-desktop
-
-# Firefox has no gpu support 
-DEBIAN_FRONTEND=noninteractive apt-get -y purge firefox
-
-# Clean package cache
-apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
-EOF
-
 # Copy GPU accelerated packages to the rootfs
 cp -r ../debs ${chroot_dir}/tmp
 
@@ -399,7 +384,6 @@ dpkg --force-overwrite --no-debsig --install /tmp/debs/rga/*deb
 dpkg --force-overwrite --no-debsig --install /tmp/debs/mpp/*.deb
 dpkg --force-overwrite --no-debsig --install /tmp/debs/libmali/*.deb
 dpkg --force-overwrite --no-debsig --install /tmp/debs/libv4l/*.deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/gst-rkmpp/*.deb
 dpkg --force-overwrite --no-debsig --install /tmp/debs/gstreamer/*.deb
 dpkg --force-overwrite --no-debsig --install /tmp/debs/gst-plugins-base1.0/*.deb
 dpkg --force-overwrite --no-debsig --install /tmp/debs/gst-plugins-good1.0/*.deb
@@ -429,6 +413,21 @@ done
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 rm -rf /tmp/*
+EOF
+
+# Download and update packages
+cat << EOF | chroot ${chroot_dir} /bin/bash
+set -eE 
+trap 'echo Error: in $0 on line $LINENO' ERR
+
+# Desktop packages
+DEBIAN_FRONTEND=noninteractive apt-get -y install ubuntu-desktop
+
+# Firefox has no gpu support 
+DEBIAN_FRONTEND=noninteractive apt-get -y purge firefox
+
+# Clean package cache
+apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
 # Umount the temporary API filesystems
