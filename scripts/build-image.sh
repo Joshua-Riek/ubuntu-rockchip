@@ -135,6 +135,9 @@ EOF
     cat > ${mount_point}/boot/boot.cmd << EOF
 env set bootargs "root=UUID=${root_uuid} console=ttyS2,1500000 console=tty1 rootfstype=ext4 rootwait rw"
 fatload \${devtype} \${devnum}:1 \${fdt_addr_r} /rk3588s-orangepi-5.dtb
+fdt addr \${fdt_addr_r} && fdt resize 0x2000
+fatload \${devtype} \${devnum}:1 \${fdtoverlay_addr_r} /overlays/rk3588-wifi-ap6275p.dtbo
+fdt apply \${fdtoverlay_addr_r}
 ext4load \${devtype} \${devnum}:2 \${ramdisk_addr_r} /boot/vmlinuz
 unzip \${ramdisk_addr_r} \${kernel_addr_r} \${filesize}
 ext4load \${devtype} \${devnum}:2 \${ramdisk_addr_r} /boot/initrd.img
