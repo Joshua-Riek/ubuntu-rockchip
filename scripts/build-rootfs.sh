@@ -495,6 +495,9 @@ sed -i 's/#WaylandEnable=false/WaylandEnable=true/g' ${chroot_dir}/etc/gdm3/cust
 echo "[User]" > ${chroot_dir}/var/lib/AccountsService/users/ubuntu 
 echo "XSession=ubuntu-wayland" >> ${chroot_dir}/var/lib/AccountsService/users/ubuntu 
 
+# Improve mesa performance 
+echo "PAN_MESA_DEBUG=gofaster" >> ${chroot_dir}/etc/environment
+
 # Umount the temporary API filesystems
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
