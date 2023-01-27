@@ -16,6 +16,3 @@ fi
 
 # Build the root file system
 ./scripts/build-rootfs.sh
-
-# Build the Ubuntu preinstalled images
-./scripts/build-image.sh
