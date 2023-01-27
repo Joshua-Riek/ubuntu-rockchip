@@ -488,6 +488,14 @@ DEBIAN_FRONTEND=noninteractive apt-get -y purge firefox
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
+# Enable mpp and rga hardware acceleration
+cat > ${chroot_dir}/etc/udev/rules.d/11-rockchip-multimedia.rules << EOF
+KERNEL=="mpp_service", MODE="0660", GROUP="video"
+KERNEL=="rga", MODE="0660", GROUP="video"
+KERNEL=="system-dma32", MODE="0666", GROUP="video"
+KERNEL=="system-uncached-dma32", MODE="0666", GROUP="video" RUN+="/usr/bin/chmod a+rw /dev/dma_heap"
+EOF
+
 # Enable wayland session
 sed -i 's/#WaylandEnable=false/WaylandEnable=true/g' ${chroot_dir}/etc/gdm3/custom.conf
 
