@@ -16,6 +16,11 @@ if [ ! -d linux-orangepi ]; then
     git clone --progress -b orange-pi-5.10-rk3588 https://github.com/orangepi-xunlong/linux-orangepi
     git -C linux-orangepi checkout 161606b049488da100e5d7ec95c8997d3b59b20d
     git -C linux-orangepi apply ../../patches/linux-orangepi/0001-debianize-kernel-package.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0001-dma-buf-add-dma_resv_get_singleton-v2.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0002-dma-buf-Add-an-API-for-exporting-sync-files-v14.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0003-dma-buf-Add-an-API-for-importing-sync-files-v10.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0004-MALI-bifrost-avoid-fence-double-free.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0005-drm-rockchip-Re-add-implicit-fencing-support-for-pla.patch
 fi
 cd linux-orangepi
 
@@ -25,7 +30,7 @@ make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- olddefconfig
 ./scripts/config --disable CONFIG_DEBUG_INFO
 ./scripts/config --disable MODULE_SCMVERSION
 
-# Disable for panfrost
+# Disable for panfork
 ./scripts/config --disable CONFIG_DRM_IGNORE_IOTCL_PERMIT 
 
 # Set custom kernel version
