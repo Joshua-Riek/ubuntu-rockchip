@@ -8,6 +8,22 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 [focal|jammy]"
+    exit 1
+fi
+
+if [ "$1" == "focal" ]; then
+    release="focal"
+    version="20.04"
+elif [ "$1" == "jammy" ]; then
+    release="jammy"
+    version="22.04"
+else
+    echo "Usage: $0 [focal|jammy]"
+    exit 1
+fi
+
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
@@ -28,7 +44,6 @@ unset TMPDIR
 
 # Debootstrap options
 arch=arm64
-release=focal
 mirror=http://ports.ubuntu.com/ubuntu-ports
 chroot_dir=rootfs
 
@@ -129,7 +144,7 @@ pigz wget curl grub-common grub2-common grub-efi-arm64 grub-efi-arm64-bin gdisk
 # Download and install developer packages
 DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
 git binutils build-essential bc bison cmake flex libssl-dev device-tree-compiler \
-i2c-tools u-boot-tools binfmt-support python
+i2c-tools u-boot-tools binfmt-support python3
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
@@ -344,8 +359,8 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-20.04-preinstalled-server-arm64-orange-pi5.rootfs.tar.xz . && cd ..
-../scripts/build-image.sh ubuntu-20.04-preinstalled-server-arm64-orange-pi5.rootfs.tar.xz
+cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-${version}-preinstalled-server-arm64-orange-pi5.rootfs.tar.xz . && cd ..
+../scripts/build-image.sh ubuntu-${version}-preinstalled-server-arm64-orange-pi5.rootfs.tar.xz
 
 # Mount the temporary API filesystems
 mkdir -p ${chroot_dir}/{proc,sys,run,dev,dev/pts}
@@ -355,7 +370,7 @@ mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
 # Copy GPU accelerated packages to the rootfs
-cp -r ../debs ${chroot_dir}/tmp
+cp -r ../debs/${release}/* ${chroot_dir}/tmp
 
 # Install GPU accelerated packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
@@ -367,35 +382,64 @@ DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
 libglib2.0-doc libglib2.0-dev liborc-0.4-dev libgl1-mesa-dev libegl1-mesa-dev \
 libgles2-mesa-dev libx11-xcb-dev libqt5core5a libqt5gui5 libqt5gui5 libdrm-tegra0 \
 libqt5quick5 libqt5x11extras5 libjsoncpp-dev libminizip1 libsnappy1v5 \
-libdrm-freedreno1 libdrm-etnaviv1 libpciaccess-dev libsdl2-2.0-0 libdc1394-22 \
+libdrm-freedreno1 libdrm-etnaviv1 libpciaccess-dev libsdl2-2.0-0 libdw-dev \
 libopenal1 libsndio7.0 libass9 libbs2b0 libflite1 liblilv-0-0 libmysofa1 \
 librubberband2 libvidstab1.1 libzmq5 libdvdnav4 liblua5.2-0 libva-wayland2 \
-libaom0 libcodec2-0.9 libgsm1 libshine3 libx264-155 libx265-179 libxvidcore4 \
-libzvbi0 ocl-icd-libopencl1 libbluray2 libchromaprint1 libgme0 libopenmpt0 \
-libssh-gcrypt-4 libdw1 libunwind8 libcdparanoia0 libgraphene-1.0-0 libxv1 \
-libvisual-0.4-0 libgtk-3-0 libaa1 libavc1394-0 libcaca0 libdv4 libiec61883-0 \
-libjack-jackd2-0 libshout3 libtag1v5  libxdamage1 libwebpdemux2 \
-libxfont2 xserver-common libcdio-cdda2 libcdio-paranoia2 libnspr4 libnss3 \
-libsmbclient libxslt1.1 libqt5opengl5 libqt5widgets5    
+libgsm1 libshine3  libxvidcore4 libzvbi0 ocl-icd-libopencl1 libbluray2 \
+libchromaprint1 libgme0 libopenmpt0 libssh-gcrypt-4 libdw1 libunwind8 \
+libcdparanoia0 libgraphene-1.0-0 libxv1 libvisual-0.4-0 libgtk-3-0 libaa1 \
+libavc1394-0 libcaca0 libdv4 libiec61883-0 libunwind-dev libjack-jackd2-0 \
+libshout3 libtag1v5  libxdamage1 libwebpdemux2 libxfont2 xserver-common \
+libcdio-cdda2 libcdio-paranoia2 libnspr4 libnss3 libsmbclient libxslt1.1 \
+libqt5opengl5 libqt5widgets5    
 
-# Install packages
-dpkg --force-overwrite --no-debsig --install /tmp/debs/rkaiq/*.deb
-cp -f /tmp/debs/rkaiq/rkaiq_3A_server /usr/bin
-dpkg --force-overwrite --no-debsig --install /tmp/debs/rga/*deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/mpp/*.deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/libmali/*.deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/libv4l/*.deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/gstreamer/*.deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/gst-plugins-base1.0/*.deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/gst-plugins-good1.0/*.deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/xserver/*.deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/ffmpeg/*.deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/chromium/*.deb
-cp -f /tmp/debs/chromium/libjpeg.so.62 /usr/lib/aarch64-linux-gnu
-dpkg --force-overwrite --no-debsig --install /tmp/debs/libdrm/*.deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/rktoolkit/*.deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/mpv/*.deb
-dpkg --force-overwrite --no-debsig --install /tmp/debs/rkwifibt/*.deb
+if [ "${release}" != "jammy" ]; then
+    DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+    libaom0 libdc1394-22 libcodec2-0.9 libx264-155 libx265-179
+
+    # Install packages
+    dpkg --force-overwrite --no-debsig --install /tmp/rkaiq/*.deb
+    cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
+    dpkg --force-overwrite --no-debsig --install /tmp/rga/*deb
+    dpkg --force-overwrite --no-debsig --install /tmp/mpp/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/libmali/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/libv4l/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/gstreamer/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/gst-plugins-base1.0/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/gst-plugins-good1.0/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/xserver/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/ffmpeg/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/chromium/*.deb
+    cp -f /tmp/chromium/libjpeg.so.62 /usr/lib/aarch64-linux-gnu
+    dpkg --force-overwrite --no-debsig --install /tmp/libdrm/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/rktoolkit/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/mpv/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/rkwifibt/*.deb
+else
+    DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+    libaom3 libdc1394-25 libcodec2-1.0 libx264-163 libx265-199 libwayland-dev \
+    libgbm-dev libgudev-1.0-dev libxcvt0 libpixman-1-dev libxcvt-dev libxfont-dev \
+    libxkbfile-dev mesa-common-dev libpocketsphinx3 libsphinxbase3 libzimg2 \
+    libgdk-pixbuf2.0-0 libevent-2.1-7 libicu70 libwebp7 libmujs1 libplacebo192 \
+    libsixel1 librabbitmq4 libsrt1.4-gnutls
+
+    # Install packages
+    dpkg --force-overwrite --no-debsig --install /tmp/rkaiq/*.deb
+    cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
+    dpkg --force-overwrite --no-debsig --install /tmp/rga/*deb
+    dpkg --force-overwrite --no-debsig --install /tmp/mpp/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/libmali/*.deb && rm -rf /tmp/libmali
+    dpkg --force-overwrite --no-debsig --install /tmp/libv4l/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/libdrm/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/libdrm-cursor/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/gstreamer/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/gst-plugins-base1.0/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/xserver/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/ffmpeg/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/rktoolkit/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/mpv/*.deb
+    dpkg --force-overwrite --no-debsig --install /tmp/rkwifibt/*.deb
+fi
 
 # Chromium uses fixed paths for libv4l2.so
 ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
@@ -407,7 +451,7 @@ rm -f /usr/lib/aarch64-linux-gnu/dri/*.so
 mv /*.so /usr/lib/aarch64-linux-gnu/dri/
 
 # Hold packages
-for i in /tmp/debs/*/*.deb; do
+for i in /tmp/*/*.deb; do
     apt-mark hold "\$(basename "\${i}" | cut -d "_" -f1)"
 done
 
@@ -468,7 +512,7 @@ rm -rf /root/.cache/pip
 DEBIAN_FRONTEND=noninteractive apt-get -y purge \
 python3-mako libexpat1-dev libwayland-egl-backend-dev libxext-dev libxfixes-dev \
 libxcb-glx0-dev libxcb-shm0-dev libxcb-dri2-0-dev libxcb-dri3-dev libxrandr-dev \
-libxcb-present-dev libxshmfence-dev libxxf86vm-dev libwayland-dev python3-pip
+libxcb-present-dev libxshmfence-dev libxxf86vm-dev python3-pip
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
@@ -512,5 +556,5 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-20.04-preinstalled-desktop-arm64-orange-pi5.rootfs.tar.xz . && cd ..
-../scripts/build-image.sh ubuntu-20.04-preinstalled-desktop-arm64-orange-pi5.rootfs.tar.xz
+cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-${version}-preinstalled-desktop-arm64-orange-pi5.rootfs.tar.xz . && cd ..
+../scripts/build-image.sh ubuntu-${version}-preinstalled-desktop-arm64-orange-pi5.rootfs.tar.xz
