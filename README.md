@@ -34,14 +34,6 @@ cd ubuntu-orange-pi5
 sudo ./build.sh
 ```
 
-## Virtual Machine
-
-To run the Ubuntu 20.04 preinstalled image in a virtual machine:
-
-```
-sudo ./qemu.sh images/ubuntu-20.04-preinstalled-server-arm64-orange-pi5.img.xz
-```
-
 ## Login
 
 There are two predefined users on the system: `ubuntu` and `root`. The password for each is `root`. 
