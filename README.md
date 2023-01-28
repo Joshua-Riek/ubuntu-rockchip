@@ -1,12 +1,12 @@
 ## Overview
 
-This is a collection of scripts that are used to build a Ubuntu 20.04 preinstalled desktop/server image for the Orange Pi5.
+This is a collection of scripts to build a Ubuntu 20.04 or 22.04 preinstalled desktop/server image for the Orange Pi5.
 
 ![Orange Pi 5](https://th.bing.com/th/id/R.a1de27bd2ebe148e76a874c99ad788c5?rik=Nk7xAorX4wMWfA&riu=http%3a%2f%2fwww.orangepi.cn%2fimg%2fpi-5-banner-img.png&ehk=iprwYnSrqqCCG8u9JLNVxxnIy9rza138h65C3rXhC4c%3d&risl=&pid=ImgRaw&r=0)
 
 ## Recommended Hardware
 
-To setup the build environment for the Ubuntu 20.04 image creation, a Linux host with the following configuration is recommended. A host machine with adequate processing power and disk space is ideal as the build process can be severial gigabytes in size and can take alot of time.
+A Linux host with the following configuration is recommended to set up the build environment. Adequate processing power and disk space is ideal as the build process can be several gigabytes and take a lot of time.
 
 * Intel Core i7 CPU (>= 8 cores)
 * Strong internet connection
@@ -31,7 +31,7 @@ To checkout the source and build:
 ```
 git clone https://github.com/Joshua-Riek/ubuntu-orange-pi5.git
 cd ubuntu-orange-pi5
-sudo ./build.sh
+sudo ./build.sh focal
 ```
 
 ## Login
@@ -47,7 +47,7 @@ Password: root
 
 ## Flash Removable Media
 
-To flash the Ubuntu 20.04 preinstalled image to removable media:
+To flash the Ubuntu preinstalled image to removable media:
 
 ```
 xz -dc images/ubuntu-20.04-preinstalled-desktop-arm64-orange-pi5.img.xz | sudo dd of=/dev/sdX bs=4k
