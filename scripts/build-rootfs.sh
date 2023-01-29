@@ -398,23 +398,23 @@ if [ "${release}" != "jammy" ]; then
     libaom0 libdc1394-22 libcodec2-0.9 libx264-155 libx265-179
 
     # Install packages
-    dpkg --force-overwrite --no-debsig --install /tmp/rkaiq/*.deb
+    dpkg --force-overwrite --install /tmp/rkaiq/*.deb
     cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
-    dpkg --force-overwrite --no-debsig --install /tmp/rga/*deb
-    dpkg --force-overwrite --no-debsig --install /tmp/mpp/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/libmali/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/libv4l/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/gstreamer/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/gst-plugins-base1.0/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/gst-plugins-good1.0/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/xserver/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/ffmpeg/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/chromium/*.deb
+    dpkg --force-overwrite --install /tmp/rga/*deb
+    dpkg --force-overwrite --install /tmp/mpp/*.deb
+    dpkg --force-overwrite --install /tmp/libmali/*.deb
+    dpkg --force-overwrite --install /tmp/libv4l/*.deb
+    dpkg --force-overwrite --install /tmp/gstreamer/*.deb
+    dpkg --force-overwrite --install /tmp/gst-plugins-base1.0/*.deb
+    dpkg --force-overwrite --install /tmp/gst-plugins-good1.0/*.deb
+    dpkg --force-overwrite --install /tmp/xserver/*.deb
+    dpkg --force-overwrite --install /tmp/ffmpeg/*.deb
+    dpkg --force-overwrite --install /tmp/chromium/*.deb
     cp -f /tmp/chromium/libjpeg.so.62 /usr/lib/aarch64-linux-gnu
-    dpkg --force-overwrite --no-debsig --install /tmp/libdrm/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/rktoolkit/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/mpv/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/rkwifibt/*.deb
+    dpkg --force-overwrite --install /tmp/libdrm/*.deb
+    dpkg --force-overwrite --install /tmp/rktoolkit/*.deb
+    dpkg --force-overwrite --install /tmp/mpv/*.deb
+    dpkg --force-overwrite --install /tmp/rkwifibt/*.deb
 else
     DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
     libaom3 libdc1394-25 libcodec2-1.0 libx264-163 libx265-199 libwayland-dev \
@@ -424,21 +424,23 @@ else
     libsixel1 librabbitmq4 libsrt1.4-gnutls
 
     # Install packages
-    dpkg --force-overwrite --no-debsig --install /tmp/rkaiq/*.deb
+    dpkg --force-overwrite --install /tmp/rkaiq/*.deb
     cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
-    dpkg --force-overwrite --no-debsig --install /tmp/rga/*deb
-    dpkg --force-overwrite --no-debsig --install /tmp/mpp/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/libmali/*.deb && rm -rf /tmp/libmali
-    dpkg --force-overwrite --no-debsig --install /tmp/libv4l/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/libdrm/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/libdrm-cursor/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/gstreamer/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/gst-plugins-base1.0/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/xserver/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/ffmpeg/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/rktoolkit/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/mpv/*.deb
-    dpkg --force-overwrite --no-debsig --install /tmp/rkwifibt/*.deb
+    dpkg --force-overwrite --install /tmp/rga/*deb
+    dpkg --force-overwrite --install /tmp/mpp/*.deb
+    dpkg --force-overwrite --install /tmp/libmali/*.deb && rm -rf /tmp/libmali
+    dpkg --force-overwrite --install /tmp/libv4l/*.deb
+    dpkg --force-overwrite --install /tmp/libdrm/*.deb
+    dpkg --force-overwrite --install /tmp/libdrm-cursor/*.deb
+    dpkg --force-overwrite --install /tmp/gstreamer/*.deb
+    dpkg --force-overwrite --install /tmp/gst-plugins-base1.0/*.deb
+    dpkg --force-overwrite --install /tmp/xserver/*.deb
+    dpkg --force-overwrite --install /tmp/ffmpeg/*.deb
+    dpkg --force-overwrite --install /tmp/rktoolkit/*.deb
+    dpkg --force-overwrite --install /tmp/mpv/*.deb
+    dpkg --force-overwrite --install /tmp/rkwifibt/*.deb
+    dpkg --force-overwrite --install /tmp/chromium/*.deb
+    cp -f /tmp/chromium/libjpeg.so.62 /usr/lib/aarch64-linux-gnu
 fi
 
 # Chromium uses fixed paths for libv4l2.so
