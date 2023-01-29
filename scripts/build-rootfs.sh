@@ -391,7 +391,7 @@ libcdparanoia0 libgraphene-1.0-0 libxv1 libvisual-0.4-0 libgtk-3-0 libaa1 \
 libavc1394-0 libcaca0 libdv4 libiec61883-0 libunwind-dev libjack-jackd2-0 \
 libshout3 libtag1v5  libxdamage1 libwebpdemux2 libxfont2 xserver-common \
 libcdio-cdda2 libcdio-paranoia2 libnspr4 libnss3 libsmbclient libxslt1.1 \
-libqt5opengl5 libqt5widgets5    
+libqt5opengl5 libqt5widgets5 dbus-x11
 
 if [ "${release}" != "jammy" ]; then
     DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
@@ -552,6 +552,11 @@ echo "XSession=ubuntu-wayland" >> ${chroot_dir}/var/lib/AccountsService/users/ub
 
 # Improve mesa performance 
 echo "PAN_MESA_DEBUG=gofaster" >> ${chroot_dir}/etc/environment
+
+# Add chromium to favorites bar
+chroot ${chroot_dir} /bin/bash -c "sudo -u ubuntu dbus-launch gsettings set org.gnome.shell favorite-apps \
+\"['ubiquity.desktop', 'chromium.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', \
+'rhythmbox.desktop', 'libreoffice-writer.desktop', 'snap-store_ubuntu-software.desktop', 'yelp.desktop']\""
 
 # Umount the temporary API filesystems
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
