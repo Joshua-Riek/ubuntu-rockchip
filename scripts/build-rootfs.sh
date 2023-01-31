@@ -377,73 +377,42 @@ cat << EOF | chroot ${chroot_dir} /bin/bash
 set -eE 
 trap 'echo Error: in $0 on line $LINENO' ERR
 
-# Install dependencies
-DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-libglib2.0-doc libglib2.0-dev liborc-0.4-dev libgl1-mesa-dev libegl1-mesa-dev \
-libgles2-mesa-dev libx11-xcb-dev libqt5core5a libqt5gui5 libqt5gui5 libdrm-tegra0 \
-libqt5quick5 libqt5x11extras5 libjsoncpp-dev libminizip1 libsnappy1v5 \
-libdrm-freedreno1 libdrm-etnaviv1 libpciaccess-dev libsdl2-2.0-0 libdw-dev \
-libopenal1 libsndio7.0 libass9 libbs2b0 libflite1 liblilv-0-0 libmysofa1 \
-librubberband2 libvidstab1.1 libzmq5 libdvdnav4 liblua5.2-0 libva-wayland2 \
-libgsm1 libshine3  libxvidcore4 libzvbi0 ocl-icd-libopencl1 libbluray2 \
-libchromaprint1 libgme0 libopenmpt0 libssh-gcrypt-4 libdw1 libunwind8 \
-libcdparanoia0 libgraphene-1.0-0 libxv1 libvisual-0.4-0 libgtk-3-0 libaa1 \
-libavc1394-0 libcaca0 libdv4 libiec61883-0 libunwind-dev libjack-jackd2-0 \
-libshout3 libtag1v5  libxdamage1 libwebpdemux2 libxfont2 xserver-common \
-libcdio-cdda2 libcdio-paranoia2 libnspr4 libnss3 libsmbclient libxslt1.1 \
-libqt5opengl5 libqt5widgets5 dbus-x11
+mkdir -p /tmp/apt-local
+mv /tmp/*/*.deb /tmp/apt-local
 
-if [ "${release}" != "jammy" ]; then
-    DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-    libaom0 libdc1394-22 libcodec2-0.9 libx264-155 libx265-179
+# Backup sources.list and setup a local apt repo
+cd /tmp/apt-local && apt-ftparchive packages . > Packages && cd /
+echo -e "Package: *\nPin: origin ""\nPin-Priority: 1001" > /etc/apt/prefrences
+echo "deb [trusted=yes] file:/tmp/apt-local/ ./" > /tmp/apt-local.list
+cp /etc/apt/sources.list /etc/apt/sources.list.bak
+cat /tmp/apt-local.list /etc/apt/sources.list > /tmp/sources.list
+mv /tmp/sources.list /etc/apt/sources.list
+rm -rf /tmp/apt-local.list
 
-    # Install packages
-    dpkg --force-overwrite --install /tmp/rkaiq/*.deb
-    cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
-    dpkg --force-overwrite --install /tmp/rga/*deb
-    dpkg --force-overwrite --install /tmp/mpp/*.deb
-    dpkg --force-overwrite --install /tmp/libmali/*.deb
-    dpkg --force-overwrite --install /tmp/libv4l/*.deb
-    dpkg --force-overwrite --install /tmp/gstreamer/*.deb
-    dpkg --force-overwrite --install /tmp/gst-plugins-base1.0/*.deb
-    dpkg --force-overwrite --install /tmp/gst-plugins-good1.0/*.deb
-    dpkg --force-overwrite --install /tmp/xserver/*.deb
-    dpkg --force-overwrite --install /tmp/ffmpeg/*.deb
-    dpkg --force-overwrite --install /tmp/chromium/*.deb
-    cp -f /tmp/chromium/libjpeg.so.62 /usr/lib/aarch64-linux-gnu
-    dpkg --force-overwrite --install /tmp/libdrm/*.deb
-    dpkg --force-overwrite --install /tmp/rktoolkit/*.deb
-    dpkg --force-overwrite --install /tmp/mpv/*.deb
-    dpkg --force-overwrite --install /tmp/rkwifibt/*.deb
-else
-    DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-    libaom3 libdc1394-25 libcodec2-1.0 libx264-163 libx265-199 libwayland-dev \
-    libgbm-dev libgudev-1.0-dev libxcvt0 libpixman-1-dev libxcvt-dev libxfont-dev \
-    libxkbfile-dev mesa-common-dev libpocketsphinx3 libsphinxbase3 libzimg2 \
-    libgdk-pixbuf2.0-0 libevent-2.1-7 libicu70 libwebp7 libmujs1 libplacebo192 \
-    libsixel1 librabbitmq4 libsrt1.4-gnutls
+# Download package information
+DEBIAN_FRONTEND=noninteractive apt-get -y update
 
-    # Install packages
-    dpkg --force-overwrite --install /tmp/rkaiq/*.deb
-    cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
-    dpkg --force-overwrite --install /tmp/rga/*deb
-    dpkg --force-overwrite --install /tmp/mpp/*.deb
-    dpkg --force-overwrite --install /tmp/libmali/*.deb && rm -rf /tmp/libmali
-    dpkg --force-overwrite --install /tmp/libv4l/*.deb
-    dpkg --force-overwrite --install /tmp/libdrm/*.deb
-    dpkg --force-overwrite --install /tmp/libdrm-cursor/*.deb
-    dpkg --force-overwrite --install /tmp/gstreamer/*.deb
-    dpkg --force-overwrite --install /tmp/gst-plugins-base1.0/*.deb
-    dpkg --force-overwrite --install /tmp/xserver/*.deb
-    dpkg --force-overwrite --install /tmp/ffmpeg/*.deb
-    dpkg --force-overwrite --install /tmp/rktoolkit/*.deb
-    dpkg --force-overwrite --install /tmp/mpv/*.deb
-    dpkg --force-overwrite --install /tmp/rkwifibt/*.deb
-    dpkg --force-overwrite --install /tmp/chromium/*.deb
-    cp -f /tmp/chromium/libjpeg.so.62 /usr/lib/aarch64-linux-gnu
+debs=()
+for i in /tmp/apt-local/*.deb; do
+    debs+=("\$(basename "\${i}" | cut -d "_" -f1)")
+done
+
+# Install packages
+DEBIAN_FRONTEND=noninteractive apt-get -y install "\${debs[@]}"
+
+# This package cant be held on jammy
+if [ "${release}" == "jammy" ]; then
+    debs=("\${debs[@]/libmali-valhall-g610-g6p0-x11}")
 fi
 
+# Hold packages to prevent breaking hw acceleration
+DEBIAN_FRONTEND=noninteractive apt-mark hold "\${debs[@]}"
+
+# Copy binary for rkaiq
+cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
+
 # Chromium uses fixed paths for libv4l2.so
+cp -f /tmp/chromium/libjpeg.so.62 /usr/lib/aarch64-linux-gnu
 ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
 [ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64
 
@@ -452,14 +421,16 @@ cp /usr/lib/aarch64-linux-gnu/dri/{kms_swrast_dri,swrast_dri,rockchip_dri}.so /
 rm -f /usr/lib/aarch64-linux-gnu/dri/*.so
 mv /*.so /usr/lib/aarch64-linux-gnu/dri/
 
-# Hold packages
-for i in /tmp/*/*.deb; do
-    apt-mark hold "\$(basename "\${i}" | cut -d "_" -f1)"
-done
+# Remove the local apt repo and restore sources.list
+mv /etc/apt/sources.list.bak /etc/apt/sources.list
+rm -f /etc/apt/prefrences
+rm -rf /tmp/*
+
+# Download package information
+DEBIAN_FRONTEND=noninteractive apt-get -y update
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
-rm -rf /tmp/*
 EOF
 
 # Compile and install panfrost
@@ -526,7 +497,7 @@ set -eE
 trap 'echo Error: in $0 on line $LINENO' ERR
 
 # Desktop packages
-DEBIAN_FRONTEND=noninteractive apt-get -y install ubuntu-desktop
+DEBIAN_FRONTEND=noninteractive apt-get -y install ubuntu-desktop dbus-x11
 
 # Firefox has no gpu support 
 DEBIAN_FRONTEND=noninteractive apt-get -y purge firefox
