@@ -337,10 +337,33 @@ fi
 # Remove script
 update-rc.d expand-rootfs.sh remove
 EOF
-chmod +x ${chroot_dir}/etc/init.d/expand-rootfs.sh
 
-# Install init script
+# Install init script to expand the rootfs
+chmod +x ${chroot_dir}/etc/init.d/expand-rootfs.sh
 chroot ${chroot_dir} /bin/bash -c "update-rc.d expand-rootfs.sh defaults"
+
+# Enable the USB 2.0 port on boot
+cat > ${chroot_dir}/etc/init.d/enable-usb2.sh << 'EOF'
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides: enable-usb2.sh
+# Required-Start:
+# Required-Stop:
+# Default-Start: 2 3 4 5 S
+# Default-Stop:
+# Short-Description: Enable the USB 2.0 port
+# Description:
+### END INIT INFO
+
+# Enable the USB 2.0 port by setting host mode
+if [ "$(cat /sys/kernel/debug/usb/fc000000.usb/mode)" != "host" ]; then
+    echo "host" > /sys/kernel/debug/usb/fc000000.usb/mode
+fi
+EOF
+
+# Install init script to enable the USB 2.0 port
+chmod +x ${chroot_dir}/etc/init.d/enable-usb2.sh
+chroot ${chroot_dir} /bin/bash -c "update-rc.d enable-usb2.sh defaults"
 
 # Set term for serial tty
 mkdir -p ${chroot_dir}/lib/systemd/system/serial-getty@.service.d
