@@ -400,11 +400,6 @@ done
 # Install packages
 DEBIAN_FRONTEND=noninteractive apt-get -y install "\${debs[@]}"
 
-# This package cant be held on jammy
-if [ "${release}" == "jammy" ]; then
-    debs=("\${debs[@]/libmali-valhall-g610-g6p0-x11}")
-fi
-
 # Hold packages to prevent breaking hw acceleration
 DEBIAN_FRONTEND=noninteractive apt-mark hold "\${debs[@]}"
 
