@@ -493,6 +493,10 @@ echo "XSession=ubuntu-wayland" >> ${chroot_dir}/var/lib/AccountsService/users/ub
 # Improve mesa performance 
 echo "PAN_MESA_DEBUG=gofaster" >> ${chroot_dir}/etc/environment
 
+# Set chromium as default browser
+chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium 500"
+chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium"
+
 # Add chromium to favorites bar
 chroot ${chroot_dir} /bin/bash -c "sudo -u ubuntu dbus-launch gsettings set org.gnome.shell favorite-apps \
 \"['ubiquity.desktop', 'chromium.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', \
