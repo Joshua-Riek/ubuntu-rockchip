@@ -430,6 +430,9 @@ DEBIAN_FRONTEND=noninteractive apt-get -y install "\${debs[@]}"
 # Hold packages to prevent breaking hw acceleration
 DEBIAN_FRONTEND=noninteractive apt-mark hold "\${debs[@]}"
 
+# Copy mpv config file
+cp -f /tmp/mpv/mpv.conf /etc/mpv/mpv.conf
+
 # Copy binary for rkaiq
 cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
 
