@@ -365,6 +365,10 @@ EOF
 chmod +x ${chroot_dir}/etc/init.d/enable-usb2.sh
 chroot ${chroot_dir} /bin/bash -c "update-rc.d enable-usb2.sh defaults"
 
+# Enable rc-local
+echo -e '#!/bin/sh -e\n\nexit 0' > ${chroot_dir}/etc/rc.local
+chmod +x ${chroot_dir}/etc/rc.local
+
 # Set term for serial tty
 mkdir -p ${chroot_dir}/lib/systemd/system/serial-getty@.service.d
 echo "[Service]" > ${chroot_dir}/lib/systemd/system/serial-getty@.service.d/10-term.conf
