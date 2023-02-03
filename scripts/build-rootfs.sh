@@ -496,7 +496,7 @@ Name=Chromium Web Browser
 GenericName=Web Browser
 Comment=Access the Internet
 Icon=chromium
-Exec=/usr/bin/chromium %U
+Exec=/usr/bin/chromium --password-store=basic %U
 Actions=NewWindow;Incognito;
 MimeType=text/html;text/xml;application/xhtml_xml;x-scheme-handler/http;x-scheme-handler/https;
 Categories=Network;WebBrowser;
@@ -504,11 +504,11 @@ StartupNotify=true
 
 [Desktop Action NewWindow]
 Name=Open a New Window
-Exec=/usr/bin/chromium
+Exec=/usr/bin/chromium --password-store=basic 
 
 [Desktop Action Incognito]
 Name=Open a New Window in incognito mode
-Exec=/usr/bin/chromium --incognito
+Exec=/usr/bin/chromium --password-store=basic --incognito
 EOF
 
 # Set chromium as default browser
