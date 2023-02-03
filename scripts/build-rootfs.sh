@@ -486,13 +486,38 @@ echo "XSession=ubuntu-wayland" >> ${chroot_dir}/var/lib/AccountsService/users/ub
 # Improve mesa performance 
 echo "PAN_MESA_DEBUG=gofaster" >> ${chroot_dir}/etc/environment
 
+# Fix chromium desktop entry
+rm -rf ${chroot_dir}/usr/share/applications/chromium.desktop 
+cat > ${chroot_dir}/usr/share/applications/chromium-browser.desktop << EOF
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=Chromium Web Browser
+GenericName=Web Browser
+Comment=Access the Internet
+Icon=chromium
+Exec=/usr/bin/chromium %U
+Actions=NewWindow;Incognito;
+MimeType=text/html;text/xml;application/xhtml_xml;x-scheme-handler/http;x-scheme-handler/https;
+Categories=Network;WebBrowser;
+StartupNotify=true
+
+[Desktop Action NewWindow]
+Name=Open a New Window
+Exec=/usr/bin/chromium
+
+[Desktop Action Incognito]
+Name=Open a New Window in incognito mode
+Exec=/usr/bin/chromium --incognito
+EOF
+
 # Set chromium as default browser
 chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium 500"
 chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium"
 
 # Add chromium to favorites bar
 chroot ${chroot_dir} /bin/bash -c "sudo -u ubuntu dbus-launch gsettings set org.gnome.shell favorite-apps \
-\"['ubiquity.desktop', 'chromium.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', \
+\"['ubiquity.desktop', 'chromium-browser.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', \
 'rhythmbox.desktop', 'libreoffice-writer.desktop', 'snap-store_ubuntu-software.desktop', 'yelp.desktop']\""
 
 # Umount the temporary API filesystems
