@@ -4,9 +4,19 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build Ubuntu for Orange Pi5",
+            "label": "Build Ubuntu 20.04 for Orange Pi5",
             "type": "shell",
-            "command": "sudo ./build.sh",
+            "command": "sudo ./build.sh focal",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Build Ubuntu 22.04 for Orange Pi5",
+            "type": "shell",
+            "command": "sudo ./build.sh jammy",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
