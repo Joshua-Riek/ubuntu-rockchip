@@ -356,9 +356,7 @@ cat > ${chroot_dir}/etc/init.d/enable-usb2.sh << 'EOF'
 ### END INIT INFO
 
 # Enable the USB 2.0 port by setting host mode
-if [ "$(cat /sys/kernel/debug/usb/fc000000.usb/mode)" != "host" ]; then
-    echo "host" > /sys/kernel/debug/usb/fc000000.usb/mode
-fi
+echo "host" > /sys/kernel/debug/usb/fc000000.usb/mode
 EOF
 
 # Install init script to enable the USB 2.0 port
