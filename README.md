@@ -54,3 +54,15 @@ xz -dc images/ubuntu-20.04-preinstalled-desktop-arm64-orange-pi5.img.xz | sudo d
 ```
 
 > This assumes that the removable media is added as /dev/sdX and all it’s partitions are unmounted.
+
+## Known Limitations and Bugs
+
+1. A number of packages are installed and held to enable hardware acceleration. So please don't remove them and re-install with apt-get.
+
+2. There is a slight mouse cursor glitch in the Ubuntu 20.04 and 22.04 releases.
+
+3. Dragging GPU-accelerated windows around in the Ubuntu 22.04 release is slow and laggy.
+
+4. Kernel warnings plague dmesg in the Ubuntu 22.04 release.
+
+5. Booting from an NVMe drive is not yet supported.
