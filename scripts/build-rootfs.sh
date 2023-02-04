@@ -226,7 +226,7 @@ EOF
 # Hosts file
 cat > ${chroot_dir}/etc/hosts << EOF
 127.0.0.1       localhost
-127.0.1.1       raspberry-pi
+127.0.1.1       orange-pi
 
 ::1             localhost ip6-localhost ip6-loopback
 fe00::0         ip6-localnet
