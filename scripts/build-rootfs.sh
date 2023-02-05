@@ -346,6 +346,9 @@ cp ${overlay_dir}/usr/bin/create-chromium-vda-vea-devices.sh ${chroot_dir}/usr/b
 # Set gstreamer environment variables
 cp ${overlay_dir}/etc/profile.d/gst.sh ${chroot_dir}/etc/profile.d/gst.sh
 
+# Set cogl to use gles2
+cp ${overlay_dir}/etc/profile.d/cogl.sh ${chroot_dir}/etc/profile.d/cogl.sh
+
 # Config file for mpv
 cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 
