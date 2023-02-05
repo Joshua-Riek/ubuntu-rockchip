@@ -339,6 +339,10 @@ EOF
 # Improve mesa performance 
 echo "PAN_MESA_DEBUG=gofaster" >> ${chroot_dir}/etc/environment
 
+# Rockchip multimedia rules
+cp ${overlay_dir}/etc/udev/rules.d/99-rk-device-permissions.rules ${chroot_dir}/etc/udev/rules.d/99-rk-device-permissions.rules
+cp ${overlay_dir}/usr/bin/create-chromium-vda-vea-devices.sh ${chroot_dir}/usr/bin/create-chromium-vda-vea-devices.sh
+
 # Config file for mpv
 cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 
