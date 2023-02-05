@@ -182,7 +182,7 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 
 # Setup user account
 adduser --shell /bin/bash --gecos ubuntu --disabled-password ubuntu
-usermod -a -G sudo,video,adm,dialout,cdrom,audio,plugdev ubuntu
+usermod -a -G sudo,video,adm,dialout,cdrom,audio,plugdev,netdev ubuntu
 mkdir -m 700 /home/ubuntu/.ssh
 chown -R ubuntu:ubuntu /home/ubuntu
 echo -e "root\nroot" | passwd ubuntu
@@ -355,6 +355,10 @@ cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 # Config file for xorg
 mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
 cp ${overlay_dir}/etc/X11/xorg.conf.d/20-modesetting.conf ${chroot_dir}/etc/X11/xorg.conf.d/20-modesetting.conf
+
+# Fix unmanaged ethernet
+cp ${overlay_dir}/etc/NetworkManager/NetworkManager.conf ${chroot_dir}/etc/NetworkManager/NetworkManager.conf
+cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf
 
 # Enable wayland session
 cp ${overlay_dir}/etc/gdm3/custom.conf ${chroot_dir}/etc/gdm3/custom.conf
