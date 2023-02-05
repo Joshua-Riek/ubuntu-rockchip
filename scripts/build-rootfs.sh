@@ -46,6 +46,7 @@ unset TMPDIR
 arch=arm64
 mirror=http://ports.ubuntu.com/ubuntu-ports
 chroot_dir=rootfs
+overlay_dir=../overlay
 
 # Clean chroot dir and make sure folder is not mounted
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
@@ -202,182 +203,44 @@ mv /tmp/swapfile /swapfile
 EOF
 
 # DNS
-echo "nameserver 8.8.8.8" > ${chroot_dir}/etc/resolv.conf
+cp ${overlay_dir}/etc/resolv.conf ${chroot_dir}/etc/resolv.conf
 
 # Hostname
-echo "orange-pi" > ${chroot_dir}/etc/hostname
+cp ${overlay_dir}/etc/hostname ${chroot_dir}/etc/hostname
 
 # Networking interfaces
-cat > ${chroot_dir}/etc/network/interfaces << EOF
-auto lo
-iface lo inet loopback
-
-allow-hotplug eth0
-iface eth0 inet dhcp
-
-allow-hotplug enp0s3
-iface enp0s3 inet dhcp
-
-allow-hotplug wlan0
-iface wlan0 inet dhcp
-    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
-EOF
+cp ${overlay_dir}/etc/network/interfaces ${chroot_dir}/etc/network/interfaces
 
 # Hosts file
-cat > ${chroot_dir}/etc/hosts << EOF
-127.0.0.1       localhost
-127.0.1.1       orange-pi
-
-::1             localhost ip6-localhost ip6-loopback
-fe00::0         ip6-localnet
-ff02::1         ip6-allnodes
-ff02::2         ip6-allrouters
-ff02::3         ip6-allhosts
-EOF
+cp ${overlay_dir}/etc/hosts ${chroot_dir}/etc/hosts
 
 # WIFI
-cat > ${chroot_dir}/etc/wpa_supplicant/wpa_supplicant.conf << EOF
-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-update_config=1
-country=US
-
-network={
-    ssid="your_home_ssid"
-    psk="your_home_psk"
-    key_mgmt=WPA-PSK
-    priority=1
-}
-
-network={
-    ssid="your_work_ssid"
-    psk="your_work_psk"
-    key_mgmt=WPA-PSK
-    priority=2
-}
-EOF
+cp ${overlay_dir}/etc/wpa_supplicant/wpa_supplicant.conf ${chroot_dir}/etc/wpa_supplicant/wpa_supplicant.conf
 
 # Serial console resize script
-cat > ${chroot_dir}/etc/profile.d/resize.sh << 'EOF'
-if [ -t 0 -a $# -eq 0 ]; then
-    if [ ! -x @BINDIR@/resize ] ; then
-        if [ -n "$BASH_VERSION" ] ; then
-            # Optimized resize funciton for bash
-            resize() {
-                local x y
-                IFS='[;' read -t 2 -p $(printf '\e7\e[r\e[999;999H\e[6n\e8') -sd R _ y x _
-                [ -n "$y" ] && \
-                echo -e "COLUMNS=$x;\nLINES=$y;\nexport COLUMNS LINES;" && \
-                stty cols $x rows $y
-            }
-        else
-            # Portable resize function for ash/bash/dash/ksh
-            # with subshell to avoid local variables
-            resize() {
-                (o=$(stty -g)
-                stty -echo raw min 0 time 2
-                printf '\0337\033[r\033[999;999H\033[6n\0338'
-                if echo R | read -d R x 2> /dev/null; then
-                    IFS='[;R' read -t 2 -d R -r z y x _
-                else
-                    IFS='[;R' read -r _ y x _
-                fi
-                stty "$o"
-                [ -z "$y" ] && y=${z##*[}&&x=${y##*;}&&y=${y%%;*}
-                [ -n "$y" ] && \
-                echo "COLUMNS=$x;"&&echo "LINES=$y;"&&echo "export COLUMNS LINES;"&& \
-                stty cols $x rows $y)
-            }
-        fi
-    fi
-    # Use the EDITOR not being set as a trigger to call resize
-    # and only do this for /dev/tty[A-z] which are typically
-    # serial ports
-    if [ -z "$EDITOR" -a "$SHLVL" = 1 ] ; then
-        case $(tty 2>/dev/null) in
-            /dev/tty[A-z]*) resize >/dev/null;;
-        esac
-    fi
-fi
-EOF
+cp ${overlay_dir}/etc/profile.d/resize.sh ${chroot_dir}/etc/profile.d/resize.sh
+
+# Enable rc-local
+cp ${overlay_dir}/etc/rc.local ${chroot_dir}/etc/rc.local
 
 # Expand root filesystem on first boot
-cat > ${chroot_dir}/etc/init.d/expand-rootfs.sh << 'EOF'
-#!/bin/bash
-### BEGIN INIT INFO
-# Provides: expand-rootfs.sh
-# Required-Start:
-# Required-Stop:
-# Default-Start: 2 3 4 5 S
-# Default-Stop:
-# Short-Description: Resize the root filesystem to fill partition
-# Description:
-### END INIT INFO
-
-# Get the root partition
-partition_root="$(findmnt -n -o SOURCE /)"
-partition_name="$(lsblk -no name "${partition_root}")"
-partition_pkname="$(lsblk -no pkname "${partition_root}")"
-partition_num="$(echo "${partition_name}" | grep -Eo '[0-9]+$')"
-
-# Get size of disk and root partition
-partition_start="$(cat /sys/block/${partition_pkname}/${partition_name}/start)"
-partition_end="$(( partition_start + $(cat /sys/block/${partition_pkname}/${partition_name}/size)))"
-partition_newend="$(( $(cat /sys/block/${partition_pkname}/size) - 8))"
-
-# Resize partition and filesystem
-if [ "${partition_newend}" -gt "${partition_end}" ]; then
-    sgdisk -e "/dev/${partition_pkname}"
-    sgdisk -d "${partition_num}" "/dev/${partition_pkname}"
-    sgdisk -N "${partition_num}" "/dev/${partition_pkname}"
-    partprobe "/dev/${partition_pkname}"
-    resize2fs "/dev/${partition_name}"
-    sync
-fi
-
-# Remove script
-update-rc.d expand-rootfs.sh remove
-EOF
-
-# Install init script to expand the rootfs
-chmod +x ${chroot_dir}/etc/init.d/expand-rootfs.sh
+cp ${overlay_dir}/etc/init.d/expand-rootfs.sh ${chroot_dir}/etc/init.d/expand-rootfs.sh
 chroot ${chroot_dir} /bin/bash -c "update-rc.d expand-rootfs.sh defaults"
 
 # Enable the USB 2.0 port on boot
-cat > ${chroot_dir}/etc/init.d/enable-usb2.sh << 'EOF'
-#!/bin/bash
-### BEGIN INIT INFO
-# Provides: enable-usb2.sh
-# Required-Start:
-# Required-Stop:
-# Default-Start: 2 3 4 5 S
-# Default-Stop:
-# Short-Description: Enable the USB 2.0 port
-# Description:
-### END INIT INFO
-
-# Enable the USB 2.0 port by setting host mode
-echo "host" > /sys/kernel/debug/usb/fc000000.usb/mode
-EOF
-
-# Install init script to enable the USB 2.0 port
-chmod +x ${chroot_dir}/etc/init.d/enable-usb2.sh
+cp ${overlay_dir}/etc/init.d/enable-usb2.sh ${chroot_dir}/etc/init.d/enable-usb2.sh
 chroot ${chroot_dir} /bin/bash -c "update-rc.d enable-usb2.sh defaults"
-
-# Enable rc-local
-echo -e '#!/bin/sh -e\n\nexit 0' > ${chroot_dir}/etc/rc.local
-chmod +x ${chroot_dir}/etc/rc.local
 
 # Set term for serial tty
 mkdir -p ${chroot_dir}/lib/systemd/system/serial-getty@.service.d
-echo "[Service]" > ${chroot_dir}/lib/systemd/system/serial-getty@.service.d/10-term.conf
-echo "Environment=TERM=linux" >> ${chroot_dir}/lib/systemd/system/serial-getty@.service.d/10-term.conf
+cp ${overlay_dir}/usr/lib/systemd/system/serial-getty@.service.d/10-term.conf ${chroot_dir}/usr/lib/systemd/system/serial-getty@.service.d/10-term.conf
 
 # Remove release upgrade motd
 rm -f ${chroot_dir}/var/lib/ubuntu-release-upgrader/release-upgrade-available
-sed -i 's/^Prompt.*/Prompt=never/' ${chroot_dir}/etc/update-manager/release-upgrades
+cp ${overlay_dir}/etc/update-manager/release-upgrades ${chroot_dir}/etc/update-manager/release-upgrades
 
-# Copy the orange pi firmware
-cp -r firmware ${chroot_dir}/usr/lib/
+# Orange pi firmware
+cp -r firmware ${chroot_dir}/usr/lib
 
 # Umount the temporary API filesystems
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
@@ -428,9 +291,6 @@ DEBIAN_FRONTEND=noninteractive apt-get -y install "\${debs[@]}"
 # Hold packages to prevent breaking hw acceleration
 DEBIAN_FRONTEND=noninteractive apt-mark hold "\${debs[@]}"
 
-# Copy mpv config file
-cp -f /tmp/mpv/mpv.conf /etc/mpv/mpv.conf
-
 # Copy binary for rkaiq
 cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
 
@@ -476,40 +336,21 @@ DEBIAN_FRONTEND=noninteractive apt-get -y purge firefox
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
-# Enable wayland session
-sed -i 's/#WaylandEnable=false/WaylandEnable=true/g' ${chroot_dir}/etc/gdm3/custom.conf
-
-# Use wayland as default desktop session
-echo "[User]" > ${chroot_dir}/var/lib/AccountsService/users/ubuntu 
-echo "XSession=ubuntu-wayland" >> ${chroot_dir}/var/lib/AccountsService/users/ubuntu 
-
 # Improve mesa performance 
 echo "PAN_MESA_DEBUG=gofaster" >> ${chroot_dir}/etc/environment
 
+# Config file for mpv
+cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
+
+# Enable wayland session
+cp ${overlay_dir}/etc/gdm3/custom.conf ${chroot_dir}/etc/gdm3/custom.conf
+
+# Use wayland as the default desktop session
+cp ${overlay_dir}/var/lib/AccountsService/users/ubuntu ${chroot_dir}/var/lib/AccountsService/users/ubuntu 
+
 # Fix chromium desktop entry
-rm -rf ${chroot_dir}/usr/share/applications/chromium.desktop 
-cat > ${chroot_dir}/usr/share/applications/chromium-browser.desktop << EOF
-[Desktop Entry]
-Version=1.1
-Type=Application
-Name=Chromium Web Browser
-GenericName=Web Browser
-Comment=Access the Internet
-Icon=chromium
-Exec=/usr/bin/chromium --password-store=basic %U
-Actions=NewWindow;Incognito;
-MimeType=text/html;text/xml;application/xhtml_xml;x-scheme-handler/http;x-scheme-handler/https;
-Categories=Network;WebBrowser;
-StartupNotify=true
-
-[Desktop Action NewWindow]
-Name=Open a New Window
-Exec=/usr/bin/chromium --password-store=basic 
-
-[Desktop Action Incognito]
-Name=Open a New Window in incognito mode
-Exec=/usr/bin/chromium --password-store=basic --incognito
-EOF
+rm -rf ${chroot_dir}/usr/share/applications/chromium.desktop
+cp ${overlay_dir}/usr/share/applications/chromium-browser.desktop ${chroot_dir}/usr/share/applications/chromium-browser.desktop
 
 # Set chromium as default browser
 chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium 500"
