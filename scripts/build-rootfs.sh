@@ -343,6 +343,9 @@ echo "PAN_MESA_DEBUG=gofaster" >> ${chroot_dir}/etc/environment
 cp ${overlay_dir}/etc/udev/rules.d/99-rk-device-permissions.rules ${chroot_dir}/etc/udev/rules.d/99-rk-device-permissions.rules
 cp ${overlay_dir}/usr/bin/create-chromium-vda-vea-devices.sh ${chroot_dir}/usr/bin/create-chromium-vda-vea-devices.sh
 
+# Set gstreamer environment variables
+cp ${overlay_dir}/etc/profile.d/gst.sh ${chroot_dir}/etc/profile.d/gst.sh
+
 # Config file for mpv
 cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 
