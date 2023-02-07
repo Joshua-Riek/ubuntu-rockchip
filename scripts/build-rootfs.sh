@@ -209,7 +209,7 @@ cp ${overlay_dir}/etc/resolv.conf ${chroot_dir}/etc/resolv.conf
 cp ${overlay_dir}/etc/hostname ${chroot_dir}/etc/hostname
 
 # Networking interfaces
-cp ${overlay_dir}/etc/network/interfaces ${chroot_dir}/etc/network/interfaces
+cp ${overlay_dir}/etc/network/interfaces.d/interfaces ${chroot_dir}/etc/network/interfaces.d/interfaces
 
 # Hosts file
 cp ${overlay_dir}/etc/hosts ${chroot_dir}/etc/hosts
@@ -356,7 +356,8 @@ cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
 cp ${overlay_dir}/etc/X11/xorg.conf.d/20-modesetting.conf ${chroot_dir}/etc/X11/xorg.conf.d/20-modesetting.conf
 
-# Fix unmanaged ethernet
+# Networking interfaces
+rm -f ${chroot_dir}/etc/wpa_supplicant/wpa_supplicant.conf ${chroot_dir}/etc/network/interfaces.d/interfaces 
 cp ${overlay_dir}/etc/NetworkManager/NetworkManager.conf ${chroot_dir}/etc/NetworkManager/NetworkManager.conf
 cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf
 
