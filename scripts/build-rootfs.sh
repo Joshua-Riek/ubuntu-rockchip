@@ -231,6 +231,10 @@ chroot ${chroot_dir} /bin/bash -c "update-rc.d expand-rootfs.sh defaults"
 cp ${overlay_dir}/etc/init.d/enable-usb2.sh ${chroot_dir}/etc/init.d/enable-usb2.sh
 chroot ${chroot_dir} /bin/bash -c "update-rc.d enable-usb2.sh defaults"
 
+# Enable bluetooth for AP6275P
+cp ${overlay_dir}/usr/lib/systemd/system/ap6275p-bluetooth.service ${chroot_dir}/usr/lib/systemd/system/ap6275p-bluetooth.service
+chroot ${chroot_dir} /bin/bash -c "systemctl enable ap6275p-bluetooth"
+
 # Set term for serial tty
 mkdir -p ${chroot_dir}/lib/systemd/system/serial-getty@.service.d
 cp ${overlay_dir}/usr/lib/systemd/system/serial-getty@.service.d/10-term.conf ${chroot_dir}/usr/lib/systemd/system/serial-getty@.service.d/10-term.conf

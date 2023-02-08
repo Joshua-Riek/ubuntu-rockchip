@@ -1,0 +1,14 @@
+[Unit]
+Description=Bluetooth AP6275P
+After=bluetooth.target
+
+[Service]
+Type=forking
+ExecStartPre=/usr/sbin/rfkill unblock all
+ExecStart=/usr/bin/hciattach /dev/ttyS9 bcm43xx 1500000
+TimeoutSec=0
+RemainAfterExit=yes
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target
