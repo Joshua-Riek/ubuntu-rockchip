@@ -4,11 +4,11 @@ After=bluetooth.target
 
 [Service]
 Type=forking
+ExecStartPre=/usr/bin/sleep 5
 ExecStartPre=/usr/sbin/rfkill unblock all
 ExecStart=/usr/bin/hciattach /dev/ttyS9 bcm43xx 1500000
 TimeoutSec=0
 RemainAfterExit=yes
-SysVStartPriority=99
 
 [Install]
 WantedBy=multi-user.target
