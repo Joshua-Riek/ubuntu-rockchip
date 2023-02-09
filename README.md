@@ -6,7 +6,7 @@ This repository provides a pre-installed Ubuntu 20.04 and 22.04 desktop/server i
 
 ## Recommended Hardware
 
-A Linux host with the following configuration is recommended to set up the build environment. Adequate processing power and disk space is ideal as the build process can be several gigabytes and take a lot of time.
+A Ubuntu 20.04 host with the following configuration is recommended to set up the build environment. Adequate processing power and disk space is ideal as the build process can be several gigabytes and take a lot of time.
 
 * Intel Core i7 CPU (>= 8 cores)
 * Strong internet connection
@@ -15,13 +15,13 @@ A Linux host with the following configuration is recommended to set up the build
 
 ## Requirements
 
-Please install the below packages on your host machine:
+Please use a Ubuntu 20.04 host machine and install the below packages:
 
 ```
 sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
 qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
 debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
-udev dosfstools uuid-runtime grub-pc git-lfs
+udev dosfstools uuid-runtime git-lfs grub-common python
 ```
 
 ## Building
