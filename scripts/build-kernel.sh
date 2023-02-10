@@ -21,6 +21,7 @@ if [ ! -d linux-orangepi ]; then
     git -C linux-orangepi apply ../../patches/linux-orangepi/0003-dma-buf-Add-an-API-for-importing-sync-files-v10.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0004-MALI-bifrost-avoid-fence-double-free.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0005-drm-rockchip-Re-add-implicit-fencing-support-for-pla.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0008-Revert-ANDROID-clk-Enable-writable-debugfs-files.patch
 fi
 cd linux-orangepi
 
