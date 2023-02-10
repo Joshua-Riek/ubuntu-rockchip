@@ -106,38 +106,6 @@ UUID=${root_uuid,,}  /              ext4    defaults    0       1
 /swapfile            none           swap    sw          0       0
 EOF
 
-# Extract grub arm64-efi to host system 
-if [ ! -d "/usr/lib/grub/arm64-efi" ]; then
-    rm -f /usr/lib/grub/arm64-efi
-    ln -s ${mount_point}/root/usr/lib/grub/arm64-efi /usr/lib/grub/arm64-efi
-fi
-
-# Install grub 
-mkdir -p ${mount_point}/boot/efi/boot
-mkdir -p ${mount_point}/boot/boot/grub
-grub-install --target=arm64-efi --efi-directory=${mount_point}/boot --boot-directory=${mount_point}/boot/boot --removable --recheck
-
-# Remove grub arm64-efi if extracted
-if [ -L "/usr/lib/grub/arm64-efi" ]; then
-    rm -f /usr/lib/grub/arm64-efi
-fi
-
-# Grub config
-cat > ${mount_point}/boot/boot/grub/grub.cfg << EOF
-insmod gzio
-set background_color=black
-set default=0
-set timeout=10
-
-GRUB_RECORDFAIL_TIMEOUT=
-
-menuentry 'Boot' {
-    search --no-floppy --fs-uuid --set=root ${root_uuid}
-    linux /boot/vmlinuz root=UUID=${root_uuid} console=ttyS2,115200 console=tty1 rootfstype=ext4 rootwait rw
-    initrd /boot/initrd.img
-}
-EOF
-
 # Uboot script
 cat > ${mount_point}/boot/boot.cmd << EOF
 env set bootargs "root=UUID=${root_uuid} console=ttyS2,1500000 console=tty1 rootfstype=ext4 rootwait rw"

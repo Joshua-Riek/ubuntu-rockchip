@@ -21,7 +21,7 @@ Please use a Ubuntu 20.04 host machine and install the below packages:
 sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
 qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
 debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
-udev dosfstools uuid-runtime git-lfs grub-common python
+udev dosfstools uuid-runtime git-lfs python
 ```
 
 ## Building
