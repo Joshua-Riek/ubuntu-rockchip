@@ -239,6 +239,9 @@ chroot ${chroot_dir} /bin/bash -c "systemctl enable ap6275p-bluetooth"
 mkdir -p ${chroot_dir}/lib/systemd/system/serial-getty@.service.d
 cp ${overlay_dir}/usr/lib/systemd/system/serial-getty@.service.d/10-term.conf ${chroot_dir}/usr/lib/systemd/system/serial-getty@.service.d/10-term.conf
 
+# Use gzip compression for the initrd
+cp ${overlay_dir}/etc/initramfs-tools/conf.d/compression.conf ${chroot_dir}/etc/initramfs-tools/conf.d/compression.conf
+
 # Remove release upgrade motd
 rm -f ${chroot_dir}/var/lib/ubuntu-release-upgrader/release-upgrade-available
 cp ${overlay_dir}/etc/update-manager/release-upgrades ${chroot_dir}/etc/update-manager/release-upgrades
@@ -246,7 +249,10 @@ cp ${overlay_dir}/etc/update-manager/release-upgrades ${chroot_dir}/etc/update-m
 # Orange pi firmware
 cp -r firmware ${chroot_dir}/usr/lib
 
-# Umount the temporary API filesystems
+# Update initramfs
+chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
+
+# Umount temporary API filesystems
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
@@ -383,6 +389,9 @@ chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/
 chroot ${chroot_dir} /bin/bash -c "sudo -u ubuntu dbus-launch gsettings set org.gnome.shell favorite-apps \
 \"['ubiquity.desktop', 'chromium-browser.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', \
 'rhythmbox.desktop', 'libreoffice-writer.desktop', 'snap-store_ubuntu-software.desktop', 'yelp.desktop']\""
+
+# Update initramfs
+chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
 
 # Umount the temporary API filesystems
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
