@@ -140,7 +140,7 @@ bash-completion man-db manpages nano gnupg initramfs-tools linux-firmware \
 ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof cryptsetup exfat-fuse hwinfo dmidecode \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
-pigz wget curl grub-common grub2-common grub-efi-arm64 grub-efi-arm64-bin gdisk
+pigz wget curl gdisk
 
 # Download and install developer packages
 DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
