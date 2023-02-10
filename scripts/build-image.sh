@@ -109,16 +109,35 @@ EOF
 # Uboot script
 cat > ${mount_point}/boot/boot.cmd << EOF
 env set bootargs "root=UUID=${root_uuid} console=ttyS2,1500000 console=tty1 rootfstype=ext4 rootwait rw"
-fatload \${devtype} \${devnum}:1 \${fdt_addr_r} /rk3588s-orangepi-5.dtb
-fdt addr \${fdt_addr_r} && fdt resize 0x2000
-fatload \${devtype} \${devnum}:1 \${fdtoverlay_addr_r} /overlays/rk3588-wifi-ap6275p.dtbo
-fdt apply \${fdtoverlay_addr_r}
-ext4load \${devtype} \${devnum}:2 \${ramdisk_addr_r} /boot/vmlinuz
+
+load \${devtype} \${devnum}:1 \${fdt_addr_r} /rk3588s-orangepi-5.dtb
+fdt addr \${fdt_addr_r} && fdt resize 0x10000
+
+if test -e \${devtype} \${devnum}:1 \${fdtoverlay_addr_r} /overlays.txt; then
+    load \${devtype} \${devnum}:1 \${fdtoverlay_addr_r} /overlays.txt
+    env import -t \${fdtoverlay_addr_r} \${filesize}
+fi
+for overlay_file in \${fdt_overlays}; do
+    if load \${devtype} \${devnum}:1 \${fdtoverlay_addr_r} /overlays/\${overlay_file}; then
+        echo "Applying device tree overlay: /overlays/\${overlay_file}"
+        fdt apply \${fdtoverlay_addr_r} || setenv overlay_error "true"
+    fi
+done
+if test -n \${overlay_error}; then
+    echo "Error applying device tree overlays, restoring original device tree"
+    load \${devtype} \${devnum}:1 \${fdt_addr_r} /rk3588s-orangepi-5.dtb
+fi
+
+load \${devtype} \${devnum}:2 \${ramdisk_addr_r} /boot/vmlinuz
 unzip \${ramdisk_addr_r} \${kernel_addr_r} \${filesize}
-ext4load \${devtype} \${devnum}:2 \${ramdisk_addr_r} /boot/initrd.img
+load \${devtype} \${devnum}:2 \${ramdisk_addr_r} /boot/initrd.img
+
 booti \${kernel_addr_r} \${ramdisk_addr_r}:\${filesize} \${fdt_addr_r}
 EOF
 mkimage -A arm64 -O linux -T script -C none -n "Boot Script" -d ${mount_point}/boot/boot.cmd ${mount_point}/boot/boot.scr
+
+# Device tree overlays to load
+echo "fdt_overlays=rk3588-wifi-ap6275p.dtbo" > ${mount_point}/boot/overlays.txt
 
 # Copy device tree blobs
 mkdir -p ${mount_point}/boot/overlays
