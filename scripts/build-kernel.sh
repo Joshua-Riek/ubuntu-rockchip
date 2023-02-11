@@ -32,9 +32,6 @@ make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- olddefconfig
 ./scripts/config --disable CONFIG_DEBUG_INFO
 ./scripts/config --disable MODULE_SCMVERSION
 
-# Disable for panfork
-./scripts/config --disable CONFIG_DRM_IGNORE_IOTCL_PERMIT 
-
 # Set custom kernel version
 ./scripts/config --enable CONFIG_LOCALVERSION_AUTO
 echo "-orange-pi" > .scmversion
