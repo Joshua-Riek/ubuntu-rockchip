@@ -59,6 +59,4 @@ xz -dc images/ubuntu-20.04-preinstalled-desktop-arm64-orange-pi5.img.xz | sudo d
 
 1. A number of packages are installed and held to enable hardware acceleration. So please don't remove them and re-install with apt-get.
 
-2. Dragging GPU-accelerated windows around in the Ubuntu 22.04 release is slow and laggy.
-
-3. Kernel warnings plague dmesg in the Ubuntu 22.04 release.
+2. Kernel warnings plague dmesg in the Ubuntu 22.04 release.
