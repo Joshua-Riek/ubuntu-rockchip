@@ -231,6 +231,10 @@ cp ${overlay_dir}/etc/rc.local ${chroot_dir}/etc/rc.local
 cp ${overlay_dir}/etc/init.d/expand-rootfs.sh ${chroot_dir}/etc/init.d/expand-rootfs.sh
 chroot ${chroot_dir} /bin/bash -c "update-rc.d expand-rootfs.sh defaults"
 
+# Set cpu governors to performance
+cp ${overlay_dir}/usr/lib/systemd/system/cpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/cpu-governor-performance.service
+chroot ${chroot_dir} /bin/bash -c "systemctl enable cpu-governor-performance"
+
 # Enable the USB 2.0 port on boot
 cp ${overlay_dir}/usr/lib/systemd/system/enable-usb2.service ${chroot_dir}/usr/lib/systemd/system/enable-usb2.service
 chroot ${chroot_dir} /bin/bash -c "systemctl --no-reload enable enable-usb2"
