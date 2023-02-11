@@ -18,4 +18,3 @@ Exec=/usr/bin/chromium --test-type --password-store=basic
 [Desktop Action Incognito]
 Name=Open a New Window in incognito mode
 Exec=/usr/bin/chromium --test-type --password-store=basic --incognito
-/home/joshua/Documents/ubuntu-orange-pi5/overlay/usr/share/applications/chromium-browser.desktop
