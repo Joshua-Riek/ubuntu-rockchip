@@ -1,0 +1,9 @@
+[Unit]
+Description=Enable the USB 2.0 port
+
+[Service]
+ExecStart=/usr/bin/sh -c "echo host > /sys/kernel/debug/usb/fc000000.usb/mode"
+Type=oneshot
+
+[Install]
+WantedBy=default.target

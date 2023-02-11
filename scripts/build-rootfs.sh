@@ -228,8 +228,8 @@ cp ${overlay_dir}/etc/init.d/expand-rootfs.sh ${chroot_dir}/etc/init.d/expand-ro
 chroot ${chroot_dir} /bin/bash -c "update-rc.d expand-rootfs.sh defaults"
 
 # Enable the USB 2.0 port on boot
-cp ${overlay_dir}/etc/init.d/enable-usb2.sh ${chroot_dir}/etc/init.d/enable-usb2.sh
-chroot ${chroot_dir} /bin/bash -c "update-rc.d enable-usb2.sh defaults"
+cp ${overlay_dir}/usr/lib/systemd/system/enable-usb2.service ${chroot_dir}/usr/lib/systemd/system/enable-usb2.service
+chroot ${chroot_dir} /bin/bash -c "systemctl --no-reload enable enable-usb2"
 
 # Enable bluetooth for AP6275P
 cp ${overlay_dir}/usr/lib/systemd/system/ap6275p-bluetooth.service ${chroot_dir}/usr/lib/systemd/system/ap6275p-bluetooth.service
