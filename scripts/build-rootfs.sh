@@ -174,6 +174,9 @@ ln -s initrd.img-${kernel_version} initrd.img
 ln -s vmlinuz-${kernel_version} vmlinuz
 ln -s System.map-${kernel_version} System.map
 ln -s config-${kernel_version} config
+
+# Hold package for jammy
+apt-mark hold linux-libc-dev
 EOF
 
 # Create user accounts
