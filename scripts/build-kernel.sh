@@ -16,6 +16,7 @@ if [ ! -d linux-orangepi ]; then
     git clone --progress -b orange-pi-5.10-rk3588 https://github.com/orangepi-xunlong/linux-orangepi
     git -C linux-orangepi checkout 161606b049488da100e5d7ec95c8997d3b59b20d
     git -C linux-orangepi apply ../../patches/linux-orangepi/0001-debianize-kernel-package.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0002-enable-hardware-cursor.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0001-dma-buf-add-dma_resv_get_singleton-v2.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0002-dma-buf-Add-an-API-for-exporting-sync-files-v14.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0003-dma-buf-Add-an-API-for-importing-sync-files-v10.patch
