@@ -13,12 +13,14 @@ mkdir -p build && cd build
 
 # Download rockchip firmware and tool binarys
 if [ ! -d rkbin ]; then
-    git clone --progress --depth=1 -b master https://github.com/rockchip-linux/rkbin.git
+    git clone --progress -b master https://github.com/rockchip-linux/rkbin.git
+    git -C rkbin checkout b0c100f1a260d807df450019774993c761beb79d
 fi
 
 # Download and build u-boot
 if [ ! -d u-boot-orangepi ]; then
-    git clone --progress --depth=1 -b v2017.09-rk3588 https://github.com/orangepi-xunlong/u-boot-orangepi.git
+    git clone --progress -b v2017.09-rk3588 https://github.com/orangepi-xunlong/u-boot-orangepi.git
+    git -C u-boot-orangepi checkout 6534133f97a8e4fb6db83e58dbde23aec6041ec2
 fi
 cd u-boot-orangepi
 
