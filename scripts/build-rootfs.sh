@@ -327,6 +327,9 @@ echo "/opt/panfrost/lib/aarch64-linux-gnu" > /etc/ld.so.conf.d/00-panfrost.conf
 [ -e /etc/ld.so.conf.d/00-aarch64-mali.conf ] && mv /etc/ld.so.conf.d/{00-aarch64-mali.conf,01-aarch64-mali.conf}
 ldconfig
 
+# Improve mesa performance 
+echo "PAN_MESA_DEBUG=gofaster" >> /etc/environment
+
 # Remove the local apt repo and restore sources.list
 mv /etc/apt/sources.list.bak /etc/apt/sources.list
 rm -f /etc/apt/prefrences
@@ -345,7 +348,8 @@ set -eE
 trap 'echo Error: in $0 on line $LINENO' ERR
 
 # Desktop packages
-DEBIAN_FRONTEND=noninteractive apt-get -y install ubuntu-desktop dbus-x11
+DEBIAN_FRONTEND=noninteractive apt-get -y install ubuntu-desktop \
+dbus-x11 pulseaudio pavucontrol
 
 # Firefox has no gpu support 
 DEBIAN_FRONTEND=noninteractive apt-get -y purge firefox
@@ -354,8 +358,15 @@ DEBIAN_FRONTEND=noninteractive apt-get -y purge firefox
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
-# Improve mesa performance 
-echo "PAN_MESA_DEBUG=gofaster" >> ${chroot_dir}/etc/environment
+# Rockchip pulseaudio configs and rules
+cp -r ${overlay_dir}/etc/pulse ${chroot_dir}/etc
+cp -r ${overlay_dir}/usr/share/alsa ${chroot_dir}/usr/share
+cp -r ${overlay_dir}/usr/share/pulseaudio ${chroot_dir}/usr/share
+cp -r ${overlay_dir}/etc/udev/rules.d/90-pulseaudio-rockchip.rules ${chroot_dir}/etc/udev/rules.d/90-pulseaudio-rockchip.rules
+
+# Fix pulseaudio stuck on gdm user
+cp -r ${overlay_dir}/usr/lib/systemd/user/pulseaudio.service.d ${chroot_dir}/usr/lib/systemd/user/
+cp -r ${overlay_dir}/usr/lib/systemd/user/pulseaudio.socket.d ${chroot_dir}/usr/lib/systemd/user/
 
 # Rockchip multimedia rules
 cp ${overlay_dir}/etc/udev/rules.d/99-rk-device-permissions.rules ${chroot_dir}/etc/udev/rules.d/99-rk-device-permissions.rules
