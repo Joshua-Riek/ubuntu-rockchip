@@ -1,0 +1,67 @@
+From 3b2cc74bbe0a18e624637a11d09718b810c69a1e Mon Sep 17 00:00:00 2001
+From: Joshua Riek <jjriek@verizon.net>
+Date: Mon, 13 Feb 2023 12:26:02 -0500
+Subject: [PATCH] hdmi sound improvements
+
+---
+ .../boot/dts/rockchip/rk3588s-orangepi-5.dts      | 15 +++++++++++----
+ .../arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi |  4 ++++
+ 2 files changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
+index 09762fd1dc..da2bf4d91a 100755
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
+@@ -41,6 +41,16 @@ vcc_1v1_nldo_s3: vcc-1v1-nldo-s3 {
+ 		vin-supply = <&vcc5v0_sys>;
+ 	};
+ 
++	hdmi0_sound: hdmi0-sound {
++		status = "okay";
++		compatible = "rockchip,hdmi";
++		rockchip,mclk-fs = <128>;
++		rockchip,card-name = "rockchip-hdmi0";
++		rockchip,cpu = <&i2s5_8ch>;
++		rockchip,codec = <&hdmi0>;
++		rockchip,jack-det;
++	};
++
+ 	leds: gpio-leds {
+ 		compatible = "gpio-leds";
+ 		pinctrl-names = "default";
+@@ -90,16 +100,13 @@ rgmii_phy1: phy@1 {
+ &hdmi0 {
+ 	enable-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
+ 	status = "okay";
++	cec-enable = "true";
+ };
+ 
+ &hdmi0_in_vp0 {
+ 	status = "okay";
+ };
+ 
+-&hdmi0_sound {
+-	status = "okay";
+-};
+-
+ &hdptxphy_hdmi0 {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi
+index a6d14beafc..1c395e6cb7 100755
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi
+@@ -205,6 +205,10 @@ vcc5v0_usb: vcc5v0-usb {
+ 	};
+ };
+ 
++&av1d {
++	status = "okay";
++};
++
+ &av1d_mmu {
+ 	status = "okay";
+ };
+-- 
+2.25.1
+
