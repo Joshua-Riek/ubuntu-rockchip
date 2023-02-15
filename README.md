@@ -39,9 +39,9 @@ sudo ./build.sh focal
 There are two predefined users on the system: `ubuntu` and `root`. The password for each is `root`. 
 
 ```
-Ubuntu 20.04.5 TLS orange-pi tty1
+Ubuntu 22.04.1 TLS orange-pi5 tty1
 
-orange-pi login: root
+orange-pi5 login: root
 Password: root
 ```
 
@@ -50,7 +50,7 @@ Password: root
 To flash the Ubuntu preinstalled image to removable media:
 
 ```
-xz -dc images/ubuntu-20.04-preinstalled-desktop-arm64-orange-pi5.img.xz | sudo dd of=/dev/sdX bs=4k
+xz -dc images/ubuntu-22.04-preinstalled-desktop-arm64-orange-pi5.img.xz | sudo dd of=/dev/sdX bs=4k
 ```
 
 > This assumes that the removable media is added as /dev/sdX and all it’s partitions are unmounted.
