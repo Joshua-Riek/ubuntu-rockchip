@@ -128,8 +128,7 @@ if test -n \${overlay_error}; then
     load \${devtype} \${devnum}:1 \${fdt_addr_r} /rk3588s-orangepi-5.dtb
 fi
 
-load \${devtype} \${devnum}:2 \${ramdisk_addr_r} /boot/vmlinuz
-unzip \${ramdisk_addr_r} \${kernel_addr_r} \${filesize}
+load \${devtype} \${devnum}:2 \${kernel_addr_r} /boot/vmlinuz
 load \${devtype} \${devnum}:2 \${ramdisk_addr_r} /boot/initrd.img
 
 booti \${kernel_addr_r} \${ramdisk_addr_r}:\${filesize} \${fdt_addr_r}
