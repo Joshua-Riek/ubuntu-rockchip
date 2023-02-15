@@ -1,15 +1,14 @@
-From 53b542334513f31a381150b7e38c258efac0116c Mon Sep 17 00:00:00 2001
+From 91cad40dbd52fdaa90bdc5d02a48acf7e31bbc94 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
-Date: Tue, 24 Jan 2023 11:22:00 -0500
-Subject: [PATCH] debianize kernel package
+Date: Wed, 15 Feb 2023 12:09:06 -0500
+Subject: [PATCH 1/1] debianize kernel package
 
 ---
  Makefile                 |  21 ++---
- arch/arm64/Makefile      |   2 +-
  scripts/package/builddeb | 170 ++++++---------------------------------
  scripts/package/mkdebian |  19 +----
  scripts/setlocalversion  |  47 +++--------
- 5 files changed, 46 insertions(+), 213 deletions(-)
+ 4 files changed, 45 insertions(+), 212 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index 6bbc15bea0..da51f041ec 100644
@@ -58,19 +57,6 @@ index 6bbc15bea0..da51f041ec 100644
  
  kernelversion:
  	@echo $(KERNELVERSION)
-diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
-index b3a57c5105..7e2f0c346b 100644
---- a/arch/arm64/Makefile
-+++ b/arch/arm64/Makefile
-@@ -155,7 +155,7 @@ libs-$(CONFIG_EFI_STUB) += $(objtree)/drivers/firmware/efi/libstub/lib.a
- 
- # Default target when executing plain make
- boot		:= arch/arm64/boot
--KBUILD_IMAGE	:= $(boot)/Image
-+KBUILD_IMAGE	:= $(boot)/Image.gz
- 
- # Don't compile Image in mixed build with "all" target
- ifndef KBUILD_MIXED_TREE
 diff --git a/scripts/package/builddeb b/scripts/package/builddeb
 index 7c7cde9304..91a502bb97 100755
 --- a/scripts/package/builddeb

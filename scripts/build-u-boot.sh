@@ -25,7 +25,6 @@ fi
 cd u-boot-orangepi
 
 # Set u-boot config
-sed -i 's/# CONFIG_CMD_UNZIP is not set/CONFIG_CMD_UNZIP=y/' configs/orangepi_5_defconfig
 make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu- orangepi_5_defconfig
 
 # Compile u-boot binary
