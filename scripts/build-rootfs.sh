@@ -228,8 +228,10 @@ cp ${overlay_dir}/etc/profile.d/resize.sh ${chroot_dir}/etc/profile.d/resize.sh
 cp ${overlay_dir}/etc/rc.local ${chroot_dir}/etc/rc.local
 
 # Expand root filesystem on first boot
-cp ${overlay_dir}/etc/init.d/expand-rootfs.sh ${chroot_dir}/etc/init.d/expand-rootfs.sh
-chroot ${chroot_dir} /bin/bash -c "update-rc.d expand-rootfs.sh defaults"
+mkdir -p ${chroot_dir}/usr/lib/scripts
+cp ${overlay_dir}/usr/lib/scripts/resize-filesystem.sh ${chroot_dir}/usr/lib/scripts/resize-filesystem.sh
+cp ${overlay_dir}/usr/lib/systemd/system/resize-filesystem.service ${chroot_dir}/usr/lib/systemd/system/resize-filesystem.service
+chroot ${chroot_dir} /bin/bash -c "systemctl enable resize-filesystem"
 
 # Set cpu governors to performance
 cp ${overlay_dir}/usr/lib/systemd/system/cpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/cpu-governor-performance.service
