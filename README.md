@@ -16,18 +16,32 @@ This repository provides a pre-installed Ubuntu 20.04 and 22.04 desktop/server i
 * On board Microphone
 * Audio over HDMI
 
-## Recommended Hardware
+## Prepare an SD Card
 
-A Ubuntu 20.04 host with the following configuration is recommended to set up the build environment. Adequate processing power and disk space is ideal as the build process can be several gigabytes and take a lot of time.
+Make sure you use a good, reliable, and fast SD card. For example, suppose you encounter boot or stability troubles. Most of the time, this is due to either an insufficient power supply or related to your SD card (bad card, bad card reader, something went wrong when burning the image, or the card is too slow). 
 
-* Intel Core i7 CPU (>= 8 cores)
-* Strong internet connection
-* 30 GB free disk space
-* 16 GB RAM
+Download your preferred version of Ubuntu from the latest [release](https://github.com/Joshua-Riek/ubuntu-orange-pi5/releases) on GitHub. Then write the xz compressed image to your SD card using [balenaEtcher](https://www.balena.io/etcher) since, unlike other tools, it can validate burning results, saving you from corrupted SD card contents.
 
-## Requirements
+## Boot the System
 
-Please use a Ubuntu 20.04 host machine and install the below packages:
+Insert your SD card into the slot on the board and power on the device. The first boot may take up to two minutes, so please be patient.
+
+## Login Information
+
+You will be able to login through HDMI or a serial console connection.
+
+There are two predefined users: `ubuntu` and `root`. The password for each is `root`. 
+
+```
+Ubuntu 22.04.1 TLS orange-pi5 tty1
+
+orange-pi5 login: root
+Password: root
+```
+
+## Build Requirements
+
+To to set up the build environment, please use a Ubuntu 20.04 machine, then install the below packages:
 
 ```
 sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
@@ -43,29 +57,8 @@ To checkout the source and build:
 ```
 git clone https://github.com/Joshua-Riek/ubuntu-orange-pi5.git
 cd ubuntu-orange-pi5
-sudo ./build.sh focal
+sudo ./build.sh jammy
 ```
-
-## Login
-
-There are two predefined users on the system: `ubuntu` and `root`. The password for each is `root`. 
-
-```
-Ubuntu 22.04.1 TLS orange-pi5 tty1
-
-orange-pi5 login: root
-Password: root
-```
-
-## Flash Removable Media
-
-To flash the Ubuntu preinstalled image to removable media:
-
-```
-xz -dc images/ubuntu-22.04-preinstalled-desktop-arm64-orange-pi5.img.xz | sudo dd of=/dev/sdX bs=4k
-```
-
-> This assumes that the removable media is added as /dev/sdX and all it’s partitions are unmounted.
 
 ## Known Limitations and Bugs
 
