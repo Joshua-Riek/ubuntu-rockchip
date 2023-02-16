@@ -411,6 +411,10 @@ chroot ${chroot_dir} /bin/bash -c "sudo -u ubuntu dbus-launch gsettings set org.
 \"['ubiquity.desktop', 'chromium-browser.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', \
 'rhythmbox.desktop', 'libreoffice-writer.desktop', 'snap-store_ubuntu-software.desktop', 'yelp.desktop']\""
 
+# Have plymouth use the framebuffer
+mkdir -p ${chroot_dir}/etc/initramfs-tools/conf-hooks.d
+cp ${overlay_dir}/etc/initramfs-tools/conf-hooks.d/plymouth ${chroot_dir}/etc/initramfs-tools/conf-hooks.d/plymouth
+
 # Update initramfs
 chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
 
