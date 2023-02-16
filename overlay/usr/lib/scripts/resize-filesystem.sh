@@ -1,13 +1,4 @@
 #!/bin/bash
-### BEGIN INIT INFO
-# Provides: expand-rootfs.sh
-# Required-Start:
-# Required-Stop:
-# Default-Start: 2 3 4 5 S
-# Default-Stop:
-# Short-Description: Resize the root filesystem to fill partition
-# Description:
-### END INIT INFO
 
 # Get the root partition
 partition_root="$(findmnt -n -o SOURCE /)"
@@ -27,8 +18,9 @@ if [ "${partition_newend}" -gt "${partition_end}" ]; then
     sgdisk -N "${partition_num}" "/dev/${partition_pkname}"
     partprobe "/dev/${partition_pkname}"
     resize2fs "/dev/${partition_name}"
+
+    sync --file-system
     sync
 fi
 
-# Remove script
-update-rc.d expand-rootfs.sh remove
+systemctl disable resize-filesystem
