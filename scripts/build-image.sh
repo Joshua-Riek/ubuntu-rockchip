@@ -96,6 +96,9 @@ mount "${disk}${partition_char}2" ${mount_point}/root
 echo -e "Decompressing $(basename "${rootfs}")\n"
 tar -xpJf "${rootfs}" -C ${mount_point}/root
 
+# Set boot args for the splash screen
+[ -z "${img##*desktop*}" ] && bootargs="splash plymouth.ignore-serial-consoles" || bootargs=""
+
 # Create fstab entries
 mkdir -p ${mount_point}/root/boot/firmware
 boot_uuid="${boot_uuid:0:4}-${boot_uuid:4:4}"
@@ -108,7 +111,7 @@ EOF
 
 # Uboot script
 cat > ${mount_point}/boot/boot.cmd << EOF
-env set bootargs "root=UUID=${root_uuid} console=ttyS2,1500000 console=tty1 rootfstype=ext4 rootwait rw"
+env set bootargs "root=UUID=${root_uuid} console=ttyS2,1500000 console=tty1 rootfstype=ext4 rootwait rw ${bootargs}"
 
 load \${devtype} \${devnum}:1 \${fdt_addr_r} /rk3588s-orangepi-5.dtb
 fdt addr \${fdt_addr_r} && fdt resize 0x10000
