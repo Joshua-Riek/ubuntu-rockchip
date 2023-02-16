@@ -4,6 +4,18 @@ This repository provides a pre-installed Ubuntu 20.04 and 22.04 desktop/server i
 
 <img src="https://th.bing.com/th/id/R.a1de27bd2ebe148e76a874c99ad788c5?rik=Nk7xAorX4wMWfA&riu=http%3a%2f%2fwww.orangepi.cn%2fimg%2fpi-5-banner-img.png&ehk=iprwYnSrqqCCG8u9JLNVxxnIy9rza138h65C3rXhC4c%3d&risl=&pid=ImgRaw&r=0" width="400"/>
 
+## Highlights
+
+* Package management via apt using the official Ubuntu repositories
+* Uses the 5.10.110 Linux kernel built with arm64 flags
+* Boot from an SD Card or NVMe SSD
+* 3D video hardware acceleration support via panfork
+* Fully working GNOME desktop using wayland
+* Chromium browser with smooth 4k video playback
+* Working Bluetooth and WiFi from the Orange Pi5 PCIe WiFi 6.0 module (AP6275P)
+* On board Microphone
+* Audio over HDMI
+
 ## Recommended Hardware
 
 A Ubuntu 20.04 host with the following configuration is recommended to set up the build environment. Adequate processing power and disk space is ideal as the build process can be several gigabytes and take a lot of time.
