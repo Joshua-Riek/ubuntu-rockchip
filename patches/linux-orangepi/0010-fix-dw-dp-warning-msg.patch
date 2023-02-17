@@ -1,0 +1,26 @@
+From 9422d5ceec7b0d2832c681beaadce6f99daa1e5c Mon Sep 17 00:00:00 2001
+From: Joshua Riek <jjriek@verizon.net>
+Date: Fri, 17 Feb 2023 17:45:14 -0500
+Subject: [PATCH] fix dw dp warning msg
+
+---
+ drivers/gpu/drm/rockchip/dw-dp.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/drm/rockchip/dw-dp.c b/drivers/gpu/drm/rockchip/dw-dp.c
+index b0f2c05f4c..7fd7f1ac55 100644
+--- a/drivers/gpu/drm/rockchip/dw-dp.c
++++ b/drivers/gpu/drm/rockchip/dw-dp.c
+@@ -1964,6 +1964,9 @@ static ssize_t dw_dp_aux_transfer(struct drm_dp_aux *aux,
+ 	u32 status, value;
+ 	ssize_t ret = 0;
+ 
++	if (!dw_dp_detect(dp))
++		return -EIO;
++
+ 	if (WARN_ON(msg->size > 16))
+ 		return -E2BIG;
+ 
+-- 
+2.25.1
+

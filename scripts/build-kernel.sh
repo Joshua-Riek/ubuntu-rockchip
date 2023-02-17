@@ -24,6 +24,7 @@ if [ ! -d linux-orangepi ]; then
     git -C linux-orangepi apply ../../patches/linux-orangepi/0007-debianize-kernel-package.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0008-enable-hardware-cursor.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0009-hdmi-sound-improvements.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0010-fix-dw-dp-warning-msg.patch
 fi
 cd linux-orangepi
 
