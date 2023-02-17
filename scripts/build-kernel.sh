@@ -15,15 +15,15 @@ mkdir -p build && cd build
 if [ ! -d linux-orangepi ]; then
     git clone --progress -b orange-pi-5.10-rk3588 https://github.com/orangepi-xunlong/linux-orangepi.git
     git -C linux-orangepi checkout afb867137b2bcaa3d85acebb2019b272957b8c05
-    git -C linux-orangepi apply ../../patches/linux-orangepi/0001-debianize-kernel-package.patch
-    git -C linux-orangepi apply ../../patches/linux-orangepi/0002-enable-hardware-cursor.patch
-    git -C linux-orangepi apply ../../patches/linux-orangepi/0003-hdmi-sound-improvements.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0001-dma-buf-add-dma_resv_get_singleton-v2.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0002-dma-buf-Add-an-API-for-exporting-sync-files-v14.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0003-dma-buf-Add-an-API-for-importing-sync-files-v10.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0004-MALI-bifrost-avoid-fence-double-free.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0005-drm-rockchip-Re-add-implicit-fencing-support-for-pla.patch
-    git -C linux-orangepi apply ../../patches/linux-orangepi/0008-Revert-ANDROID-clk-Enable-writable-debugfs-files.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0006-Revert-ANDROID-clk-Enable-writable-debugfs-files.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0007-debianize-kernel-package.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0008-enable-hardware-cursor.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0009-hdmi-sound-improvements.patch
 fi
 cd linux-orangepi
 
