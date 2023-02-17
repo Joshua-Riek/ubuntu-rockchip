@@ -13,8 +13,8 @@ mkdir -p build && cd build
 
 # Download the orange pi linux kernel source
 if [ ! -d linux-orangepi ]; then
-    git clone --progress -b orange-pi-5.10-rk3588 https://github.com/orangepi-xunlong/linux-orangepi
-    git -C linux-orangepi checkout 161606b049488da100e5d7ec95c8997d3b59b20d
+    git clone --progress -b orange-pi-5.10-rk3588 https://github.com/orangepi-xunlong/linux-orangepi.git
+    git -C linux-orangepi checkout afb867137b2bcaa3d85acebb2019b272957b8c05
     git -C linux-orangepi apply ../../patches/linux-orangepi/0001-debianize-kernel-package.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0002-enable-hardware-cursor.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0003-hdmi-sound-improvements.patch
