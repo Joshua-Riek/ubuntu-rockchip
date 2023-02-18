@@ -26,6 +26,7 @@ if [ ! -d linux-orangepi ]; then
     git -C linux-orangepi apply ../../patches/linux-orangepi/0009-hdmi-sound-improvements.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0010-fix-dw-dp-warning-msg.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0011-suppress-drm-warning.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0012-suppress-wl-cfg80211-netdev-notifier-call.patch
 fi
 cd linux-orangepi
 
