@@ -1,0 +1,1 @@
+SUBSYSTEM=="graphics", ACTION=="add", DEVPATH=="/devices/platform/display-subsystem/graphics/fb0", RUN+="/usr/lib/scripts/gdm-hack.sh"
