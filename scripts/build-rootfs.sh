@@ -360,6 +360,10 @@ DEBIAN_FRONTEND=noninteractive apt-get -y purge firefox
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
+# Hack for GDM to restart on first HDMI hotplug
+cp ${overlay_dir}/usr/lib/scripts/gdm-hack.sh ${chroot_dir}/usr/lib/scripts/gdm-hack.sh
+cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
+
 # Rockchip pulseaudio configs and rules
 cp -r ${overlay_dir}/etc/pulse ${chroot_dir}/etc
 cp -r ${overlay_dir}/usr/share/alsa ${chroot_dir}/usr/share
