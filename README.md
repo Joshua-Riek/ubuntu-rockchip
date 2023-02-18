@@ -1,14 +1,14 @@
 ## Overview
 
-This repository provides a pre-installed Ubuntu 20.04 and 22.04 desktop/server image for the Orange Pi 5, offering a default Ubuntu experience. With this port, you can experience the power and stability of Ubuntu on your Orange Pi 5, making it an excellent choice for a wide range of projects and applications. If you find problems, please report them in the issues section, and I will be happy to assist!
+This repository provides a pre-installed Ubuntu 20.04 and 22.04 desktop/server image for the [Orange Pi 5](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5.html), offering a default Ubuntu experience. With this port, you can experience the power and stability of Ubuntu on your Orange Pi 5, making it an excellent choice for a wide range of projects and applications. If you find problems, please report them in the issues section, and I will be happy to assist!
 
-<img src="https://i.imgur.com/eQnRu1t.png" width="400"/>
+<img src="https://i.imgur.com/eQnRu1t.png" width="400">
 
 ## Highlights
 
 * Package management via apt using the official Ubuntu repositories
 * Uses the 5.10.110 Linux kernel built with arm64 flags
-* Boot from an SD Card or NVMe SSD
+* Boot from an SD Card, USB, or NVMe SSD
 * 3D video hardware acceleration support via panfork
 * Fully working GNOME desktop using wayland
 * Chromium browser with smooth 4k video playback
@@ -18,7 +18,7 @@ This repository provides a pre-installed Ubuntu 20.04 and 22.04 desktop/server i
 
 ## Prepare an SD Card
 
-Make sure you use a good, reliable, and fast SD card. For example, suppose you encounter boot or stability troubles. Most of the time, this is due to either an insufficient power supply or related to your SD card (bad card, bad card reader, something went wrong when burning the image, or the card is too slow). 
+Make sure you use a good, reliable, and fast SD card. For example, suppose you encounter boot or stability troubles. Most of the time, this is due to either an insufficient power supply or related to your SD card (bad card, bad card reader, something went wrong when burning the image, or the card is too slow).
 
 Download your preferred version of Ubuntu from the latest [release](https://github.com/Joshua-Riek/ubuntu-orange-pi5/releases) on GitHub. Then write the xz compressed image to your SD card using [balenaEtcher](https://www.balena.io/etcher) since, unlike other tools, it can validate burning results, saving you from corrupted SD card contents.
 
@@ -30,7 +30,7 @@ Insert your SD card into the slot on the board and power on the device. The firs
 
 You will be able to login through HDMI or a serial console connection.
 
-There are two predefined users: `ubuntu` and `root`. The password for each is `root`. 
+There are two predefined users: `ubuntu` and `root`. The password for each is `root`.
 
 ```
 Ubuntu 22.04.1 TLS orange-pi5 tty1
@@ -63,5 +63,3 @@ sudo ./build.sh jammy
 ## Known Limitations and Bugs
 
 1. A number of packages are installed and held to enable hardware acceleration. So please don't remove them and re-install with apt-get.
-
-2. Kernel warnings plague dmesg in the Ubuntu 22.04 release.
