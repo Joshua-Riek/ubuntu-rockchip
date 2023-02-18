@@ -404,6 +404,7 @@ cp ${overlay_dir}/usr/share/applications/chromium-browser.desktop ${chroot_dir}/
 # Set chromium as default browser
 chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium 500"
 chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium"
+chroot ${chroot_dir} /bin/bash -c "sudo -u ubuntu xdg-settings set default-web-browser chromium-browser.desktop"
 
 # Add chromium to favorites bar
 chroot ${chroot_dir} /bin/bash -c "sudo -u ubuntu dbus-launch gsettings set org.gnome.shell favorite-apps \
