@@ -97,7 +97,7 @@ echo -e "Decompressing $(basename "${rootfs}")\n"
 tar -xpJf "${rootfs}" -C ${mount_point}/root
 
 # Set boot args for the splash screen
-[ -z "${img##*desktop*}" ] && bootargs="splash plymouth.ignore-serial-consoles" || bootargs=""
+[ -z "${img##*desktop*}" ] && bootargs="quiet splash plymouth.ignore-serial-consoles" || bootargs=""
 
 # Create fstab entries
 mkdir -p ${mount_point}/root/boot/firmware
