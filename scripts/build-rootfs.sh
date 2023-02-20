@@ -181,7 +181,7 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 
 # Setup user account
 adduser --shell /bin/bash --gecos ubuntu --disabled-password ubuntu
-usermod -a -G sudo,video,adm,dialout,cdrom,audio,plugdev,netdev ubuntu
+usermod -a -G sudo,video,adm,dialout,cdrom,audio,plugdev,netdev,input ubuntu
 mkdir -m 700 /home/ubuntu/.ssh
 chown -R ubuntu:ubuntu /home/ubuntu
 echo -e "root\nroot" | passwd ubuntu
