@@ -141,7 +141,7 @@ bash-completion man-db manpages nano gnupg initramfs-tools linux-firmware \
 ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof cryptsetup exfat-fuse hwinfo dmidecode \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
-pigz wget curl gdisk i2c-tools u-boot-tools
+pigz wget curl lm-sensors gdisk i2c-tools u-boot-tools
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
