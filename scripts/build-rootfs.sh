@@ -386,6 +386,14 @@ cp ${overlay_dir}/etc/profile.d/cogl.sh ${chroot_dir}/etc/profile.d/cogl.sh
 # Config file for mpv
 cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 
+# Use mpv as the default video player
+if [ "${release}" == "focal" ]; then
+    sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/etc/gnome/defaults.list
+    sed -i 's/gpu-context=x11egl/#gpu-context=x11egl/g' ${chroot_dir}/etc/mpv/mpv.conf
+else
+    sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
+fi
+
 # Config file for xorg
 mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
 cp ${overlay_dir}/etc/X11/xorg.conf.d/20-modesetting.conf ${chroot_dir}/etc/X11/xorg.conf.d/20-modesetting.conf
