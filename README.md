@@ -1,6 +1,6 @@
 ## Overview
 
-This repository provides a pre-installed Ubuntu 20.04 and 22.04 desktop/server image for the [Orange Pi 5](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5.html), offering a default Ubuntu experience. With this port, you can experience the power and stability of Ubuntu on your Orange Pi 5, making it an excellent choice for a wide range of projects and applications.
+This repository provides a pre-installed Ubuntu 22.04 desktop/server image for the [Orange Pi 5](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5.html), offering a default Ubuntu experience. With this port, you can experience the power and stability of Ubuntu on your Orange Pi 5, making it an excellent choice for a wide range of projects and applications.
 
 This device is still new and undergoing continuous development. As a result, you may encounter bugs or missing features. I'll do my best to update this project with the most recent changes and fixes. If you find problems, please report them in the issues section, and I will be happy to assist!
 
@@ -14,6 +14,8 @@ This device is still new and undergoing continuous development. As a result, you
 * 3D video hardware acceleration support via panfork
 * Fully working GNOME desktop using wayland
 * Chromium browser with smooth 4k video playback
+* MPV video player capable of smooth 4k video playback
+* Gstreamer can be used as an alternative 4k video player from the command line
 * Working Bluetooth and WiFi from the Orange Pi5 PCIe WiFi 6.0 module (AP6275P)
 * On board Microphone
 * Audio over HDMI
@@ -43,13 +45,14 @@ Password: root
 
 ## Build Requirements
 
-To to set up the build environment, please use a Ubuntu 20.04 machine, then install the below packages:
+To to set up the build environment, please use a Ubuntu 22.04 machine, then install the below packages:
 
 ```
 sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
 qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
 debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
-udev dosfstools uuid-runtime git-lfs python
+udev dosfstools uuid-runtime git-lfs device-tree-compiler python3 \
+python-is-python3 
 ```
 
 ## Building
@@ -59,7 +62,7 @@ To checkout the source and build:
 ```
 git clone https://github.com/Joshua-Riek/ubuntu-orange-pi5.git
 cd ubuntu-orange-pi5
-sudo ./build.sh jammy
+sudo ./build.sh
 ```
 
 ## Known Limitations and Bugs

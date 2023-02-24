@@ -8,22 +8,6 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 [focal|jammy]"
-    exit 1
-fi
-
-if [ "$1" == "focal" ]; then
-    release="focal"
-    version="20.04"
-elif [ "$1" == "jammy" ]; then
-    release="jammy"
-    version="22.04"
-else
-    echo "Usage: $0 [focal|jammy]"
-    exit 1
-fi
-
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
@@ -45,6 +29,7 @@ unset TMPDIR
 
 # Debootstrap options
 arch=arm64
+release=jammy
 mirror=http://ports.ubuntu.com/ubuntu-ports
 chroot_dir=rootfs
 overlay_dir=../overlay
@@ -268,8 +253,8 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-${version}-preinstalled-server-arm64-orange-pi5.rootfs.tar.xz . && cd ..
-../scripts/build-image.sh ubuntu-${version}-preinstalled-server-arm64-orange-pi5.rootfs.tar.xz
+cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-22.04-preinstalled-server-arm64-orange-pi5.rootfs.tar.xz . && cd ..
+../scripts/build-image.sh ubuntu-22.04-preinstalled-server-arm64-orange-pi5.rootfs.tar.xz
 
 # Mount the temporary API filesystems
 mkdir -p ${chroot_dir}/{proc,sys,run,dev,dev/pts}
@@ -279,7 +264,7 @@ mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
 # Copy GPU accelerated packages to the rootfs
-cp -r ../debs/${release}/* ${chroot_dir}/tmp
+cp -r ../debs/* ${chroot_dir}/tmp
 
 # Install GPU accelerated packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
@@ -389,12 +374,7 @@ cp ${overlay_dir}/etc/profile.d/cogl.sh ${chroot_dir}/etc/profile.d/cogl.sh
 cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 
 # Use mpv as the default video player
-if [ "${release}" == "focal" ]; then
-    sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/etc/gnome/defaults.list
-    sed -i 's/gpu-context=x11egl/#gpu-context=x11egl/g' ${chroot_dir}/etc/mpv/mpv.conf
-else
-    sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
-fi
+sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
 
 # Config file for xorg
 mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
@@ -437,5 +417,5 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-${version}-preinstalled-desktop-arm64-orange-pi5.rootfs.tar.xz . && cd ..
-../scripts/build-image.sh ubuntu-${version}-preinstalled-desktop-arm64-orange-pi5.rootfs.tar.xz
+cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-22.04-preinstalled-desktop-arm64-orange-pi5.rootfs.tar.xz . && cd ..
+../scripts/build-image.sh ubuntu-22.04-preinstalled-desktop-arm64-orange-pi5.rootfs.tar.xz
