@@ -1,18 +1,17 @@
-From 3b2cc74bbe0a18e624637a11d09718b810c69a1e Mon Sep 17 00:00:00 2001
+From b21727d0072f6e6995095328f0daf12d7d94f02b Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
-Date: Mon, 13 Feb 2023 12:26:02 -0500
+Date: Fri, 24 Feb 2023 13:31:28 -0500
 Subject: [PATCH] hdmi sound improvements
 
 ---
- .../boot/dts/rockchip/rk3588s-orangepi-5.dts      | 15 +++++++++++----
- .../arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi |  4 ++++
- 2 files changed, 15 insertions(+), 4 deletions(-)
+ .../boot/dts/rockchip/rk3588s-orangepi-5.dts     | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
-index 09762fd1dc..da2bf4d91a 100755
+index 83fc3f2570..ee6825995c 100755
 --- a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
-@@ -41,6 +41,16 @@ vcc_1v1_nldo_s3: vcc-1v1-nldo-s3 {
+@@ -54,6 +54,16 @@ vcc3v3_pcie2x1l2: vcc3v3-pcie2x1l2 {
  		vin-supply = <&vcc5v0_sys>;
  	};
  
@@ -29,14 +28,16 @@ index 09762fd1dc..da2bf4d91a 100755
  	leds: gpio-leds {
  		compatible = "gpio-leds";
  		pinctrl-names = "default";
-@@ -90,16 +100,13 @@ rgmii_phy1: phy@1 {
+@@ -102,7 +112,7 @@ rgmii_phy1: phy@1 {
+ 
  &hdmi0 {
  	enable-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
- 	status = "okay";
+-	cec-enable;
 +	cec-enable = "true";
+ 	status = "okay";
  };
  
- &hdmi0_in_vp0 {
+@@ -110,10 +120,6 @@ &hdmi0_in_vp0 {
  	status = "okay";
  };
  
@@ -45,21 +46,6 @@ index 09762fd1dc..da2bf4d91a 100755
 -};
 -
  &hdptxphy_hdmi0 {
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi
-index a6d14beafc..1c395e6cb7 100755
---- a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi
-@@ -205,6 +205,10 @@ vcc5v0_usb: vcc5v0-usb {
- 	};
- };
- 
-+&av1d {
-+	status = "okay";
-+};
-+
- &av1d_mmu {
  	status = "okay";
  };
 -- 
