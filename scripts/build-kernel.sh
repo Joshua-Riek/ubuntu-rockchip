@@ -14,7 +14,7 @@ mkdir -p build && cd build
 # Download the orange pi linux kernel source
 if [ ! -d linux-orangepi ]; then
     git clone --progress -b orange-pi-5.10-rk3588 https://github.com/orangepi-xunlong/linux-orangepi.git
-    git -C linux-orangepi checkout afb867137b2bcaa3d85acebb2019b272957b8c05
+    git -C linux-orangepi checkout d522b896b621710e2abd181a8e1923933c08769b
     git -C linux-orangepi apply ../../patches/linux-orangepi/0001-dma-buf-add-dma_resv_get_singleton-v2.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0002-dma-buf-Add-an-API-for-exporting-sync-files-v14.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0003-dma-buf-Add-an-API-for-importing-sync-files-v10.patch
