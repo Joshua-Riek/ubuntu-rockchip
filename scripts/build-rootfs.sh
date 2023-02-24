@@ -141,7 +141,7 @@ bash-completion man-db manpages nano gnupg initramfs-tools linux-firmware \
 ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof cryptsetup exfat-fuse hwinfo dmidecode \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
-pigz wget curl lm-sensors gdisk i2c-tools u-boot-tools
+pigz wget curl lm-sensors bluez gdisk i2c-tools u-boot-tools
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
@@ -181,7 +181,7 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 
 # Setup user account
 adduser --shell /bin/bash --gecos ubuntu --disabled-password ubuntu
-usermod -a -G sudo,video,adm,dialout,cdrom,audio,plugdev,netdev,input ubuntu
+usermod -a -G sudo,video,adm,dialout,cdrom,audio,plugdev,netdev,input,bluetooth ubuntu
 mkdir -m 700 /home/ubuntu/.ssh
 chown -R ubuntu:ubuntu /home/ubuntu
 echo -e "root\nroot" | passwd ubuntu
@@ -242,6 +242,8 @@ chroot ${chroot_dir} /bin/bash -c "systemctl --no-reload enable enable-usb2"
 
 # Enable bluetooth for AP6275P
 cp ${overlay_dir}/usr/lib/systemd/system/ap6275p-bluetooth.service ${chroot_dir}/usr/lib/systemd/system/ap6275p-bluetooth.service
+cp ${overlay_dir}/usr/lib/scripts/ap6275p-bluetooth.sh ${chroot_dir}/usr/lib/scripts/ap6275p-bluetooth.sh
+cp ${overlay_dir}/usr/bin/brcm_patchram_plus ${chroot_dir}/usr/bin/brcm_patchram_plus
 chroot ${chroot_dir} /bin/bash -c "systemctl enable ap6275p-bluetooth"
 
 # Set term for serial tty
