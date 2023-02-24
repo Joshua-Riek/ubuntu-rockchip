@@ -1,4 +1,5 @@
 #!/bin/bash
+
 echo dec > /dev/video-dec0
 chown root:video /dev/video-dec0
 chmod 0660 /dev/video-dec0
