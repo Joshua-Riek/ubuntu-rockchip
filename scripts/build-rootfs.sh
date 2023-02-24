@@ -376,8 +376,8 @@ cp -r ${overlay_dir}/usr/lib/systemd/user/pulseaudio.service.d ${chroot_dir}/usr
 cp -r ${overlay_dir}/usr/lib/systemd/user/pulseaudio.socket.d ${chroot_dir}/usr/lib/systemd/user/
 
 # Rockchip multimedia rules
-cp ${overlay_dir}/etc/udev/rules.d/99-rk-device-permissions.rules ${chroot_dir}/etc/udev/rules.d/99-rk-device-permissions.rules
-cp ${overlay_dir}/usr/bin/create-chromium-vda-vea-devices.sh ${chroot_dir}/usr/bin/create-chromium-vda-vea-devices.sh
+cp ${overlay_dir}/etc/udev/rules.d/99-rockchip-permissions.rules ${chroot_dir}/etc/udev/rules.d/99-rockchip-permissions.rules
+cp ${overlay_dir}/usr/lib/scripts/create-chromium-vda-vea-devices.sh ${chroot_dir}/usr/lib/scripts/create-chromium-vda-vea-devices.sh
 
 # Set gstreamer environment variables
 cp ${overlay_dir}/etc/profile.d/gst.sh ${chroot_dir}/etc/profile.d/gst.sh
