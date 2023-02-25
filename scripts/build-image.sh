@@ -153,6 +153,11 @@ cp -r linux-orangepi/arch/arm64/boot/dts/rockchip/overlay/rk3588*.dtbo ${mount_p
 dd if=u-boot-orangepi/idbloader.img of="${loop}" seek=64 conv=notrunc
 dd if=u-boot-orangepi/u-boot.itb of="${loop}" seek=16384 conv=notrunc
 
+# Copy spi bootloader to disk image
+mkdir -p ${mount_point}/usr/share/orangepi
+cp u-boot-orangepi/rkspi_loader.img ${mount_point}/usr/share/orangepi/rkspi_loader.img
+cp u-boot-orangepi/rkspi_loader_sata.img ${mount_point}/usr/share/orangepi/rkspi_loader_sata.img
+
 sync --file-system
 sync
 
