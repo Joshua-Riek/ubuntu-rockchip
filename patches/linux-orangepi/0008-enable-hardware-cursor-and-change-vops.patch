@@ -1,37 +1,56 @@
-From ca84b03b59e1baa0bf75a4052737dede4ab32e4d Mon Sep 17 00:00:00 2001
+From 5ca35c1184042b3b0832b58f89d8c40a036e37c5 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
-Date: Fri, 10 Feb 2023 18:22:10 -0500
-Subject: enable hardware cursor
+Date: Sat, 25 Feb 2023 18:44:41 -0500
+Subject: [PATCH] enable hardware cursor and change vops
 
+---
+ arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi
-index 26531d5acc..a6d14beafc 100755
+index af25013fcb..cdc0e5d028 100755
 --- a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi
-@@ -578,21 +578,25 @@ &vepu {
+@@ -566,6 +566,7 @@ &vdpu_mmu {
+ 
+ &vop {
+ 	status = "okay";
++    disable-win-move;
+ 	assigned-clocks = <&cru ACLK_VOP>;
+ 	assigned-clock-rates = <800000000>;
+ };
+@@ -580,23 +581,31 @@ &vepu {
+ 
+ /* vp0 & vp1 splice for 8K output */
  &vp0 {
++    cursor-win-id=<ROCKCHIP_VOP2_ESMART0>;
  	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER0 | 1 << ROCKCHIP_VOP2_ESMART0)>;
  	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART0>;
-+	cursor-win-id = <ROCKCHIP_VOP2_CLUSTER0>;
++	rockchip,primary-plane = <ROCKCHIP_VOP2_CLUSTER0>;
  };
  
  &vp1 {
++    cursor-win-id=<ROCKCHIP_VOP2_ESMART1>;
  	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER1 | 1 << ROCKCHIP_VOP2_ESMART1)>;
  	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART1>;
-+	cursor-win-id = <ROCKCHIP_VOP2_CLUSTER1>;
++	rockchip,primary-plane = <ROCKCHIP_VOP2_CLUSTER1>;
  };
  
  &vp2 {
++    cursor-win-id=<ROCKCHIP_VOP2_ESMART2>;
  	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER2 | 1 << ROCKCHIP_VOP2_ESMART2)>;
  	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART2>;
-+	cursor-win-id = <ROCKCHIP_VOP2_CLUSTER2>;
++	rockchip,primary-plane = <ROCKCHIP_VOP2_CLUSTER2>;
  };
  
  &vp3 {
++    cursor-win-id=<ROCKCHIP_VOP2_ESMART3>;
  	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER3 | 1 << ROCKCHIP_VOP2_ESMART3)>;
  	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART3>;
-+	cursor-win-id = <ROCKCHIP_VOP2_CLUSTER3>;
++	rockchip,primary-plane = <ROCKCHIP_VOP2_CLUSTER3>;
  };
  
  /* Fix tty terminal out of screen, and most dclk of resolutions was not supported in hdmiphy clock from parent clock by default */
- 
+-- 
+2.25.1
+
