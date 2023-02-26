@@ -22,7 +22,7 @@ if [ ! -d linux-orangepi ]; then
     git -C linux-orangepi apply ../../patches/linux-orangepi/0005-drm-rockchip-Re-add-implicit-fencing-support-for-pla.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0006-Revert-ANDROID-clk-Enable-writable-debugfs-files.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0007-debianize-kernel-package.patch
-    git -C linux-orangepi apply ../../patches/linux-orangepi/0008-enable-hardware-cursor.patch
+    git -C linux-orangepi apply ../../patches/linux-orangepi/0008-enable-hardware-cursor-and-change-vops.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0009-hdmi-sound-improvements.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0010-fix-dw-dp-warning-msg.patch
     git -C linux-orangepi apply ../../patches/linux-orangepi/0011-suppress-drm-warning.patch
