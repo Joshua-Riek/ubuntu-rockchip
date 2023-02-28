@@ -1,0 +1,16 @@
+[Unit]
+Description=Synchronize system clock to hardware RTC
+Before=systemd-journald.service systemd-fsck-root.service time-sync.target sysinit.target shutdown.target
+Conflicts=shutdown.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=/sbin/modprobe rtc-hym8563
+ExecStart=/sbin/hwclock --hctosys --utc --noadjfile
+ExecStop=/sbin/hwclock --systohc --utc --noadjfile
+RestrictRealtime=yes
+
+[Install]
+WantedBy=sysinit.target
