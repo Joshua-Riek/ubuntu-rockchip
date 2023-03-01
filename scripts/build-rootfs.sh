@@ -319,6 +319,9 @@ echo "/opt/panfrost/lib/aarch64-linux-gnu" > /etc/ld.so.conf.d/00-panfrost.conf
 [ -e /etc/ld.so.conf.d/00-aarch64-mali.conf ] && mv /etc/ld.so.conf.d/{00-aarch64-mali.conf,01-aarch64-mali.conf}
 ldconfig
 
+# Set board for wiringpi
+echo "BOARD=orangepi5" > /etc/orangepi-release
+
 # Improve mesa performance 
 echo "PAN_MESA_DEBUG=gofaster" >> /etc/environment
 
