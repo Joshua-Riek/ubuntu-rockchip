@@ -41,7 +41,7 @@ rm -rf ${chroot_dir}
 mkdir -p ${chroot_dir}
 
 # Install the base system into a directory 
-qemu-debootstrap --arch ${arch} ${release} ${chroot_dir} ${mirror}
+debootstrap --arch ${arch} ${release} ${chroot_dir} ${mirror}
 
 # Use a more complete sources.list file 
 cat > ${chroot_dir}/etc/apt/sources.list << EOF
