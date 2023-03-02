@@ -139,7 +139,7 @@ EOF
 mkimage -A arm64 -O linux -T script -C none -n "Boot Script" -d ${mount_point}/boot/boot.cmd ${mount_point}/boot/boot.scr
 
 # Device tree overlays to load
-echo "fdt_overlays=rk3588-wifi-ap6275p.dtbo" > ${mount_point}/boot/overlays.txt
+echo "fdt_overlays=" > ${mount_point}/boot/overlays.txt
 
 # Copy device tree blobs
 mkdir -p ${mount_point}/boot/overlays
