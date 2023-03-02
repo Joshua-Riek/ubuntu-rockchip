@@ -8,7 +8,7 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
+cd "$(dirname -- "$(readlink -f -- "$0")")"
 
 # Build the docker container 
 docker build -t ubuntu-orange-pi5-build docker
