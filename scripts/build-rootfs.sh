@@ -169,10 +169,10 @@ adduser --shell /bin/bash --gecos ubuntu --disabled-password ubuntu
 usermod -a -G sudo,video,adm,dialout,cdrom,audio,plugdev,netdev,input,bluetooth ubuntu
 mkdir -m 700 /home/ubuntu/.ssh
 chown -R ubuntu:ubuntu /home/ubuntu
-echo -e "root\nroot" | passwd ubuntu
+echo -e "ubuntu\nubuntu" | passwd ubuntu
 
 # Root pass
-echo -e "root\nroot" | passwd
+echo -e "ubuntu\nubuntu" | passwd
 EOF
 
 # Swapfile
