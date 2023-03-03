@@ -158,6 +158,9 @@ mkdir -p ${mount_point}/usr/share/orangepi
 cp u-boot-orangepi/rkspi_loader.img ${mount_point}/usr/share/orangepi/rkspi_loader.img
 cp u-boot-orangepi/rkspi_loader_sata.img ${mount_point}/usr/share/orangepi/rkspi_loader_sata.img
 
+# Cloud init config for server image
+[ -z "${img##*server*}" ] && cp ../overlay/boot/firmware/{meta-data,user-data,network-config} ${mount_point}/boot
+
 sync --file-system
 sync
 
