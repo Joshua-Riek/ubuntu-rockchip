@@ -126,7 +126,7 @@ bash-completion man-db manpages nano gnupg initramfs-tools linux-firmware \
 ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof cryptsetup exfat-fuse hwinfo dmidecode \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
-pigz wget curl lm-sensors bluez gdisk i2c-tools u-boot-tools
+pigz wget curl lm-sensors bluez gdisk i2c-tools u-boot-tools cloud-init
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
@@ -192,20 +192,17 @@ cp ${overlay_dir}/etc/resolv.conf ${chroot_dir}/etc/resolv.conf
 # Hostname
 cp ${overlay_dir}/etc/hostname ${chroot_dir}/etc/hostname
 
-# Networking interfaces
-cp ${overlay_dir}/etc/network/interfaces.d/interfaces ${chroot_dir}/etc/network/interfaces.d/interfaces
-
 # Hosts file
 cp ${overlay_dir}/etc/hosts ${chroot_dir}/etc/hosts
-
-# WIFI
-cp ${overlay_dir}/etc/wpa_supplicant/wpa_supplicant.conf ${chroot_dir}/etc/wpa_supplicant/wpa_supplicant.conf
 
 # Serial console resize script
 cp ${overlay_dir}/etc/profile.d/resize.sh ${chroot_dir}/etc/profile.d/resize.sh
 
 # Enable rc-local
 cp ${overlay_dir}/etc/rc.local ${chroot_dir}/etc/rc.local
+
+# Cloud init config
+cp ${overlay_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg ${chroot_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg
 
 # Expand root filesystem on first boot
 mkdir -p ${chroot_dir}/usr/lib/scripts
@@ -346,8 +343,8 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 DEBIAN_FRONTEND=noninteractive apt-get -y install ubuntu-desktop \
 dbus-x11 pulseaudio pavucontrol
 
-# Firefox has no gpu support 
-DEBIAN_FRONTEND=noninteractive apt-get -y purge firefox
+# Remove cloud-init
+DEBIAN_FRONTEND=noninteractive apt-get -y purge cloud-init
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
@@ -388,7 +385,6 @@ mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
 cp ${overlay_dir}/etc/X11/xorg.conf.d/20-modesetting.conf ${chroot_dir}/etc/X11/xorg.conf.d/20-modesetting.conf
 
 # Networking interfaces
-rm -f ${chroot_dir}/etc/wpa_supplicant/wpa_supplicant.conf ${chroot_dir}/etc/network/interfaces.d/interfaces 
 cp ${overlay_dir}/etc/NetworkManager/NetworkManager.conf ${chroot_dir}/etc/NetworkManager/NetworkManager.conf
 cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf
 cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/10-override-wifi-random-mac-disable.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/10-override-wifi-random-mac-disable.conf
