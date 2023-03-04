@@ -154,9 +154,9 @@ dd if=u-boot-orangepi/idbloader.img of="${loop}" seek=64 conv=notrunc
 dd if=u-boot-orangepi/u-boot.itb of="${loop}" seek=16384 conv=notrunc
 
 # Copy spi bootloader to disk image
-mkdir -p ${mount_point}/usr/share/orangepi
-cp u-boot-orangepi/rkspi_loader.img ${mount_point}/usr/share/orangepi/rkspi_loader.img
-cp u-boot-orangepi/rkspi_loader_sata.img ${mount_point}/usr/share/orangepi/rkspi_loader_sata.img
+mkdir -p ${mount_point}/root/usr/share/orangepi
+cp u-boot-orangepi/rkspi_loader.img ${mount_point}/root/usr/share/orangepi/rkspi_loader.img
+cp u-boot-orangepi/rkspi_loader_sata.img ${mount_point}/root/usr/share/orangepi/rkspi_loader_sata.img
 
 # Cloud init config for server image
 [ -z "${img##*server*}" ] && cp ../overlay/boot/firmware/{meta-data,user-data,network-config} ${mount_point}/boot
