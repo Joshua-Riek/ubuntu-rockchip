@@ -277,7 +277,7 @@ mv /tmp/*/*.deb /tmp/apt-local
 
 # Backup sources.list and setup a local apt repo
 cd /tmp/apt-local && apt-ftparchive packages . > Packages && cd /
-echo -e "Package: *\nPin: origin ""\nPin-Priority: 1001" > /etc/apt/prefrences
+echo -e "Package: *\nPin: origin ""\nPin-Priority: 1001" > /etc/apt/preferences.d/apt-local
 echo "deb [trusted=yes] file:/tmp/apt-local/ ./" > /tmp/apt-local.list
 cp /etc/apt/sources.list /etc/apt/sources.list.bak
 cat /tmp/apt-local.list /etc/apt/sources.list > /tmp/sources.list
@@ -324,7 +324,7 @@ echo "PAN_MESA_DEBUG=gofaster" >> /etc/environment
 
 # Remove the local apt repo and restore sources.list
 mv /etc/apt/sources.list.bak /etc/apt/sources.list
-rm -f /etc/apt/prefrences
+rm -f /etc/apt/preferences.d/apt-local
 rm -rf /tmp/*
 
 # Download package information
