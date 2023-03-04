@@ -34,7 +34,7 @@ cd linux-orangepi
 cp ../../config/linux-rockchip-rk3588-legacy.config .config
 make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- olddefconfig
 ./scripts/config --disable CONFIG_DEBUG_INFO
-./scripts/config --disable MODULE_SCMVERSION
+./scripts/config --disable CONFIG_MODULE_SCMVERSION
 
 # Set custom kernel version
 ./scripts/config --enable CONFIG_LOCALVERSION_AUTO
