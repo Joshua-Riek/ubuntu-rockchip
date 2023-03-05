@@ -34,13 +34,13 @@ Insert your SD card into the slot on the board and power on the device. The firs
 
 You will be able to login through HDMI or a serial console connection.
 
-There are two predefined users: `ubuntu` and `root`. The password for each is `root`.
+There are two predefined users: `ubuntu` and `root`. The password for each is `ubuntu`.
 
 ```
 Ubuntu 22.04.1 TLS orange-pi5 tty1
 
-orange-pi5 login: root
-Password: root
+orange-pi5 login: ubuntu
+Password: ubuntu
 ```
 
 ## Build Requirements
