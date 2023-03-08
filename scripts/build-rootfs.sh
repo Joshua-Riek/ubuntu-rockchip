@@ -331,7 +331,7 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 
 # Desktop packages
 DEBIAN_FRONTEND=noninteractive apt-get -y install ubuntu-desktop \
-dbus-x11 pulseaudio pavucontrol
+dbus-x11 pulseaudio pavucontrol qtwayland5
 
 # Remove cloud-init
 DEBIAN_FRONTEND=noninteractive apt-get -y purge cloud-init
