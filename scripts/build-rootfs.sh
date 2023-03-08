@@ -306,16 +306,6 @@ cp -f /tmp/chromium/libjpeg.so.62 /usr/lib/aarch64-linux-gnu
 ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
 [ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64
 
-# Remove other dri libs
-cp /usr/lib/aarch64-linux-gnu/dri/{kms_swrast_dri,swrast_dri,rockchip_dri}.so /
-rm -f /usr/lib/aarch64-linux-gnu/dri/*.so
-mv /*.so /usr/lib/aarch64-linux-gnu/dri/
-
-# Use panfrost by default
-echo "/opt/panfrost/lib/aarch64-linux-gnu" > /etc/ld.so.conf.d/00-panfrost.conf
-[ -e /etc/ld.so.conf.d/00-aarch64-mali.conf ] && mv /etc/ld.so.conf.d/{00-aarch64-mali.conf,01-aarch64-mali.conf}
-ldconfig
-
 # Set board for wiringpi
 echo "BOARD=orangepi5" > /etc/orangepi-release
 
