@@ -17,6 +17,7 @@ This device is still new and undergoing continuous development. As a result, you
 * MPV video player capable of smooth 4k video playback
 * Gstreamer can be used as an alternative 4k video player from the command line
 * Working Bluetooth and WiFi from the Orange Pi5 PCIe WiFi 6.0 module (AP6275P)
+* RTC synchronization on startup and shutdown
 * On board Microphone
 * Audio over HDMI
 
