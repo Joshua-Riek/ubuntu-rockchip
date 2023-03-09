@@ -364,6 +364,9 @@ cp ${overlay_dir}/etc/profile.d/gst.sh ${chroot_dir}/etc/profile.d/gst.sh
 # Set cogl to use gles2
 cp ${overlay_dir}/etc/profile.d/cogl.sh ${chroot_dir}/etc/profile.d/cogl.sh
 
+# Set qt to use wayland
+cp ${overlay_dir}/etc/profile.d/qt.sh ${chroot_dir}/etc/profile.d/qt.sh
+
 # Config file for mpv
 cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 
