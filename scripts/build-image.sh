@@ -111,7 +111,7 @@ EOF
 
 # Uboot script
 cat > ${mount_point}/boot/boot.cmd << EOF
-env set bootargs "root=UUID=${root_uuid} console=ttyS2,1500000 console=tty1 cma=64M rootfstype=ext4 rootwait rw ${bootargs}"
+env set bootargs "root=UUID=${root_uuid} console=ttyS2,1500000 console=tty1 cma=64M rootfstype=ext4 rootwait rw cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0 ${bootargs}"
 
 load \${devtype} \${devnum}:1 \${fdt_addr_r} /rk3588s-orangepi-5.dtb
 fdt addr \${fdt_addr_r} && fdt resize 0x10000
