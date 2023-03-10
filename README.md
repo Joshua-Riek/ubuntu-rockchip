@@ -59,6 +59,13 @@ sudo dd if=/usr/share/orangepi/rkspi_loader_sata.img of=/dev/mtdblock0 conv=notr
 echo "overlays=ssd-sata" | sudo tee /boot/firmware/overlays.txt
 ```
 
+## PCIe WiFi 6.0 module (AP6275P)
+
+To enable, please use the below command and reboot your system:
+```
+echo "overlays=wifi-ap6275p" | sudo tee /boot/firmware/overlays.txt
+```
+
 ## Build Requirements
 
 To to set up the build environment, please use a Ubuntu 22.04 machine, then install the below packages:
