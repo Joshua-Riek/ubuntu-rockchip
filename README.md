@@ -9,11 +9,11 @@ This device is still new and undergoing continuous development. As a result, you
 ## Highlights
 
 * Package management via apt using the official Ubuntu repositories
-* Uses the 5.10.110 Linux kernel built with arm64 flags
-* Boot from an SD Card, USB, or NVMe SSD
+* Uses the 5.10.110 Linux kernel
+* Boot from an SD Card, USB, NVMe or SATA SSD
 * 3D video hardware acceleration support via panfork
 * Fully working GNOME desktop using wayland
-* Chromium browser with smooth 4k video playback
+* Chromium browser with smooth 4k youtube video playback
 * MPV video player capable of smooth 4k video playback
 * Gstreamer can be used as an alternative 4k video player from the command line
 * Working Bluetooth and WiFi from the Orange Pi5 PCIe WiFi 6.0 module (AP6275P)
@@ -44,6 +44,21 @@ orange-pi5 login: ubuntu
 Password: ubuntu
 ```
 
+## Flash Bootloader to SPI
+
+Booting directly from a USB, NVMe or SATA SSD requires flashing U-Boot to the SPI.
+
+For a **NVMe** SSD, please use the below comand:
+```
+sudo dd if=/usr/share/orangepi/rkspi_loader.img of=/dev/mtdblock0 conv=notrunc
+```
+
+For a **SATA** SSD, please use the below comands:
+```
+sudo dd if=/usr/share/orangepi/rkspi_loader_sata.img of=/dev/mtdblock0 conv=notrunc 
+echo "overlays=ssd-sata" | sudo tee /boot/firmware/overlays.txt
+```
+
 ## Build Requirements
 
 To to set up the build environment, please use a Ubuntu 22.04 machine, then install the below packages:
@@ -66,6 +81,6 @@ cd ubuntu-orange-pi5
 sudo ./build.sh
 ```
 
-## Known Limitations and Bugs
+## Known Limitations
 
 1. A number of packages are installed and held to enable hardware acceleration. So please don't remove them and re-install with apt-get.
