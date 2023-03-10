@@ -120,8 +120,8 @@ if test -e \${devtype} \${devnum}:1 \${fdtoverlay_addr_r} /overlays.txt; then
     load \${devtype} \${devnum}:1 \${fdtoverlay_addr_r} /overlays.txt
     env import -t \${fdtoverlay_addr_r} \${filesize}
 fi
-for overlay_file in \${fdt_overlays}; do
-    if load \${devtype} \${devnum}:1 \${fdtoverlay_addr_r} /overlays/\${overlay_file}; then
+for overlay_file in \${overlays}; do
+    if load \${devtype} \${devnum}:1 \${fdtoverlay_addr_r} /overlays/rk3588-\${overlay_file}.dtbo; then
         echo "Applying device tree overlay: /overlays/\${overlay_file}"
         fdt apply \${fdtoverlay_addr_r} || setenv overlay_error "true"
     fi
@@ -139,7 +139,7 @@ EOF
 mkimage -A arm64 -O linux -T script -C none -n "Boot Script" -d ${mount_point}/boot/boot.cmd ${mount_point}/boot/boot.scr
 
 # Device tree overlays to load
-echo "fdt_overlays=" > ${mount_point}/boot/overlays.txt
+echo "overlays=" > ${mount_point}/boot/overlays.txt
 
 # Copy device tree blobs
 mkdir -p ${mount_point}/boot/overlays
