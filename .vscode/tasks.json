@@ -12,6 +12,16 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Build Ubuntu 22.04 for Orange Pi5 with Docker",
+            "type": "shell",
+            "command": "sudo ./build-docker.sh",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }
