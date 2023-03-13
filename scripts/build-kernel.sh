@@ -30,7 +30,7 @@ make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- olddefconfig
 
 # Set custom kernel version
 ./scripts/config --enable CONFIG_LOCALVERSION_AUTO
-echo "-orange-pi" > .scmversion
+echo "-rockchip-rk3588" > .scmversion
 echo "0" > .version
 
 # Compile kernel into deb package
