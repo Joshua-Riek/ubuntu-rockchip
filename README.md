@@ -91,3 +91,5 @@ sudo ./build.sh
 ## Known Limitations
 
 1. A number of packages are installed and held to enable hardware acceleration. So please don't remove them and re-install with apt-get.
+2. The Vulkan graphics API is not supported due to driver limitations.
+3. HDR video playback currently does not work.
