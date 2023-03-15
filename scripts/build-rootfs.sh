@@ -124,9 +124,12 @@ DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends dist-upgrade
 DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
 bash-completion man-db manpages nano gnupg initramfs-tools linux-firmware \
 ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
-p7zip-full htop iotop pciutils lshw lsof cryptsetup exfat-fuse hwinfo dmidecode \
+p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
-pigz wget curl lm-sensors bluez gdisk i2c-tools u-boot-tools cloud-init mtd-tools
+pigz wget curl lm-sensors bluez gdisk i2c-tools u-boot-tools cloud-init mtd-tools \
+dmidecode
+
+DEBIAN_FRONTEND=noninteractive apt-get -y remove cryptsetup needrestart
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
@@ -333,8 +336,8 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 DEBIAN_FRONTEND=noninteractive apt-get -y install ubuntu-desktop \
 dbus-x11 pulseaudio pavucontrol qtwayland5
 
-# Remove cloud-init
-DEBIAN_FRONTEND=noninteractive apt-get -y purge cloud-init
+# Remove cloud-init and landscape-common
+DEBIAN_FRONTEND=noninteractive apt-get -y purge cloud-init landscape-common
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
