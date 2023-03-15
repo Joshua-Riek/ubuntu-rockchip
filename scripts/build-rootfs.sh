@@ -112,22 +112,21 @@ locale-gen en_US.UTF-8
 update-locale LC_ALL="en_US.UTF-8"
 
 # Download package information
-DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends update
+DEBIAN_FRONTEND=noninteractive apt-get -y update
 
 # Update installed packages
-DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends upgrade
+DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
 
 # Update installed packages and dependencies
-DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends dist-upgrade
+DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
 
 # Download and install generic packages
-DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+DEBIAN_FRONTEND=noninteractive apt-get -y install dmidecode mtd-tools \
 bash-completion man-db manpages nano gnupg initramfs-tools linux-firmware \
 ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
-pigz wget curl lm-sensors bluez gdisk i2c-tools u-boot-tools cloud-init mtd-tools \
-dmidecode
+pigz wget curl lm-sensors bluez gdisk i2c-tools u-boot-tools cloud-init
 
 DEBIAN_FRONTEND=noninteractive apt-get -y remove cryptsetup needrestart
 
