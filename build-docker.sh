@@ -14,4 +14,4 @@ cd "$(dirname -- "$(readlink -f -- "$0")")"
 docker build -t ubuntu-orange-pi5-build docker
 
 # Invoke build script inside the docker container
-docker run --privileged --network=host -it -v "$(pwd)":/opt -v /dev:/dev ubuntu-orange-pi5-build /usr/bin/bash ./build.sh
+docker run --privileged --network=host --rm -it -v "$(pwd)":/opt -v /dev:/dev ubuntu-orange-pi5-build /usr/bin/bash ./build.sh
