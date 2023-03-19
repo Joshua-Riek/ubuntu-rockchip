@@ -113,30 +113,31 @@ cat > ${mount_point}/system-boot/boot.cmd << EOF
 # This is a boot script for U-Boot
 #
 # Recompile with:
-# mkimage -A arm64 -O linux -T script -C none -n "Boot Script" boot.cmd boot.scr
+# mkimage -A arm64 -O linux -T script -C none -n "Boot Script" -d boot.cmd boot.scr
 
 env set bootargs "console=ttyS2,1500000 console=tty1 root=LABEL=writable rootfstype=ext4 rootwait rw cma=64M cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0 ${bootargs}"
 
-load \${devtype} \${devnum}:1 \${fdt_addr_r} /rk3588s-orangepi-5.dtb
+load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /rk3588s-orangepi-5.dtb
 fdt addr \${fdt_addr_r} && fdt resize 0x10000
 
-if test -e \${devtype} \${devnum}:1 \${fdtoverlay_addr_r} /overlays.txt; then
-    load \${devtype} \${devnum}:1 \${fdtoverlay_addr_r} /overlays.txt
+if test -e \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /overlays.txt; then
+    load \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /overlays.txt
     env import -t \${fdtoverlay_addr_r} \${filesize}
 fi
 for overlay_file in \${overlays}; do
-    if load \${devtype} \${devnum}:1 \${fdtoverlay_addr_r} /overlays/rk3588-\${overlay_file}.dtbo; then
-        echo "Applying device tree overlay: /overlays/\${overlay_file}"
+    if load \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /overlays/rk3588-\${overlay_file}.dtbo; then
+        echo "Applying device tree overlay: /overlays/rk3588-\${overlay_file}.dtbo"
         fdt apply \${fdtoverlay_addr_r} || setenv overlay_error "true"
     fi
 done
 if test -n \${overlay_error}; then
     echo "Error applying device tree overlays, restoring original device tree"
-    load \${devtype} \${devnum}:1 \${fdt_addr_r} /rk3588s-orangepi-5.dtb
+    load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /rk3588s-orangepi-5.dtb
 fi
 
-load \${devtype} \${devnum}:2 \${kernel_addr_r} /boot/vmlinuz
-load \${devtype} \${devnum}:2 \${ramdisk_addr_r} /boot/initrd.img
+setexpr distro_rootpart \${distro_bootpart} + 1
+load \${devtype} \${devnum}:\${distro_rootpart} \${kernel_addr_r} /boot/vmlinuz
+load \${devtype} \${devnum}:\${distro_rootpart} \${ramdisk_addr_r} /boot/initrd.img
 
 booti \${kernel_addr_r} \${ramdisk_addr_r}:\${filesize} \${fdt_addr_r}
 EOF
