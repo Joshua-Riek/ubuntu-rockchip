@@ -206,6 +206,11 @@ cp ${overlay_dir}/etc/rc.local ${chroot_dir}/etc/rc.local
 # Cloud init config
 cp ${overlay_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg ${chroot_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg
 
+# Install and hold wiringpi package
+cp ../debs/wiringpi/wiringpi_2.47.deb ${chroot_dir}/tmp
+chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/wiringpi_2.47.deb && apt-mark hold wiringpi && rm -rf /tmp/*.deb"
+echo "BOARD=orangepi5" > ${chroot_dir}/etc/orangepi-release
+
 # Expand root filesystem on first boot
 mkdir -p ${chroot_dir}/usr/lib/scripts
 cp ${overlay_dir}/usr/lib/scripts/resize-filesystem.sh ${chroot_dir}/usr/lib/scripts/resize-filesystem.sh
@@ -313,9 +318,6 @@ cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
 cp -f /tmp/chromium/libjpeg.so.62 /usr/lib/aarch64-linux-gnu
 ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
 [ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64
-
-# Set board for wiringpi
-echo "BOARD=orangepi5" > /etc/orangepi-release
 
 # Improve mesa performance 
 echo "PAN_MESA_DEBUG=gofaster" >> /etc/environment
