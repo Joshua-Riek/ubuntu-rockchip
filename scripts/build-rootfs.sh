@@ -251,6 +251,9 @@ cp ${overlay_dir}/etc/update-manager/release-upgrades ${chroot_dir}/etc/update-m
 # Orange pi firmware
 cp -r firmware ${chroot_dir}/usr/lib
 
+# Fix Intel AX210 not working after linux-firmware update
+[ -e ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.pnvm ] && mv ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.{pnvm,bak}
+
 # Update initramfs
 chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
 
@@ -411,6 +414,9 @@ chroot ${chroot_dir} /bin/bash -c "sudo -u ubuntu dbus-launch gsettings set org.
 # Have plymouth use the framebuffer
 mkdir -p ${chroot_dir}/etc/initramfs-tools/conf-hooks.d
 cp ${overlay_dir}/etc/initramfs-tools/conf-hooks.d/plymouth ${chroot_dir}/etc/initramfs-tools/conf-hooks.d/plymouth
+
+# Fix Intel AX210 not working after linux-firmware update
+[ -e ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.pnvm ] && mv ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.{pnvm,bak}
 
 # Update initramfs
 chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
