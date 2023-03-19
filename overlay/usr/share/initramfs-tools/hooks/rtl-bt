@@ -1,0 +1,24 @@
+#!/bin/sh
+
+PREREQ=""
+prereqs()
+{
+    echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+    prereqs
+    exit 0
+    ;;
+esac
+
+. /usr/share/initramfs-tools/scripts/functions
+. /usr/share/initramfs-tools/hook-functions
+
+files=$(find /usr/lib/firmware/rtl_bt)
+for file in $files; do
+    copy_exec "${file}" /usr/lib/firmware/rtl_bt
+done
+
+exit 0

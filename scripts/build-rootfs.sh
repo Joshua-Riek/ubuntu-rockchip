@@ -230,6 +230,9 @@ cp ${overlay_dir}/usr/lib/scripts/ap6275p-bluetooth.sh ${chroot_dir}/usr/lib/scr
 cp ${overlay_dir}/usr/bin/brcm_patchram_plus ${chroot_dir}/usr/bin/brcm_patchram_plus
 chroot ${chroot_dir} /bin/bash -c "systemctl enable ap6275p-bluetooth"
 
+# Add realtek bluetooth firmware to initrd 
+cp ${overlay_dir}/usr/share/initramfs-tools/hooks/rtl-bt ${chroot_dir}/usr/share/initramfs-tools/hooks/rtl-bt
+
 # Synchronise system clock to hardware RTC
 cp ${overlay_dir}/usr/lib/systemd/system/rtc-hym8563.service ${chroot_dir}/usr/lib/systemd/system/rtc-hym8563.service
 chroot ${chroot_dir} /bin/bash -c "systemctl enable rtc-hym8563"
