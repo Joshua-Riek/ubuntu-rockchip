@@ -10,13 +10,13 @@ This device is still new and undergoing continuous development. As a result, you
 
 * Package management via apt using the official Ubuntu repositories
 * Uses the 5.10.110 Linux kernel
-* Boot from an SD Card, USB, NVMe or SATA SSD
+* Boot from [SD Card, USB, NVMe or SATA SSD](#flash-bootloader-to-spi)
 * 3D video hardware acceleration support via panfork
 * Fully working GNOME desktop using wayland
 * Chromium browser with smooth 4k youtube video playback
 * MPV video player capable of smooth 4k video playback
 * Gstreamer can be used as an alternative 4k video player from the command line
-* Working Bluetooth and WiFi from the Orange Pi5 PCIe WiFi 6.0 module (AP6275P)
+* Working Bluetooth and WiFi from the [Orange Pi5 PCIe WiFi 6.0 module (AP6275P)](#pcie-wifi-60-module-ap6275p)
 * RTC synchronization on startup and shutdown
 * On board Microphone
 * Audio over HDMI
