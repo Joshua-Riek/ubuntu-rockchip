@@ -38,9 +38,9 @@ You will be able to login through HDMI or a serial console connection.
 There are two predefined users: `ubuntu` and `root`. The password for each is `ubuntu`.
 
 ```
-Ubuntu 22.04.1 TLS orange-pi5 tty1
+Ubuntu 22.04.2 TLS ubuntu tty1
 
-orange-pi5 login: ubuntu
+ubuntu login: ubuntu
 Password: ubuntu
 ```
 
