@@ -161,22 +161,6 @@ ln -s config-${kernel_version} config
 apt-mark hold linux-libc-dev
 EOF
 
-# Create user accounts
-cat << EOF | chroot ${chroot_dir} /bin/bash
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
-
-# Setup user account
-adduser --shell /bin/bash --gecos ubuntu --disabled-password ubuntu
-usermod -a -G sudo,video,adm,dialout,cdrom,audio,plugdev,netdev,input,bluetooth ubuntu
-mkdir -m 700 /home/ubuntu/.ssh
-chown -R ubuntu:ubuntu /home/ubuntu
-echo -e "ubuntu\nubuntu" | passwd ubuntu
-
-# Root pass
-echo -e "ubuntu\nubuntu" | passwd
-EOF
-
 # Swapfile
 cat << EOF | chroot ${chroot_dir} /bin/bash
 set -eE 
@@ -205,6 +189,9 @@ cp ${overlay_dir}/etc/rc.local ${chroot_dir}/etc/rc.local
 
 # Cloud init config
 cp ${overlay_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg ${chroot_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg
+
+# Default adduser config
+cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
 
 # Install and hold wiringpi package
 cp ../debs/wiringpi/wiringpi_2.47.deb ${chroot_dir}/tmp
@@ -350,6 +337,31 @@ DEBIAN_FRONTEND=noninteractive apt-get -y purge cloud-init landscape-common
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
+# Setup and configure oem installer
+cat << EOF | chroot ${chroot_dir} /bin/bash
+set -eE 
+trap 'echo Error: in $0 on line $LINENO' ERR
+
+addgroup --gid 29999 oem
+adduser --gecos "OEM Configuration (temporary user)" --add_extra_groups --disabled-password --gid 29999 --uid 29999 oem
+usermod -a -G adm,sudo -p "$(date +%s | sha256sum | base64 | head -c 32)" oem
+
+DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends \
+oem-config-gtk ubiquity-frontend-gtk ubiquity-ubuntu-artwork oem-config-slideshow-ubuntu
+
+mkdir -p /var/log/installer
+touch /var/log/syslog
+touch /var/log/installer/debug
+cp -a /usr/lib/oem-config/oem-config.service /lib/systemd/system
+cp -a /usr/lib/oem-config/oem-config.target /lib/systemd/system
+systemctl enable oem-config.service
+systemctl enable oem-config.target
+systemctl set-default oem-config.target
+
+# Clean package cache
+apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
+EOF
+
 # Hack for GDM to restart on first HDMI hotplug
 cp ${overlay_dir}/usr/lib/scripts/gdm-hack.sh ${chroot_dir}/usr/lib/scripts/gdm-hack.sh
 cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
@@ -392,9 +404,6 @@ cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/20-override-wifi-powersave-disab
 # Enable wayland session
 cp ${overlay_dir}/etc/gdm3/custom.conf ${chroot_dir}/etc/gdm3/custom.conf
 
-# Use wayland as the default desktop session
-cp ${overlay_dir}/var/lib/AccountsService/users/ubuntu ${chroot_dir}/var/lib/AccountsService/users/ubuntu 
-
 # Set chromium inital prefrences
 mkdir -p ${chroot_dir}/usr/lib/chromium-browser
 cp ${overlay_dir}/usr/lib/chromium-browser/initial_preferences ${chroot_dir}/usr/lib/chromium-browser/initial_preferences
@@ -406,12 +415,13 @@ cp ${overlay_dir}/etc/chromium-browser/default ${chroot_dir}/etc/chromium-browse
 # Set chromium as default browser
 chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium-browser 500"
 chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium-browser"
-chroot ${chroot_dir} /bin/bash -c "sudo -u ubuntu xdg-settings set default-web-browser chromium-browser.desktop"
+sed -i 's/firefox-esr\.desktop/chromium-browser\.desktop/g;s/firefox\.desktop;//g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
 
 # Add chromium to favorites bar
-chroot ${chroot_dir} /bin/bash -c "sudo -u ubuntu dbus-launch gsettings set org.gnome.shell favorite-apps \
-\"['ubiquity.desktop', 'chromium-browser.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', \
-'rhythmbox.desktop', 'libreoffice-writer.desktop', 'snap-store_ubuntu-software.desktop', 'yelp.desktop']\""
+mkdir -p ${chroot_dir}/etc/dconf/db/local.d
+cp ${overlay_dir}/etc/dconf/db/local.d/00-favorite-apps ${chroot_dir}/etc/dconf/db/local.d/00-favorite-apps
+cp ${overlay_dir}/etc/dconf/profile/user ${chroot_dir}/etc/dconf/profile/user
+chroot ${chroot_dir} /bin/bash -c "dconf update"
 
 # Have plymouth use the framebuffer
 mkdir -p ${chroot_dir}/etc/initramfs-tools/conf-hooks.d
