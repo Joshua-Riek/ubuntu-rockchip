@@ -107,9 +107,8 @@ cat << EOF | chroot ${chroot_dir} /bin/bash
 set -eE 
 trap 'echo Error: in $0 on line $LINENO' ERR
 
-# Generate localisation files
-locale-gen en_US.UTF-8
-update-locale LC_ALL="en_US.UTF-8"
+# Update localisation files
+update-locale LANG=C.UTF-8
 
 # Download package information
 DEBIAN_FRONTEND=noninteractive apt-get -y update
