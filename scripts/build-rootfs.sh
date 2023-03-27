@@ -328,7 +328,7 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 
 # Desktop packages
 apt-get -y install ubuntu-desktop dbus-x11 xterm pulseaudio pavucontrol qtwayland5 \
-gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
+gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-plugins-good mpv \
 gstreamer1.0-tools gstreamer1.0-rockchip1 chromium-browser mali-g610-firmware malirun \
 rockchip-multimedia-config librist4 librist-dev rist-tools dvb-tools ir-keytable \
 libdvbv5-0 libdvbv5-dev libdvbv5-doc libv4l-0 libv4l2rds0 libv4lconvert0 libv4l-dev \
