@@ -155,9 +155,6 @@ ln -s initrd.img-${kernel_version} initrd.img
 ln -s vmlinuz-${kernel_version} vmlinuz
 ln -s System.map-${kernel_version} System.map
 ln -s config-${kernel_version} config
-
-# Hold package for jammy
-apt-mark hold linux-libc-dev
 EOF
 
 # Swapfile
@@ -263,13 +260,21 @@ mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-# Copy GPU accelerated packages to the rootfs
+# Pin packages from ppa
+cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
+cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
+
+# Copy packages to the rootfs
 cp -r ../debs/* ${chroot_dir}/tmp
 
-# Install GPU accelerated packages
+# Install packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
 set -eE 
 trap 'echo Error: in $0 on line $LINENO' ERR
+
+DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:jjriek/panfork-mesa
+DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:jjriek/rockchip-multimedia
+DEBIAN_FRONTEND=noninteractive apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
 
 mkdir -p /tmp/apt-local
 mv /tmp/*/*.deb /tmp/apt-local
@@ -292,7 +297,79 @@ for i in /tmp/apt-local/*.deb; do
 done
 
 # Install packages
-DEBIAN_FRONTEND=noninteractive apt-get -y install "\${debs[@]}"
+DEBIAN_FRONTEND=noninteractive apt-get -y install "\${debs[@]}" \
+chromium-browser \
+chromium-browser-l10n \
+chromium-chromedriver \
+chromium-codecs-ffmpeg-extra \
+ffmpeg \
+ffmpeg-doc \
+libavcodec58 \
+libavcodec-dev \
+libavdevice58 \
+libavdevice-dev \
+libavfilter7 \
+libavfilter-dev \
+libavformat58 \
+libavformat-dev \
+libavutil56 \
+libavutil-dev \
+libpostproc55 \
+libpostproc-dev \
+libswresample3 \
+libswresample-dev \
+libswscale5 \
+libswscale-dev \
+gir1.2-gst-plugins-bad-1.0 \
+gstreamer1.0-opencv \
+gstreamer1.0-plugins-bad \
+gstreamer1.0-plugins-bad-apps \
+gstreamer1.0-wpe \
+libgstreamer-opencv1.0-0 \
+libgstreamer-plugins-bad1.0-0 \
+libgstreamer-plugins-bad1.0-dev \
+gir1.2-gst-plugins-base-1.0 \
+gstreamer1.0-alsa \
+gstreamer1.0-gl \
+gstreamer1.0-plugins-base \
+gstreamer1.0-plugins-base-apps \
+gstreamer1.0-x \
+libgstreamer-gl1.0-0 \
+libgstreamer-plugins-base1.0-0 \
+libgstreamer-plugins-base1.0-dev \
+gstreamer1.0-gtk3 \
+gstreamer1.0-plugins-good \
+gstreamer1.0-pulseaudio \
+gstreamer1.0-qt5 \
+libgstreamer-plugins-good1.0-0 \
+libgstreamer-plugins-good1.0-dev \
+gir1.2-gstreamer-1.0 \
+gstreamer1.0-tools \
+libgstreamer1.0-0 \
+libgstreamer1.0-dev \
+gstreamer1.0-rockchip1 \
+librist4 \
+librist-dev \
+rist-tools \
+dvb-tools \
+ir-keytable \
+libdvbv5-0 \
+libdvbv5-dev \
+libdvbv5-doc \
+libv4l-0 \
+libv4l2rds0 \
+libv4lconvert0 \
+libv4l-dev \
+libv4l-rkmpp \
+qv4l2 \
+v4l-utils \
+librockchip-mpp1 \
+librockchip-mpp-dev \
+librockchip-vpu0 \
+rockchip-mpp-demos \
+librga2 \
+librga-dev \
+rockchip-multimedia-config
 
 # Hold packages to prevent breaking hw acceleration
 DEBIAN_FRONTEND=noninteractive apt-mark hold "\${debs[@]}"
@@ -301,7 +378,6 @@ DEBIAN_FRONTEND=noninteractive apt-mark hold "\${debs[@]}"
 cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
 
 # Chromium uses fixed paths for libv4l2.so
-cp -f /tmp/chromium/libjpeg.so.62 /usr/lib/aarch64-linux-gnu
 ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
 [ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64
 
