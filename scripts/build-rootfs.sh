@@ -23,9 +23,17 @@ if [ ! -d firmware ]; then
 fi
 
 # These env vars can cause issues with chroot
-unset TMP
-unset TEMP
-unset TMPDIR
+export TMP=
+export TEMP=
+export TMPDIR=
+
+# Fix locale warning
+export LC_ALL=
+export LANGUAGE=
+export LANG=C.UTF-8
+
+# Prevent dpkg interactive dialogues
+export DEBIAN_FRONTEND=noninteractive
 
 # Debootstrap options
 arch=arm64
@@ -110,24 +118,19 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 # Update localisation files
 update-locale LANG=C.UTF-8
 
-# Download package information
-DEBIAN_FRONTEND=noninteractive apt-get -y update
-
-# Update installed packages
-DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
-
-# Update installed packages and dependencies
-DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
+# Download and update installed packages
+apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
 
 # Download and install generic packages
-DEBIAN_FRONTEND=noninteractive apt-get -y install dmidecode mtd-tools \
+apt-get -y install dmidecode mtd-tools i2c-tools u-boot-tools cloud-init \
 bash-completion man-db manpages nano gnupg initramfs-tools linux-firmware \
 ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
-pigz wget curl lm-sensors bluez gdisk i2c-tools u-boot-tools cloud-init
+pigz wget curl lm-sensors bluez gdisk
 
-DEBIAN_FRONTEND=noninteractive apt-get -y remove cryptsetup needrestart
+# Remove cryptsetup and needrestart
+apt-get -y remove cryptsetup needrestart
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
@@ -264,6 +267,19 @@ mount -o bind /dev/pts ${chroot_dir}/dev/pts
 cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
 cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
 
+# Add mesa and rockchip multimedia mirrors
+cat << EOF | chroot ${chroot_dir} /bin/bash
+set -eE 
+trap 'echo Error: in $0 on line $LINENO' ERR
+
+# Add mesa and rockchip multimedia mirrors
+add-apt-repository -y ppa:jjriek/panfork-mesa
+add-apt-repository -y ppa:jjriek/rockchip-multimedia
+
+# Download and update installed packages
+apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
+EOF
+
 # Copy packages to the rootfs
 cp -r ../debs/* ${chroot_dir}/tmp
 
@@ -271,10 +287,6 @@ cp -r ../debs/* ${chroot_dir}/tmp
 cat << EOF | chroot ${chroot_dir} /bin/bash
 set -eE 
 trap 'echo Error: in $0 on line $LINENO' ERR
-
-DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:jjriek/panfork-mesa
-DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:jjriek/rockchip-multimedia
-DEBIAN_FRONTEND=noninteractive apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
 
 mkdir -p /tmp/apt-local
 mv /tmp/*/*.deb /tmp/apt-local
@@ -287,113 +299,26 @@ cp /etc/apt/sources.list /etc/apt/sources.list.bak
 cat /tmp/apt-local.list /etc/apt/sources.list > /tmp/sources.list
 mv /tmp/sources.list /etc/apt/sources.list
 rm -rf /tmp/apt-local.list
-
-# Download package information
-DEBIAN_FRONTEND=noninteractive apt-get -y update
+apt-get -y update
 
 debs=()
 for i in /tmp/apt-local/*.deb; do
     debs+=("\$(basename "\${i}" | cut -d "_" -f1)")
 done
 
-# Install packages
-DEBIAN_FRONTEND=noninteractive apt-get -y install "\${debs[@]}" \
-chromium-browser \
-chromium-browser-l10n \
-chromium-chromedriver \
-chromium-codecs-ffmpeg-extra \
-ffmpeg \
-ffmpeg-doc \
-libavcodec58 \
-libavcodec-dev \
-libavdevice58 \
-libavdevice-dev \
-libavfilter7 \
-libavfilter-dev \
-libavformat58 \
-libavformat-dev \
-libavutil56 \
-libavutil-dev \
-libpostproc55 \
-libpostproc-dev \
-libswresample3 \
-libswresample-dev \
-libswscale5 \
-libswscale-dev \
-gir1.2-gst-plugins-bad-1.0 \
-gstreamer1.0-opencv \
-gstreamer1.0-plugins-bad \
-gstreamer1.0-plugins-bad-apps \
-gstreamer1.0-wpe \
-libgstreamer-opencv1.0-0 \
-libgstreamer-plugins-bad1.0-0 \
-libgstreamer-plugins-bad1.0-dev \
-gir1.2-gst-plugins-base-1.0 \
-gstreamer1.0-alsa \
-gstreamer1.0-gl \
-gstreamer1.0-plugins-base \
-gstreamer1.0-plugins-base-apps \
-gstreamer1.0-x \
-libgstreamer-gl1.0-0 \
-libgstreamer-plugins-base1.0-0 \
-libgstreamer-plugins-base1.0-dev \
-gstreamer1.0-gtk3 \
-gstreamer1.0-plugins-good \
-gstreamer1.0-pulseaudio \
-gstreamer1.0-qt5 \
-libgstreamer-plugins-good1.0-0 \
-libgstreamer-plugins-good1.0-dev \
-gir1.2-gstreamer-1.0 \
-gstreamer1.0-tools \
-libgstreamer1.0-0 \
-libgstreamer1.0-dev \
-gstreamer1.0-rockchip1 \
-librist4 \
-librist-dev \
-rist-tools \
-dvb-tools \
-ir-keytable \
-libdvbv5-0 \
-libdvbv5-dev \
-libdvbv5-doc \
-libv4l-0 \
-libv4l2rds0 \
-libv4lconvert0 \
-libv4l-dev \
-libv4l-rkmpp \
-qv4l2 \
-v4l-utils \
-librockchip-mpp1 \
-librockchip-mpp-dev \
-librockchip-vpu0 \
-rockchip-mpp-demos \
-librga2 \
-librga-dev \
-rockchip-multimedia-config
-
-# Hold packages to prevent breaking hw acceleration
-DEBIAN_FRONTEND=noninteractive apt-mark hold "\${debs[@]}"
+# Install and hold packages
+apt-get -y install "\${debs[@]}" && apt-mark hold "\${debs[@]}"
 
 # Copy binary for rkaiq
 cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
-
-# Chromium uses fixed paths for libv4l2.so
-ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
-[ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64
-
-# Improve mesa performance 
-echo "PAN_MESA_DEBUG=gofaster" >> /etc/environment
 
 # Remove the local apt repo and restore sources.list
 mv /etc/apt/sources.list.bak /etc/apt/sources.list
 rm -f /etc/apt/preferences.d/apt-local
 rm -rf /tmp/*
 
-# Download package information
-DEBIAN_FRONTEND=noninteractive apt-get -y update
-
 # Clean package cache
-apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
+apt-get -y update && apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
 # Download and update packages
@@ -402,11 +327,25 @@ set -eE
 trap 'echo Error: in $0 on line $LINENO' ERR
 
 # Desktop packages
-DEBIAN_FRONTEND=noninteractive apt-get -y install ubuntu-desktop \
-dbus-x11 xterm pulseaudio pavucontrol qtwayland5
+apt-get -y install ubuntu-desktop dbus-x11 xterm pulseaudio pavucontrol qtwayland5 \
+gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
+gstreamer1.0-tools gstreamer1.0-rockchip1 chromium-browser mali-g610-firmware malirun \
+rockchip-multimedia-config librist4 librist-dev rist-tools dvb-tools ir-keytable \
+libdvbv5-0 libdvbv5-dev libdvbv5-doc libv4l-0 libv4l2rds0 libv4lconvert0 libv4l-dev \
+libv4l-rkmpp qv4l2 v4l-utils librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 \
+rockchip-mpp-demos librga2 librga-dev libegl-mesa0 libegl1-mesa-dev libgbm-dev \
+libgl1-mesa-dev libgles2-mesa-dev libglx-mesa0 mesa-common-dev mesa-vulkan-drivers \
+mesa-utils
 
 # Remove cloud-init and landscape-common
-DEBIAN_FRONTEND=noninteractive apt-get -y purge cloud-init landscape-common
+apt-get -y purge cloud-init landscape-common
+
+# Chromium uses fixed paths for libv4l2.so
+ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
+[ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64
+
+# Improve mesa performance 
+echo "PAN_MESA_DEBUG=gofaster" >> /etc/environment
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
@@ -421,8 +360,8 @@ addgroup --gid 29999 oem
 adduser --gecos "OEM Configuration (temporary user)" --add_extra_groups --disabled-password --gid 29999 --uid 29999 oem
 usermod -a -G adm,sudo -p "$(date +%s | sha256sum | base64 | head -c 32)" oem
 
-DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends \
-oem-config-gtk ubiquity-frontend-gtk ubiquity-ubuntu-artwork oem-config-slideshow-ubuntu
+apt-get -y install --no-install-recommends oem-config-gtk ubiquity-frontend-gtk \
+ubiquity-ubuntu-artwork oem-config-slideshow-ubuntu
 
 mkdir -p /var/log/installer
 touch /var/log/syslog
@@ -448,8 +387,8 @@ cp -r ${overlay_dir}/usr/share/pulseaudio ${chroot_dir}/usr/share
 cp -r ${overlay_dir}/etc/udev/rules.d/90-pulseaudio-rockchip.rules ${chroot_dir}/etc/udev/rules.d/90-pulseaudio-rockchip.rules
 
 # Fix pulseaudio stuck on gdm user
-cp -r ${overlay_dir}/usr/lib/systemd/user/pulseaudio.service.d ${chroot_dir}/usr/lib/systemd/user/
-cp -r ${overlay_dir}/usr/lib/systemd/user/pulseaudio.socket.d ${chroot_dir}/usr/lib/systemd/user/
+cp -r ${overlay_dir}/usr/lib/systemd/user/pulseaudio.service.d ${chroot_dir}/usr/lib/systemd/user
+cp -r ${overlay_dir}/usr/lib/systemd/user/pulseaudio.socket.d ${chroot_dir}/usr/lib/systemd/user
 
 # Set gstreamer environment variables
 cp ${overlay_dir}/etc/profile.d/gst.sh ${chroot_dir}/etc/profile.d/gst.sh
