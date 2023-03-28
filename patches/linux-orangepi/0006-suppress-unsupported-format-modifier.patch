@@ -1,0 +1,27 @@
+From ac847dfb37ace7490456d201dd9e2a6ee123bdba Mon Sep 17 00:00:00 2001
+From: Joshua Riek <jjriek@verizon.net>
+Date: Mon, 27 Mar 2023 22:50:54 -0400
+Subject: [PATCH] suppress unsupported format modifier
+
+---
+ drivers/gpu/drm/rockchip/rockchip_drm_vop2.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
+index 49c142c8a5..0515cf608b 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
+@@ -2026,8 +2026,9 @@ static bool rockchip_vop2_mod_supported(struct drm_plane *plane, u32 format, u64
+ 		return true;
+ 
+ 	if (!rockchip_afbc(plane, modifier)) {
+-		DRM_ERROR("Unsupported format modifier 0x%llx\n", modifier);
+-
++        if (modifier != (u64)0x800000100000351) {
++    		DRM_ERROR("Unsupported format modifier 0x%llx\n", modifier);
++        }
+ 		return false;
+ 	}
+ 
+-- 
+2.25.1
