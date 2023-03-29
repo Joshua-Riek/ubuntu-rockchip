@@ -33,16 +33,9 @@ Insert your SD card into the slot on the board and power on the device. The firs
 
 ## Login Information
 
-You will be able to login through HDMI or a serial console connection.
+For the server image you will be able to login through HDMI or a serial console connection. The predefined user is `ubuntu` and the password is `ubuntu`.
 
-There are two predefined users: `ubuntu` and `root`. The password for each is `ubuntu`.
-
-```
-Ubuntu 22.04.2 TLS ubuntu tty1
-
-ubuntu login: ubuntu
-Password: ubuntu
-```
+For the desktop image you must connect through HDMI and follow the setup-wizard.
 
 ## Flash Bootloader to SPI
 
@@ -90,6 +83,4 @@ sudo ./build.sh
 
 ## Known Limitations
 
-1. A number of packages are installed and held to enable hardware acceleration. So please don't remove them and re-install with apt-get.
-2. The Vulkan graphics API is not supported due to driver limitations.
-3. HDR video playback currently does not work.
+1. The Vulkan graphics API is not supported due to driver limitations.
