@@ -23,14 +23,9 @@ if [ ! -d firmware ]; then
 fi
 
 # These env vars can cause issues with chroot
-export TMP=
-export TEMP=
-export TMPDIR=
-
-# Fix locale warning
-export LC_ALL=
-export LANGUAGE=
-export LANG=C.UTF-8
+unset TMP
+unset TEMP
+unset TMPDIR
 
 # Prevent dpkg interactive dialogues
 export DEBIAN_FRONTEND=noninteractive
@@ -116,7 +111,8 @@ set -eE
 trap 'echo Error: in $0 on line $LINENO' ERR
 
 # Update localisation files
-update-locale LANG=C.UTF-8
+locale-gen en_US.UTF-8
+update-locale LANG="en_US.UTF-8"
 
 # Download and update installed packages
 apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
