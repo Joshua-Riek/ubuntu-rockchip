@@ -30,11 +30,9 @@ make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- olddefconfig
 ./scripts/config --disable CONFIG_DEBUG_INFO
 ./scripts/config --disable CONFIG_MODULE_SCMVERSION
 
-# Set custom kernel version
-./scripts/config --enable CONFIG_LOCALVERSION_AUTO
-echo "-rockchip-rk3588" > .scmversion
-echo "0" > .version
+touch .version
 
 # Compile kernel into deb package
-make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j "$(nproc)"
-make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j "$(nproc)" bindeb-pkg
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KBUILD_DEBARCH=arm64 KDEB_PKGVERSION="5.10.110-1" LOCALVERSION="-rockchip-rk3588" -j "$(nproc)" bindeb-pkg
+
+rm -f ../*.buildinfo ../*.changes ../linux-libc-dev*

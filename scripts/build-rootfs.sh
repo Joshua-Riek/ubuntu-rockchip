@@ -100,7 +100,7 @@ mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
 # Copy the the kernel, modules, and headers to the rootfs
-if ! cp linux-{headers,image,libc}-*.deb ${chroot_dir}/tmp; then
+if ! cp linux-{headers,image,dtb}-*.deb ${chroot_dir}/tmp; then
     echo "Error: could not find the kernel deb packages, please run build-kernel.sh"
     exit 1
 fi
@@ -141,7 +141,7 @@ set -eE
 trap 'echo Error: in $0 on line $LINENO' ERR
 
 # Install the kernel, modules, and headers
-dpkg -i /tmp/linux-{headers,image,libc}-*.deb
+dpkg -i /tmp/linux-{headers,image,dtb}-*.deb
 rm -rf /tmp/*
 
 # Generate kernel module dependencies
