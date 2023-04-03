@@ -1,17 +1,16 @@
-From 91cad40dbd52fdaa90bdc5d02a48acf7e31bbc94 Mon Sep 17 00:00:00 2001
+From 9a1ae923ebacac888fb7bf07f3adff5f3a61168b Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
-Date: Wed, 15 Feb 2023 12:09:06 -0500
-Subject: [PATCH 1/1] debianize kernel package
+Date: Sun, 2 Apr 2023 18:48:26 -0400
+Subject: [PATCH] scripts: package: debianize kernel package
 
 ---
  Makefile                 |  21 ++---
- scripts/package/builddeb | 170 ++++++---------------------------------
- scripts/package/mkdebian |  19 +----
- scripts/setlocalversion  |  47 +++--------
- 4 files changed, 45 insertions(+), 212 deletions(-)
+ scripts/package/builddeb | 183 +++++----------------------------------
+ scripts/package/mkdebian |  26 +++---
+ 3 files changed, 41 insertions(+), 189 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 6bbc15bea0..da51f041ec 100644
+index 6bbc15bea0..e9109e20f2 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1293,8 +1293,7 @@ targets := vmlinux
@@ -40,8 +39,8 @@ index 6bbc15bea0..da51f041ec 100644
 -	fi;                                                             \
 -	echo \#define UTS_RELEASE \"$(UTS_RELEASE)\"
 +	if [ `echo -n "$(KERNELRELEASE)" | wc -c ` -gt $(uts_len) ]; then \
-+	  echo '"$(KERNELRELEASE)" exceeds $(uts_len) characters' >&2;    \
-+	  exit 1;                                                         \
++		echo '"$(KERNELRELEASE)" exceeds $(uts_len) characters' >&2;    \
++		exit 1;                                                         \
 +	fi;                                                               \
 +	echo \#define UTS_RELEASE \"$(KERNELRELEASE)\"
  endef
@@ -53,40 +52,18 @@ index 6bbc15bea0..da51f041ec 100644
  kernelrelease:
 -	@echo "$(KERNELVERSION)$$($(CONFIG_SHELL) $(srctree)/scripts/setlocalversion \
 -		$(srctree) $(BRANCH) $(KMI_GENERATION))"
-+	@echo "$(KERNELVERSION)$$($(CONFIG_SHELL) $(srctree)/scripts/setlocalversion $(srctree))"
++	echo "$(KERNELVERSION)$$($(CONFIG_SHELL) $(srctree)/scripts/setlocalversion $(srctree))"
  
  kernelversion:
  	@echo $(KERNELVERSION)
 diff --git a/scripts/package/builddeb b/scripts/package/builddeb
-index 7c7cde9304..91a502bb97 100755
+index 7c7cde9304..cc384ab4da 100755
 --- a/scripts/package/builddeb
 +++ b/scripts/package/builddeb
-@@ -26,62 +26,31 @@ if_enabled_echo() {
- 
- create_package() {
- 	local pname="$1" pdir="$2"
-+	local dpkg_deb_opts
- 
- 	mkdir -m 755 -p "$pdir/DEBIAN"
- 	mkdir -p "$pdir/usr/share/doc/$pname"
- 	cp debian/copyright "$pdir/usr/share/doc/$pname/"
- 	cp debian/changelog "$pdir/usr/share/doc/$pname/changelog.Debian"
--	gzip -9 "$pdir/usr/share/doc/$pname/changelog.Debian"
-+	gzip -n -9 "$pdir/usr/share/doc/$pname/changelog.Debian"
- 	sh -c "cd '$pdir'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' \
- 		| xargs -r0 md5sum > DEBIAN/md5sums"
- 
- 	# Fix ownership and permissions
--	chown -R root:root "$pdir"
-+	if [ "$DEB_RULES_REQUIRES_ROOT" = "no" ]; then
-+		dpkg_deb_opts="--root-owner-group"
-+	else
-+		chown -R root:root "$pdir"
-+	fi
- 	chmod -R go-w "$pdir"
+@@ -41,100 +41,9 @@ create_package() {
  	# in case we are in a restrictive umask environment like 0077
  	chmod -R a+rX "$pdir"
--
+ 
 -	# Create preinstall and post install script to remove dtb
 -	if [ "$3" = "dtb" ]; then
 -
@@ -124,45 +101,83 @@ index 7c7cde9304..91a502bb97 100755
 -
 -	chmod 775 $pdir/DEBIAN/postinst ; chmod 775 $pdir/DEBIAN/prerm
 -	fi
-+	# in case we build in a setuid/setgid directory
-+	chmod -R ug-s "$pdir"
- 
+-
  	# Create the package
  	dpkg-gencontrol -p$pname -P"$pdir"
 -	dpkg-deb ${KDEB_COMPRESS:+-Z$KDEB_COMPRESS} --build "$pdir" ..
-+	dpkg-deb $dpkg_deb_opts ${KDEB_COMPRESS:+-Z$KDEB_COMPRESS} --build "$pdir" ..
- }
- 
- deploy_kernel_headers () {
-@@ -93,7 +62,7 @@ deploy_kernel_headers () {
- 		cd $srctree
- 		find . arch/$SRCARCH -maxdepth 1 -name Makefile\*
- 		find include scripts -type f -o -type l
+-}
+-
+-deploy_kernel_headers () {
+-	pdir=$1
+-
+-	rm -rf $pdir
+-
+-	(
+-		cd $srctree
+-		find . arch/$SRCARCH -maxdepth 1 -name Makefile\*
+-		find include scripts -type f -o -type l
 -		find arch/$SRCARCH -name module.lds -o -name Kbuild.platforms -o -name Platform
-+		find arch/$SRCARCH -name Kbuild.platforms -o -name Platform
- 		find $(find arch/$SRCARCH -name include -o -name scripts -type d) -type f
- 	) > debian/hdrsrcfiles
- 
-@@ -138,15 +107,9 @@ deploy_libc_headers () {
+-		find $(find arch/$SRCARCH -name include -o -name scripts -type d) -type f
+-	) > debian/hdrsrcfiles
+-
+-	{
+-		if is_enabled CONFIG_STACK_VALIDATION; then
+-			echo tools/objtool/objtool
+-		fi
+-
+-		find arch/$SRCARCH/include Module.symvers include scripts -type f
+-
+-		if is_enabled CONFIG_GCC_PLUGINS; then
+-			find scripts/gcc-plugins -name \*.so
+-		fi
+-	} > debian/hdrobjfiles
+-
+-	destdir=$pdir/usr/src/linux-headers-$version
+-	mkdir -p $destdir
+-	tar -c -f - -C $srctree -T debian/hdrsrcfiles | tar -xf - -C $destdir
+-	tar -c -f - -T debian/hdrobjfiles | tar -xf - -C $destdir
+-	rm -f debian/hdrsrcfiles debian/hdrobjfiles
+-
+-	# copy .config manually to be where it's expected to be
+-	cp $KCONFIG_CONFIG $destdir/.config
+-
+-	mkdir -p $pdir/lib/modules/$version/
+-	ln -s /usr/src/linux-headers-$version $pdir/lib/modules/$version/build
+-}
+-
+-deploy_libc_headers () {
+-	pdir=$1
+-
+-	rm -rf $pdir
+-
+-	$MAKE -f $srctree/Makefile headers
+-	$MAKE -f $srctree/Makefile headers_install INSTALL_HDR_PATH=$pdir/usr
+-
+-	# move asm headers to /usr/include/<libc-machine>/asm to match the structure
+-	# used by Debian-based distros (to support multi-arch)
+-	host_arch=$(dpkg-architecture -a$(cat debian/arch) -qDEB_HOST_MULTIARCH)
+-	mkdir $pdir/usr/include/$host_arch
+-	mv $pdir/usr/include/asm $pdir/usr/include/$host_arch/
++	dpkg --build "$pdir" ..
  }
  
  version=$KERNELRELEASE
--tmpdir="$objtree/debian/tmp"
--kernel_headers_dir="$objtree/debian/hdrtmp"
--libc_headers_dir="$objtree/debian/headertmp"
--dbg_dir="$objtree/debian/dbgtmp"
--dtb_dir="$objtree/debian/dtbtmp"
+@@ -143,10 +52,10 @@ kernel_headers_dir="$objtree/debian/hdrtmp"
+ libc_headers_dir="$objtree/debian/headertmp"
+ dbg_dir="$objtree/debian/dbgtmp"
+ dtb_dir="$objtree/debian/dtbtmp"
 -packagename=linux-image-"$BRANCH$LOCALVERSION"
 -kernel_headers_packagename=linux-headers-"$BRANCH$LOCALVERSION"
 -dtb_packagename=linux-dtb-"$BRANCH$LOCALVERSION"
 -libc_headers_packagename=linux-libc-dev-"$BRANCH$LOCALVERSION"
-+tmpdir=debian/linux-image
-+dbg_dir=debian/linux-image-dbg
 +packagename=linux-image-$version
++kernel_headers_packagename=linux-headers-$version
++dtb_packagename=linux-dtb-$version
++libc_headers_packagename=linux-libc-dev
  dbg_packagename=$packagename-dbg
  
  if [ "$ARCH" = "um" ] ; then
-@@ -157,15 +120,6 @@ fi
+@@ -157,15 +66,6 @@ fi
  # XXX: have each arch Makefile export a variable of the canonical image install
  # path instead
  case $ARCH in
@@ -178,27 +193,35 @@ index 7c7cde9304..91a502bb97 100755
  um)
  	installed_image_path="usr/bin/linux-$version"
  	;;
-@@ -179,17 +133,13 @@ esac
- BUILD_DEBUG=$(if_enabled_echo CONFIG_DEBUG_INFO Yes)
+@@ -180,10 +80,10 @@ BUILD_DEBUG=$(if_enabled_echo CONFIG_DEBUG_INFO Yes)
  
  # Setup the directory structure
--rm -rf "$tmpdir" "$kernel_headers_dir" "$libc_headers_dir" "$dbg_dir" "$dtb_dir" $objtree/debian/files
+ rm -rf "$tmpdir" "$kernel_headers_dir" "$libc_headers_dir" "$dbg_dir" "$dtb_dir" $objtree/debian/files
 -mkdir -m 755 -p "$dtb_dir/DEBIAN"
 -mkdir -p "$dtb_dir/boot/dtb-$version" "$dtb_dir/usr/share/doc/$dtb_packagename"
-+rm -rf "$tmpdir" "$dbg_dir" debian/files
  mkdir -m 755 -p "$tmpdir/DEBIAN"
  mkdir -p "$tmpdir/lib" "$tmpdir/boot"
--mkdir -p "$kernel_headers_dir/lib/modules/$version/"
++mkdir -m 755 -p "$dtb_dir/DEBIAN"
++mkdir -p "$dtb_dir/boot/dtb-$version" "$dtb_dir/usr/share/doc/$dtb_packagename"
+ mkdir -p "$kernel_headers_dir/lib/modules/$version/"
  
--# Build and install the kernel
-+# Install the kernel
- if [ "$ARCH" = "um" ] ; then
- 	mkdir -p "$tmpdir/usr/lib/uml/modules/$version" "$tmpdir/usr/bin" "$tmpdir/usr/share/doc/$packagename"
--	$MAKE linux
- 	cp System.map "$tmpdir/usr/lib/uml/modules/$version/System.map"
- 	cp $KCONFIG_CONFIG "$tmpdir/usr/share/doc/$packagename/config"
- 	gzip "$tmpdir/usr/share/doc/$packagename/config"
-@@ -233,21 +183,6 @@ if is_enabled CONFIG_MODULES; then
+ # Build and install the kernel
+@@ -206,6 +106,14 @@ if is_enabled CONFIG_OF_EARLY_FLATTREE; then
+ 	fi
+ fi
+ 
++if grep -q '^CONFIG_OF=y' $KCONFIG_CONFIG; then
++	INSTALL_DTBS_PATH="$dtb_dir/boot/dtb-$version" $MAKE KBUILD_SRC= dtbs_install
++	mkdir -p "$dtb_dir/boot/firmware/overlays"
++	find "$dtb_dir/boot/dtb-$version" -path "$dtb_dir/boot/firmware" -prune -o -name '*.dtb' -exec cp {} "$dtb_dir/boot/firmware" \;
++	find "$dtb_dir/boot/dtb-$version" -path "$dtb_dir/boot/firmware" -prune -o -name '*.dtbo' -exec cp {} "$dtb_dir/boot/firmware/overlays" \;
++	rm -rf "$dtb_dir/boot/dtb-$version"
++fi
++
+ if is_enabled CONFIG_MODULES; then
+ 	INSTALL_MOD_PATH="$tmpdir" $MAKE -f $srctree/Makefile modules_install
+ 	rm -f "$tmpdir/lib/modules/$version/build"
+@@ -233,11 +141,6 @@ if is_enabled CONFIG_MODULES; then
  	fi
  fi
  
@@ -207,20 +230,10 @@ index 7c7cde9304..91a502bb97 100755
 -	INSTALL_DTBS_PATH="$dtb_dir/boot/dtb-$version" $MAKE KBUILD_SRC= dtbs_install
 -fi
 -
--if [ "$ARCH" != "um" ]; then
--	$MAKE -f $srctree/Makefile headers
--	$MAKE -f $srctree/Makefile headers_install INSTALL_HDR_PATH="$libc_headers_dir/usr"
--	# move asm headers to /usr/include/<libc-machine>/asm to match the structure
--	# used by Debian-based distros (to support multi-arch)
--	host_arch=$(dpkg-architecture -a$(cat debian/arch) -qDEB_HOST_MULTIARCH)
--	mkdir $libc_headers_dir/usr/include/$host_arch
--	mv $libc_headers_dir/usr/include/asm $libc_headers_dir/usr/include/$host_arch/
--fi
--
- # Install the maintainer scripts
- # Note: hook scripts under /etc/kernel are also executed by official Debian
- # kernel packages, as well as kernel packages built using make-kpkg.
-@@ -257,7 +192,7 @@ debhookdir=${KDEB_HOOKDIR:-/etc/kernel}
+ if [ "$ARCH" != "um" ]; then
+ 	$MAKE -f $srctree/Makefile headers
+ 	$MAKE -f $srctree/Makefile headers_install INSTALL_HDR_PATH="$libc_headers_dir/usr"
+@@ -257,7 +160,7 @@ debhookdir=${KDEB_HOOKDIR:-/etc/kernel}
  for script in postinst postrm preinst prerm ; do
  	mkdir -p "$tmpdir$debhookdir/$script.d"
  	cat <<EOF > "$tmpdir/DEBIAN/$script"
@@ -229,7 +242,7 @@ index 7c7cde9304..91a502bb97 100755
  
  set -e
  
-@@ -273,73 +208,14 @@ EOF
+@@ -273,53 +176,11 @@ EOF
  	chmod 755 "$tmpdir/DEBIAN/$script"
  done
  
@@ -266,54 +279,54 @@ index 7c7cde9304..91a502bb97 100755
 -	if [ "\$bootfstype" = "vfat" ]; then
 -		# we have to keep it mounted! umount /boot
 -		rm -f /boot/System.map* /boot/config* /boot/vmlinuz* /boot/$image_name /boot/uImage
-+if [ "$ARCH" != "um" ]; then
-+	if is_enabled CONFIG_MODULES; then
-+		deploy_kernel_headers debian/linux-headers
-+		create_package linux-headers-$version debian/linux-headers
- 	fi
+-	fi
 -}
 -mountpoint -q /boot && check_and_unmount
 -EOT
 -echo "exit 0" >> $tmpdir/DEBIAN/preinst
 -
--# Build kernel header package
--(cd $srctree; find . -name Makefile\* -o -name Kconfig\* -o -name \*.pl) > "$objtree/debian/hdrsrcfiles"
--(cd $srctree; find arch/*/include include scripts -type f -o -type l) >> "$objtree/debian/hdrsrcfiles"
+ # Build kernel header package
+ (cd $srctree; find . -name Makefile\* -o -name Kconfig\* -o -name \*.pl) > "$objtree/debian/hdrsrcfiles"
+ (cd $srctree; find arch/*/include include scripts -type f -o -type l) >> "$objtree/debian/hdrsrcfiles"
 -(cd $srctree; find security/*/include -type f) >> "$objtree/debian/hdrsrcfiles"
--(cd $srctree; find arch/$SRCARCH -name module.lds -o -name Kbuild.platforms -o -name Platform) >> "$objtree/debian/hdrsrcfiles"
--(cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -type d) -type f) >> "$objtree/debian/hdrsrcfiles"
+ (cd $srctree; find arch/$SRCARCH -name module.lds -o -name Kbuild.platforms -o -name Platform) >> "$objtree/debian/hdrsrcfiles"
+ (cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -type d) -type f) >> "$objtree/debian/hdrsrcfiles"
 -ldstemp=$(mktemp);cp scripts/module.lds $ldstemp
 -(cd $objtree; make M=scripts clean;)
--if is_enabled CONFIG_STACK_VALIDATION; then
--	(cd $objtree; find tools/objtool -type f -executable) >> "$objtree/debian/hdrobjfiles"
--fi
--(cd $objtree; find arch/$SRCARCH/include Module.symvers include scripts -type f) >> "$objtree/debian/hdrobjfiles"
--if is_enabled CONFIG_GCC_PLUGINS; then
--	(cd $objtree; find scripts/gcc-plugins -name \*.so -o -name gcc-common.h) >> "$objtree/debian/hdrobjfiles"
--fi
--destdir=$kernel_headers_dir/usr/src/linux-headers-$version
--mkdir -p "$destdir"
+ if is_enabled CONFIG_STACK_VALIDATION; then
+ 	(cd $objtree; find tools/objtool -type f -executable) >> "$objtree/debian/hdrobjfiles"
+ fi
+@@ -329,17 +190,21 @@ if is_enabled CONFIG_GCC_PLUGINS; then
+ fi
+ destdir=$kernel_headers_dir/usr/src/linux-headers-$version
+ mkdir -p "$destdir"
 -(cd $destdir; patch -p1 < /tmp/headers-debian-byteshift.patch)
--(cd $srctree; tar -c -f - -T -) < "$objtree/debian/hdrsrcfiles" | (cd $destdir; tar -xf -)
--(cd $objtree; tar -c -f - -T -) < "$objtree/debian/hdrobjfiles" | (cd $destdir; tar -xf -)
--(cd $objtree; cp $KCONFIG_CONFIG $destdir/.config) # copy .config manually to be where it's expected to be
+ (cd $srctree; tar -c -f - -T -) < "$objtree/debian/hdrsrcfiles" | (cd $destdir; tar -xf -)
+ (cd $objtree; tar -c -f - -T -) < "$objtree/debian/hdrobjfiles" | (cd $destdir; tar -xf -)
+ (cd $objtree; cp $KCONFIG_CONFIG $destdir/.config) # copy .config manually to be where it's expected to be
 -mv ${ldstemp} $destdir/scripts/module.lds
--ln -sf "/usr/src/linux-headers-$version" "$kernel_headers_dir/lib/modules/$version/build"
--rm -f "$objtree/debian/hdrsrcfiles" "$objtree/debian/hdrobjfiles"
+ ln -sf "/usr/src/linux-headers-$version" "$kernel_headers_dir/lib/modules/$version/build"
+ rm -f "$objtree/debian/hdrsrcfiles" "$objtree/debian/hdrobjfiles"
  
--if [ "$ARCH" != "um" ]; then
+ if [ "$ARCH" != "um" ]; then
 -	create_package "$kernel_headers_packagename" "$kernel_headers_dir" "headers"
 -	create_package "$dtb_packagename" "$dtb_dir" "dtb"
-+	deploy_libc_headers debian/linux-libc-dev
-+	create_package linux-libc-dev debian/linux-libc-dev
++
++	if [ "$(cat debian/arch)" != "amd64" ]; then # No DTB for amd64 target
++		create_package "$dtb_packagename" "$dtb_dir" "dtb"
++	fi
++
++	create_package "$kernel_headers_packagename" "$kernel_headers_dir"
++	create_package "$libc_headers_packagename" "$libc_headers_dir"
++
  fi
  
  create_package "$packagename" "$tmpdir"
 diff --git a/scripts/package/mkdebian b/scripts/package/mkdebian
-index 7c6197efa1..357dc56bcf 100755
+index 7c6197efa1..5ed7c250f4 100755
 --- a/scripts/package/mkdebian
 +++ b/scripts/package/mkdebian
-@@ -94,12 +94,10 @@ else
+@@ -94,12 +94,11 @@ else
  	packageversion=$version-$revision
  fi
  sourcename=$KDEB_SOURCENAME
@@ -322,13 +335,14 @@ index 7c6197efa1..357dc56bcf 100755
 -dtb_packagename=linux-dtb-$BRANCH$LOCALVERSION
 +packagename=linux-image-$version
 +kernel_headers_packagename=linux-headers-$version
++dtb_packagename=linux-dtb-$version
  dbg_packagename=$packagename-dbg
  debarch=
 -image_name=
  set_debarch
  
  if [ "$ARCH" = "um" ] ; then
-@@ -177,7 +175,7 @@ Section: kernel
+@@ -177,7 +176,7 @@ Section: kernel
  Priority: optional
  Maintainer: $maintainer
  Build-Depends: bc, rsync, kmod, cpio, bison, flex | flex:native $extra_build_depends
@@ -337,7 +351,7 @@ index 7c6197efa1..357dc56bcf 100755
  
  Package: $packagename
  Architecture: $debarch
-@@ -185,14 +183,8 @@ Description: Linux kernel, version $version
+@@ -185,14 +184,8 @@ Description: Linux kernel, version $version
   This package contains the Linux kernel, modules and corresponding other
   files, version: $version.
  
@@ -352,7 +366,7 @@ index 7c6197efa1..357dc56bcf 100755
  Description: Linux kernel headers for $version on $debarch
   This package provides kernel header files for $version on $debarch
   .
-@@ -206,10 +198,6 @@ Description: Linux support headers for userspace development
+@@ -206,10 +199,6 @@ Description: Linux support headers for userspace development
   This package provides userspaces headers from the Linux kernel.  These headers
   are used by the installed headers for GNU glibc and other system libraries.
  Multi-Arch: same
@@ -363,119 +377,21 @@ index 7c6197efa1..357dc56bcf 100755
  
  Package: $dbg_packagename
  Section: debug
-@@ -218,7 +206,6 @@ Description: Linux kernel debugging symbols for $version
+@@ -217,8 +206,13 @@ Architecture: $debarch
+ Description: Linux kernel debugging symbols for $version
   This package will come in handy if you need to debug the kernel. It provides
   all the necessary debug symbols for the kernel and its modules.
++
++Package: $dtb_packagename
++Architecture: $debarch
++Provides: linux-dtb
++Description: Linux DTB, version $version
++ This package contains device blobs from the Linux kernel, version $version
  EOF
 -fi
  
  cat <<EOF > debian/rules
  #!$(command -v $MAKE) -f
-diff --git a/scripts/setlocalversion b/scripts/setlocalversion
-index 842936656b..45609dba7d 100755
---- a/scripts/setlocalversion
-+++ b/scripts/setlocalversion
-@@ -11,14 +11,12 @@
- #
- 
- usage() {
--	echo "Usage: $0 [--save-scmversion] [srctree] [branch] [kmi-generation]" >&2
-+	echo "Usage: $0 [--save-scmversion] [srctree]" >&2
- 	exit 1
- }
- 
- scm_only=false
- srctree=.
--android_release=
--kmi_generation=
- if test "$1" = "--save-scmversion"; then
- 	scm_only=true
- 	shift
-@@ -27,22 +25,6 @@ if test $# -gt 0; then
- 	srctree=$1
- 	shift
- fi
--if test $# -gt 0; then
--	# Extract the Android release version. If there is no match, then return 255
--	# and clear the var $android_release
--	android_release=`echo "$1" | sed -e '/android[0-9]\{2,\}/!{q255}; \
--		s/^\(android[0-9]\{2,\}\)-.*/\1/'`
--	if test $? -ne 0; then
--		android_release=
--	fi
--	shift
--
--	if test $# -gt 0; then
--		kmi_generation=$1
--		[ $(expr $kmi_generation : '^[0-9]\+$') -eq 0 ] && usage
--		shift
--	fi
--fi
- if test $# -gt 0 -o ! -d "$srctree"; then
- 	usage
- fi
-@@ -62,17 +44,12 @@ scm_version()
- 	fi
- 
- 	# Check for git and a git repo.
--	if head=$(git rev-parse --verify HEAD 2>/dev/null); then
--
--		if [ -n "$android_release" ] && [ -n "$kmi_generation" ]; then
--			printf '%s' "-$android_release-$kmi_generation"
--		elif [ -n "$android_release" ]; then
--			printf '%s' "-$android_release"
--		fi
-+	if test -z "$(git rev-parse --show-cdup 2>/dev/null)" &&
-+	   head=$(git rev-parse --verify HEAD 2>/dev/null); then
- 
- 		# If we are at a tagged commit (like "v2.6.30-rc6"), we ignore
- 		# it, because this version is defined in the top level Makefile.
--		if [ -z "$(git describe --exact-match 2>/dev/null)" ]; then
-+		if [ -z "`git describe --exact-match 2>/dev/null`" ]; then
- 
- 			# If only the short version is requested, don't bother
- 			# running further git commands
-@@ -104,7 +81,7 @@ scm_version()
- 
- 		# Is this git on svn?
- 		if git config --get svn-remote.svn.url >/dev/null; then
--			printf -- '-svn%s' "$(git svn find-rev $head)"
-+			printf -- '-svn%s' "`git svn find-rev $head`"
- 		fi
- 
- 		# Check for uncommitted changes.
-@@ -125,15 +102,15 @@ scm_version()
- 	fi
- 
- 	# Check for mercurial and a mercurial repo.
--	if hgid=$(hg id 2>/dev/null); then
-+	if test -d .hg && hgid=`hg id 2>/dev/null`; then
- 		# Do we have an tagged version?  If so, latesttagdistance == 1
--		if [ "$(hg log -r . --template '{latesttagdistance}')" = "1" ]; then
--			id=$(hg log -r . --template '{latesttag}')
-+		if [ "`hg log -r . --template '{latesttagdistance}'`" = "1" ]; then
-+			id=`hg log -r . --template '{latesttag}'`
- 			printf '%s%s' -hg "$id"
- 		else
--			tag=$(printf '%s' "$hgid" | cut -d' ' -f2)
-+			tag=`printf '%s' "$hgid" | cut -d' ' -f2`
- 			if [ -z "$tag" -o "$tag" = tip ]; then
--				id=$(printf '%s' "$hgid" | sed 's/[+ ].*//')
-+				id=`printf '%s' "$hgid" | sed 's/[+ ].*//'`
- 				printf '%s%s' -hg "$id"
- 			fi
- 		fi
-@@ -149,8 +126,8 @@ scm_version()
- 	fi
- 
- 	# Check for svn and a svn repo.
--	if rev=$(LANG= LC_ALL= LC_MESSAGES=C svn info 2>/dev/null | grep '^Last Changed Rev'); then
--		rev=$(echo $rev | awk '{print $NF}')
-+	if rev=`LANG= LC_ALL= LC_MESSAGES=C svn info 2>/dev/null | grep '^Last Changed Rev'`; then
-+		rev=`echo $rev | awk '{print $NF}'`
- 		printf -- '-svn%s' "$rev"
- 
- 		# All done with svn
 -- 
 2.25.1
 

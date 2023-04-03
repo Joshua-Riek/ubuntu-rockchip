@@ -145,14 +145,7 @@ mkimage -A arm64 -O linux -T script -C none -n "Boot Script" -d ${mount_point}/s
 
 # Device tree overlays to load
 echo "overlays=" > ${mount_point}/system-boot/overlays.txt
-
-# Copy device tree blobs
-mkdir -p ${mount_point}/system-boot/overlays
-cp -r linux-orangepi/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dtb ${mount_point}/system-boot
-
-# Copy device tree overlays
-mkdir -p ${mount_point}/system-boot/overlays
-cp -r linux-orangepi/arch/arm64/boot/dts/rockchip/overlay/rk3588*.dtbo ${mount_point}/system-boot/overlays
+mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot
 
 # Write bootloader to disk image
 dd if=u-boot-orangepi/idbloader.img of="${loop}" seek=64 conv=notrunc
