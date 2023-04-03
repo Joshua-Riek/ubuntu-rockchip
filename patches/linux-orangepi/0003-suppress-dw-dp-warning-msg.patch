@@ -1,7 +1,7 @@
 From 9422d5ceec7b0d2832c681beaadce6f99daa1e5c Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Fri, 17 Feb 2023 17:45:14 -0500
-Subject: [PATCH] fix dw dp warning msg
+Subject: [PATCH] drm/rockchip: dw-dp: suppress dw-dp warning msg
 
 ---
  drivers/gpu/drm/rockchip/dw-dp.c | 3 +++
