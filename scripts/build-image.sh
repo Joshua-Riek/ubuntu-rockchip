@@ -3,7 +3,7 @@
 set -eE 
 trap 'echo Error: in $0 on line $LINENO' ERR
 
-function cleanup_loopdev {
+cleanup_loopdev() {
     sync --file-system
     sync
 
@@ -13,6 +13,17 @@ function cleanup_loopdev {
     fi
 }
 trap cleanup_loopdev EXIT
+
+wait_loopdev() {
+    local loop="$1"
+    local seconds="$2"
+
+    until test $((seconds--)) -eq 0 -o -b "${loop}"; do sleep 1; done
+
+    ((++seconds))
+
+    ls -l "${loop}" &> /dev/null
+}
 
 if [ "$(id -u)" -ne 0 ]; then 
     echo "Please run as root"
@@ -73,16 +84,31 @@ set -eE
 
 partprobe "${disk}"
 
-sleep 2
+partition_char="$(if [[ ${disk: -1} == [0-9] ]]; then echo p; fi)"
+
+sleep 1
+
+wait_loopdev "${disk}${partition_char}2" 60 || {
+    echo "Failure to create ${disk}${partition_char}1 in time"
+    exit 1
+}
+
+sleep 1
+
+wait_loopdev "${disk}${partition_char}1" 60 || {
+    echo "Failure to create ${disk}${partition_char}1 in time"
+    exit 1
+}
+
+sleep 1
 
 # Generate random uuid for bootfs
 boot_uuid=$(uuidgen | head -c8)
 
 # Generate random uuid for rootfs
 root_uuid=$(uuidgen)
-    
+
 # Create filesystems on partitions
-partition_char="$(if [[ ${disk: -1} == [0-9] ]]; then echo p; fi)"
 mkfs.vfat -i "${boot_uuid}" -F16 -n system-boot "${disk}${partition_char}1"
 dd if=/dev/zero of="${disk}${partition_char}2" bs=1KB count=10 > /dev/null
 mkfs.ext4 -U "${root_uuid}" -L writable "${disk}${partition_char}2"
