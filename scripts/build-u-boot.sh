@@ -25,6 +25,7 @@ fi
 cd u-boot-orangepi
 
 # Set u-boot config with sata support
+make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu- distclean
 make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu- orangepi_5_sata_defconfig
 
 # Set custom u-boot version
@@ -49,8 +50,10 @@ parted -s rkspi_loader_sata.img unit s mkpart reserved2 8192 16383
 parted -s rkspi_loader_sata.img unit s mkpart uboot 16384 32734
 dd if=idbloader.img of=rkspi_loader_sata.img seek=64 conv=notrunc
 dd if=u-boot.itb of=rkspi_loader_sata.img seek=16384 conv=notrunc
+cp rkspi_loader_sata.img ../rkspi_loader_sata.img
 
 # Set u-boot config
+make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu- distclean
 make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu- orangepi_5_defconfig
 
 # Set custom u-boot version
@@ -75,3 +78,6 @@ parted -s rkspi_loader.img unit s mkpart reserved2 8192 16383
 parted -s rkspi_loader.img unit s mkpart uboot 16384 32734
 dd if=idbloader.img of=rkspi_loader.img seek=64 conv=notrunc
 dd if=u-boot.itb of=rkspi_loader.img seek=16384 conv=notrunc
+cp rkspi_loader.img ../rkspi_loader.img
+cp idbloader.img ../idbloader.img
+cp u-boot.itb ../u-boot.itb
