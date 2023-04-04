@@ -174,13 +174,13 @@ echo "overlays=" > ${mount_point}/system-boot/overlays.txt
 mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot
 
 # Write bootloader to disk image
-dd if=u-boot-orangepi/idbloader.img of="${loop}" seek=64 conv=notrunc
-dd if=u-boot-orangepi/u-boot.itb of="${loop}" seek=16384 conv=notrunc
+dd if=idbloader.img of="${loop}" seek=64 conv=notrunc
+dd if=u-boot.itb of="${loop}" seek=16384 conv=notrunc
 
 # Copy spi bootloader to disk image
 mkdir -p ${mount_point}/writable/usr/share/orangepi
-cp u-boot-orangepi/rkspi_loader.img ${mount_point}/writable/usr/share/orangepi/rkspi_loader.img
-cp u-boot-orangepi/rkspi_loader_sata.img ${mount_point}/writable/usr/share/orangepi/rkspi_loader_sata.img
+cp rkspi_loader.img ${mount_point}/writable/usr/share/orangepi/rkspi_loader.img
+cp rkspi_loader_sata.img ${mount_point}/writable/usr/share/orangepi/rkspi_loader_sata.img
 
 # Cloud init config for server image
 [ -z "${img##*server*}" ] && cp ../overlay/boot/firmware/{meta-data,user-data,network-config} ${mount_point}/system-boot
