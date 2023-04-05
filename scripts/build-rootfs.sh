@@ -188,6 +188,9 @@ cp ${overlay_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg ${chroot_dir}/etc/clou
 # Default adduser config
 cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
 
+# Audio naming rules
+cp ${overlay_dir}/etc/udev/rules.d/90-audio-naming.rules ${chroot_dir}/etc/udev/rules.d/90-audio-naming.rules
+
 # Install and hold wiringpi package
 cp ../debs/wiringpi/wiringpi_2.47.deb ${chroot_dir}/tmp
 chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/wiringpi_2.47.deb && apt-mark hold wiringpi && rm -rf /tmp/*.deb"
