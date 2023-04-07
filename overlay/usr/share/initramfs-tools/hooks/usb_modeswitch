@@ -1,0 +1,23 @@
+#!/bin/sh
+
+PREREQ=""
+prereqs()
+{
+    echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+    prereqs
+    exit 0
+    ;;
+esac
+
+. /usr/share/initramfs-tools/scripts/functions
+. /usr/share/initramfs-tools/hook-functions
+
+copy_exec /usr/sbin/usb_modeswitch /usr/sbin/usb_modeswitch 
+copy_exec /etc/udev/rules.d/40-usb_modeswitch.rules /etc/udev/rules.d/40-usb_modeswitch.rules
+copy_exec /lib/udev/rules.d/40-usb_modeswitch.rules /lib/udev/rules.d/40-usb_modeswitch.rules
+
+exit 0
