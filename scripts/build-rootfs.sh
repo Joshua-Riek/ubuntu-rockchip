@@ -123,7 +123,7 @@ bash-completion man-db manpages nano gnupg initramfs-tools linux-firmware \
 ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
-pigz wget curl lm-sensors bluez gdisk
+pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data
 
 # Remove cryptsetup and needrestart
 apt-get -y remove cryptsetup needrestart
@@ -195,6 +195,19 @@ cp ${overlay_dir}/etc/udev/rules.d/90-audio-naming.rules ${chroot_dir}/etc/udev/
 cp ../debs/wiringpi/wiringpi_2.47.deb ${chroot_dir}/tmp
 chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/wiringpi_2.47.deb && apt-mark hold wiringpi && rm -rf /tmp/*.deb"
 echo "BOARD=orangepi5" > ${chroot_dir}/etc/orangepi-release
+
+# Realtek 8811CU/8821CU usb modeswitch support
+cp ${chroot_dir}/lib/udev/rules.d/40-usb_modeswitch.rules ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
+sed '/LABEL="modeswitch_rules_end"/d' -i ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
+cat >> ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules <<EOF
+# Realtek 8811CU/8821CU Wifi AC USB
+ATTR{idVendor}=="0bda", ATTR{idProduct}=="1a2b", RUN+="/usr/sbin/usb_modeswitch -K -v 0bda -p 1a2b"
+
+LABEL="modeswitch_rules_end"
+EOF
+
+# Add usb modeswitch to initrd this fixes a boot hang with 8811CU/8821CU
+cp ${overlay_dir}/usr/share/initramfs-tools/hooks/usb_modeswitch ${chroot_dir}/usr/share/initramfs-tools/hooks/usb_modeswitch
 
 # Expand root filesystem on first boot
 mkdir -p ${chroot_dir}/usr/lib/scripts
