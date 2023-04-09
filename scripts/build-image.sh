@@ -124,6 +124,7 @@ tar -xpJf "${rootfs}" -C ${mount_point}/writable
 
 # Set boot args for the splash screen
 [ -z "${img##*desktop*}" ] && bootargs="quiet splash plymouth.ignore-serial-consoles" || bootargs=""
+[ -z "${img##*orangepi5b*}" ] && device_tree="orangepi-5b" || device_tree="orangepi-5"
 
 # Create fstab entries
 mkdir -p ${mount_point}/writable/boot/firmware
@@ -143,7 +144,7 @@ cat > ${mount_point}/system-boot/boot.cmd << EOF
 
 env set bootargs "console=ttyS2,1500000 console=tty1 root=LABEL=writable rootfstype=ext4 rootwait rw cma=64M cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0 ${bootargs}"
 
-load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /rk3588s-orangepi-5.dtb
+load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /rk3588s-${device_tree}.dtb
 fdt addr \${fdt_addr_r} && fdt resize 0x10000
 
 if test -e \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /overlays.txt; then
@@ -158,7 +159,7 @@ for overlay_file in \${overlays}; do
 done
 if test -n \${overlay_error}; then
     echo "Error applying device tree overlays, restoring original device tree"
-    load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /rk3588s-orangepi-5.dtb
+    load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /rk3588s-${device_tree}.dtb
 fi
 
 setexpr distro_rootpart \${distro_bootpart} + 1
