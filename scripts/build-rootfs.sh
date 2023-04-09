@@ -265,8 +265,8 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-22.04.2-preinstalled-server-arm64-orange-pi5.rootfs.tar.xz . && cd ..
-../scripts/build-image.sh ubuntu-22.04.2-preinstalled-server-arm64-orange-pi5.rootfs.tar.xz
+cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf "../ubuntu-22.04.2-preinstalled-server-arm64-${BOARD}.rootfs.tar.xz" . && cd ..
+../scripts/build-image.sh "ubuntu-22.04.2-preinstalled-server-arm64-${BOARD}.rootfs.tar.xz"
 
 # Mount the temporary API filesystems
 mkdir -p ${chroot_dir}/{proc,sys,run,dev,dev/pts}
@@ -464,5 +464,5 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-22.04.2-preinstalled-desktop-arm64-orange-pi5.rootfs.tar.xz . && cd ..
-../scripts/build-image.sh ubuntu-22.04.2-preinstalled-desktop-arm64-orange-pi5.rootfs.tar.xz
+cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf "../ubuntu-22.04.2-preinstalled-desktop-arm64-${BOARD}.rootfs.tar.xz" . && cd ..
+../scripts/build-image.sh "ubuntu-22.04.2-preinstalled-desktop-arm64-${BOARD}.rootfs.tar.xz"
