@@ -377,6 +377,9 @@ rockchip-mpp-demos librga2 librga-dev libegl-mesa0 libegl1-mesa-dev libgbm-dev \
 libgl1-mesa-dev libgles2-mesa-dev libglx-mesa0 mesa-common-dev mesa-vulkan-drivers \
 mesa-utils libwidevinecdm
 
+# Hold package to prevent audo breaking
+apt-mark hold alsa-ucm-conf
+
 # Remove cloud-init and landscape-common
 apt-get -y purge cloud-init landscape-common
 
