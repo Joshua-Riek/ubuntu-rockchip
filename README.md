@@ -79,7 +79,7 @@ To checkout the source and build:
 ```
 git clone https://github.com/Joshua-Riek/ubuntu-orange-pi5.git
 cd ubuntu-orange-pi5
-sudo ./build.sh
+sudo ./build.sh --board=orangepi5
 ```
 
 ## Known Limitations
