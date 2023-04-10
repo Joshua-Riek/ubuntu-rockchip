@@ -33,11 +33,11 @@ for i in "$@"; do
             exit 0
             ;;
         -b=*|--board=*)
-            BOARD="${i#*=}"
+            export BOARD="${i#*=}"
             shift
             ;;
         -b|--board)
-            BOARD="${2}"
+            export BOARD="${2}"
             shift
             ;;
         -d|--docker)

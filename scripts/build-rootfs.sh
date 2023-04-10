@@ -11,6 +11,11 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
+if [[ -z ${BOARD} ]]; then
+    echo "Error: BOARD is not set"
+    exit 1
+fi
+
 if [ ! -d linux-orangepi ]; then
     echo "Error: could not find the kernel source code, please run build-kernel.sh"
     exit 1
