@@ -191,6 +191,29 @@ cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
 # Audio naming rules
 cp ${overlay_dir}/etc/udev/rules.d/90-audio-naming.rules ${chroot_dir}/etc/udev/rules.d/90-audio-naming.rules
 
+# Package orangepi-firmware
+mkdir -p orangepi-firmware_20230217.git9e0d07cc_all/lib/firmware
+cp -af --reflink=auto firmware/* orangepi-firmware_20230217.git9e0d07cc_all/lib/firmware/
+rm -rf orangepi-firmware_20230217.git9e0d07cc_all/lib/firmware/{amdgpu,amd-ucode,radeon,nvidia,matrox,.git}
+mkdir -p orangepi-firmware_20230217.git9e0d07cc_all/DEBIAN
+cat <<-END > orangepi-firmware_20230217.git9e0d07cc_all/DEBIAN/control
+Package: orangepi-firmware
+Version: 20230217.git034127ab
+Architecture: all    
+Maintainer: Joshua Riek <jjriek@verizon.net>
+Installed-Size: 1
+Replaces: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, orangepi-firmware
+Section: kernel
+Priority: optional
+Description: Linux firmware
+END
+fakeroot dpkg-deb -b orangepi-firmware_20230217.git9e0d07cc_all
+rm -rf orangepi-firmware_20230217.git9e0d07cc_all
+
+# Install and hold orangepi-firmware package
+cp orangepi-firmware_20230217.git9e0d07cc_all.deb ${chroot_dir}/tmp
+chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/orangepi-firmware_20230217.git9e0d07cc_all.deb && apt-mark hold orangepi-firmware && rm -rf /tmp/*.deb"
+
 # Install and hold wiringpi package
 cp ../debs/wiringpi/wiringpi_2.47.deb ${chroot_dir}/tmp
 chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/wiringpi_2.47.deb && apt-mark hold wiringpi && rm -rf /tmp/*.deb"
