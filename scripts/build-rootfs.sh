@@ -222,7 +222,7 @@ chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/orangepi-firmware_20230217.git9e
 # Install and hold wiringpi package
 cp ../debs/wiringpi/wiringpi_2.47.deb ${chroot_dir}/tmp
 chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/wiringpi_2.47.deb && apt-mark hold wiringpi && rm -rf /tmp/*.deb"
-echo "BOARD=orangepi5" > ${chroot_dir}/etc/orangepi-release
+echo "BOARD=${BOARD}" > ${chroot_dir}/etc/orangepi-release
 
 # Realtek 8811CU/8821CU usb modeswitch support
 cp ${chroot_dir}/lib/udev/rules.d/40-usb_modeswitch.rules ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
