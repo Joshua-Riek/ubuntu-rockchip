@@ -24,7 +24,7 @@ fi
 # Download the orange pi firmware
 if [ ! -d firmware ]; then
     git clone --progress -b master https://github.com/orangepi-xunlong/firmware.git
-    git -C firmware checkout 9e0d07ccfa91868a83515306539a567477ad8ffe
+    git -C firmware checkout 034127aba373d8ae6afd8a4af0ba5d59f99fc011
 fi
 
 # These env vars can cause issues with chroot
