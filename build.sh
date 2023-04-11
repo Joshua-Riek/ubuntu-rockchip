@@ -41,7 +41,7 @@ for i in "$@"; do
             shift
             ;;
         -d|--docker)
-            DOCKER="docker run --privileged --network=host --rm -it -v \"$(pwd)\":/opt -v /dev:/dev ubuntu-orange-pi5-build /bin/bash"
+            DOCKER="docker run --privileged --network=host --rm -it -v \"$(pwd)\":/opt -v /dev:/dev -e BOARD ubuntu-orange-pi5-build /bin/bash"
             docker build -t ubuntu-orange-pi5-build docker
             shift
             ;;
@@ -57,7 +57,7 @@ for i in "$@"; do
             set -x
             shift
             ;;
-        -*|--*)
+        -*)
             echo "Error: unknown argument \"$i\""
             exit 1
             ;;
