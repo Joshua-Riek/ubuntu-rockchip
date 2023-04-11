@@ -20,7 +20,7 @@ fi
 # Download and build u-boot
 if [ ! -d u-boot-orangepi ]; then
     git clone --progress -b v2017.09-rk3588 https://github.com/orangepi-xunlong/u-boot-orangepi.git
-    git -C u-boot-orangepi checkout d4ad93d9890f9f2904175645cdc3e7efe993da2f
+    git -C u-boot-orangepi checkout 65cc471745d1eaf583bd435545d4451f7bbb1b5e
 fi
 cd u-boot-orangepi
 
