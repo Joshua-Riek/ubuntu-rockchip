@@ -153,13 +153,6 @@ rm -rf /tmp/*
 # Generate kernel module dependencies
 depmod -a ${kernel_version}
 update-initramfs -c -k ${kernel_version}
-
-# Create kernel and component symlinks
-cd /boot
-ln -s initrd.img-${kernel_version} initrd.img
-ln -s vmlinuz-${kernel_version} vmlinuz
-ln -s System.map-${kernel_version} System.map
-ln -s config-${kernel_version} config
 EOF
 
 # Swapfile
