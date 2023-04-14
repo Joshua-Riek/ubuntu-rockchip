@@ -127,10 +127,11 @@ tar -xpJf "${rootfs}" -C ${mount_point}/writable
 [ -z "${img##*orangepi5b*}" ] && device_tree="orangepi-5b" || device_tree="orangepi-5"
 
 # Create fstab entries
+boot_uuid="${boot_uuid:0:4}-${boot_uuid:4:4}"
 cat > ${mount_point}/writable/etc/fstab << EOF
 # <file system>     <mount point>  <type>  <options>   <dump>  <fsck>
-LABEL=system-boot   /boot          vfat    defaults    0       2
-LABEL=writable      /              ext4    defaults    0       1
+UUID=${boot_uuid^^} /boot          vfat    defaults    0       2
+UUID=${root_uuid,,} /              ext4    defaults    0       1
 /swapfile           none           swap    sw          0       0
 EOF
 
@@ -141,7 +142,7 @@ cat > ${mount_point}/system-boot/boot.cmd << EOF
 # Recompile with:
 # mkimage -A arm64 -O linux -T script -C none -n "Boot Script" -d boot.cmd boot.scr
 
-env set bootargs "console=ttyS2,1500000 console=tty1 root=LABEL=writable rootfstype=ext4 rootwait rw cma=64M cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0 ${bootargs}"
+env set bootargs "console=ttyS2,1500000 console=tty1 root=UUID=${root_uuid} rootfstype=ext4 rootwait rw cma=64M cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0 ${bootargs}"
 
 load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /dtb-5.10.110-orangepi/rk3588s-${device_tree}.dtb
 fdt addr \${fdt_addr_r} && fdt resize 0x10000
