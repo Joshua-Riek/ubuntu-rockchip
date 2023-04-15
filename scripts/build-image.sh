@@ -196,6 +196,6 @@ umount "${disk}${partition_char}2"
 losetup -d "${loop}"
 
 echo -e "\nCompressing $(basename "${img}.xz")\n"
-xz -9 --force --keep --quiet --threads=0 "${img}"
+xz -3 --force --keep --quiet --threads=0 "${img}"
 rm -f "${img}"
 cd ../images && sha256sum "$(basename "${img}.xz")" > "$(basename "${img}.xz.sha256")"
