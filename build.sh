@@ -53,6 +53,10 @@ for i in "$@"; do
             UBOOT_ONLY=Y
             shift
             ;;
+        -l|--launchpad)
+            export LAUNCHPAD=Y
+            shift
+            ;;
         -v|--verbose)
             set -x
             shift
@@ -86,11 +90,13 @@ if [[ ${UBOOT_ONLY}  == "Y" ]]; then
     exit 0
 fi
 
+# Build the Linux kernel and Device Tree Blobs
+if [[ ${LAUNCHPAD} != "Y" ]]; then
+    eval "${DOCKER}" ./scripts/build-kernel.sh
+fi
+
 # Build the U-Boot bootloader
 eval "${DOCKER}" ./scripts/build-u-boot.sh
-
-# Build the Linux kernel and Device Tree Blobs
-eval "${DOCKER}" ./scripts/build-kernel.sh
 
 # Build the root file system
 eval "${DOCKER}" ./scripts/build-rootfs.sh
