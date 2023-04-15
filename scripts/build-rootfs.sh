@@ -26,9 +26,9 @@ if [[ ${LAUNCHPAD} != "Y" ]]; then
 fi
 
 # Download the orange pi firmware
-if [ ! -d firmware ]; then
-    git clone --progress -b master https://github.com/orangepi-xunlong/firmware.git
-    git -C firmware checkout 034127aba373d8ae6afd8a4af0ba5d59f99fc011
+if [ ! -d orangepi-firmware ]; then
+    git clone --progress -b master https://github.com/Joshua-Riek/orangepi-firmware.git
+    git -C orangepi-firmware checkout 6abd78dd842fbd01e874a6be3bccdbdf35b366ea
 fi
 
 # These env vars can cause issues with chroot
@@ -122,12 +122,12 @@ apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
 
 # Download and install generic packages
 apt-get -y install dmidecode mtd-tools i2c-tools u-boot-tools cloud-init \
-bash-completion man-db manpages nano gnupg initramfs-tools linux-firmware \
+bash-completion man-db manpages nano gnupg initramfs-tools usb-modeswitch-data \
 ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
-pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
-gcc libc6-dev bison libssl-dev flex
+pigz wget curl lm-sensors bluez gdisk usb-modeswitch make gcc libc6-dev bison \
+libssl-dev flex
 
 # Remove cryptsetup and needrestart
 apt-get -y remove cryptsetup needrestart
@@ -147,18 +147,23 @@ mkswap /tmp/swapfile
 mv /tmp/swapfile /swapfile
 EOF
 
-# Install the kernel, headers, and device tree blobs
+# Install the kernel and firmware
 if [[ ${LAUNCHPAD}  == "Y" ]]; then
     cp ${overlay_dir}/etc/apt/preferences.d/orangepi5-ppa ${chroot_dir}/etc/apt/preferences.d/orangepi5-ppa
     chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/orangepi5"
     chroot ${chroot_dir} /bin/bash -c "apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade"
-    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588 flash-kernel"
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588 flash-kernel orangepi-firmware"
     chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.110-orangepi-rk3588"
     chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s initrd.img-5.10.110-orangepi-rk3588 initrd.img"
     chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s System.map-5.10.110-orangepi-rk3588 System.map"
     chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s vmlinuz-5.10.110-orangepi-rk3588 vmlinuz"
     chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s config-5.10.110-orangepi-rk3588 config"
 else
+    cd orangepi-firmware && ./debian/rules clean && ./debian/rules binary && cd ..
+    cp orangepi-firmware_20230330.git034127ab-2_all.deb ${chroot_dir}/tmp
+    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/orangepi-firmware_20230330.git034127ab-2_all.deb && rm -rf /tmp/*"
+    chroot ${chroot_dir} /bin/bash -c "apt-mark hold orangepi-firmware"
+
     cp linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb ${chroot_dir}/tmp
     chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/orangepi5"
     chroot ${chroot_dir} /bin/bash -c "apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade"
@@ -195,29 +200,6 @@ cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
 
 # Audio naming rules
 cp ${overlay_dir}/etc/udev/rules.d/90-audio-naming.rules ${chroot_dir}/etc/udev/rules.d/90-audio-naming.rules
-
-# Package orangepi-firmware
-mkdir -p orangepi-firmware_20230217.git9e0d07cc_all/lib/firmware
-cp -af --reflink=auto firmware/* orangepi-firmware_20230217.git9e0d07cc_all/lib/firmware/
-rm -rf orangepi-firmware_20230217.git9e0d07cc_all/lib/firmware/{amdgpu,amd-ucode,radeon,nvidia,matrox,.git}
-mkdir -p orangepi-firmware_20230217.git9e0d07cc_all/DEBIAN
-cat <<-END > orangepi-firmware_20230217.git9e0d07cc_all/DEBIAN/control
-Package: orangepi-firmware
-Version: 20230217.git034127ab
-Architecture: all    
-Maintainer: Joshua Riek <jjriek@verizon.net>
-Installed-Size: 1
-Replaces: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, orangepi-firmware
-Section: kernel
-Priority: optional
-Description: Linux firmware
-END
-fakeroot dpkg-deb -b orangepi-firmware_20230217.git9e0d07cc_all
-rm -rf orangepi-firmware_20230217.git9e0d07cc_all
-
-# Install and hold orangepi-firmware package
-cp orangepi-firmware_20230217.git9e0d07cc_all.deb ${chroot_dir}/tmp
-chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/orangepi-firmware_20230217.git9e0d07cc_all.deb && apt-mark hold orangepi-firmware && rm -rf /tmp/*.deb"
 
 # Install and hold wiringpi package
 cp ../debs/wiringpi/wiringpi_2.47.deb ${chroot_dir}/tmp
@@ -278,9 +260,6 @@ cp ${overlay_dir}/etc/initramfs-tools/conf.d/compression.conf ${chroot_dir}/etc/
 # Remove release upgrade motd
 rm -f ${chroot_dir}/var/lib/ubuntu-release-upgrader/release-upgrade-available
 cp ${overlay_dir}/etc/update-manager/release-upgrades ${chroot_dir}/etc/update-manager/release-upgrades
-
-# Orange pi firmware
-cp -r firmware ${chroot_dir}/usr/lib
 
 # Fix Intel AX210 not working after linux-firmware update
 [ -e ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.pnvm ] && mv ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.{pnvm,bak}
