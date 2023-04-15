@@ -14,8 +14,7 @@ mkdir -p build && cd build
 # Download and patch the orange pi linux kernel source
 if [ ! -d linux-orangepi ]; then
     git clone --progress -b orange-pi-5.10-rk3588 https://github.com/Joshua-Riek/linux-orangepi.git
-    git -C linux-orangepi fetch --all --tags
-    git -C linux-orangepi checkout 5.10.110-7
+
 fi
 cd linux-orangepi
 

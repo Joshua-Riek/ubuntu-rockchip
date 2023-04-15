@@ -16,9 +16,13 @@ if [[ -z ${BOARD} ]]; then
     exit 1
 fi
 
-if [ ! -d linux-orangepi ]; then
-    echo "Error: could not find the kernel source code, please run build-kernel.sh"
-    exit 1
+if [[ ${LAUNCHPAD} != "Y" ]]; then
+    for file in linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb; do
+        if [ ! -e "$file" ]; then
+            echo "Error: missing kernel debs, please run build-kernel.sh"
+            exit 1
+        fi
+    done
 fi
 
 # Download the orange pi firmware
@@ -104,12 +108,6 @@ mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-# Copy the the kernel, modules, and headers to the rootfs
-if ! cp linux-{headers,image,dtb}-*.deb ${chroot_dir}/tmp; then
-    echo "Error: could not find the kernel deb packages, please run build-kernel.sh"
-    exit 1
-fi
-
 # Download and update packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
 set -eE 
@@ -138,23 +136,6 @@ apt-get -y remove cryptsetup needrestart
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
-# Grab the kernel version
-kernel_version="$(sed -e 's/.*"\(.*\)".*/\1/' linux-orangepi/include/generated/utsrelease.h)"
-
-# Install kernel, modules, and headers
-cat << EOF | chroot ${chroot_dir} /bin/bash
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
-
-# Install the kernel, modules, and headers
-dpkg -i /tmp/linux-{headers,image,dtb}-*.deb
-rm -rf /tmp/*
-
-# Generate kernel module dependencies
-depmod -a ${kernel_version}
-update-initramfs -c -k ${kernel_version}
-EOF
-
 # Swapfile
 cat << EOF | chroot ${chroot_dir} /bin/bash
 set -eE 
@@ -165,6 +146,31 @@ chmod 600 /tmp/swapfile
 mkswap /tmp/swapfile
 mv /tmp/swapfile /swapfile
 EOF
+
+# Install the kernel, headers, and device tree blobs
+if [[ ${LAUNCHPAD}  == "Y" ]]; then
+    cp ${overlay_dir}/etc/apt/preferences.d/orangepi5-ppa ${chroot_dir}/etc/apt/preferences.d/orangepi5-ppa
+    chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/orangepi5"
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade"
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588 flash-kernel"
+    chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.110-orangepi-rk3588"
+    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s initrd.img-5.10.110-orangepi-rk3588 initrd.img"
+    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s System.map-5.10.110-orangepi-rk3588 System.map"
+    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s vmlinuz-5.10.110-orangepi-rk3588 vmlinuz"
+    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s config-5.10.110-orangepi-rk3588 config"
+else
+    cp linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb ${chroot_dir}/tmp
+    chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/orangepi5"
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade"
+    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb && rm -rf /tmp/*"
+    chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.110-orangepi-rk3588"
+    chroot ${chroot_dir} /bin/bash -c "apt-mark hold linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588"
+    chroot ${chroot_dir} /bin/bash -c "apt-get install -y flash-kernel"
+    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s initrd.img-5.10.110-orangepi-rk3588 initrd.img"
+    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s System.map-5.10.110-orangepi-rk3588 System.map"
+    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s vmlinuz-5.10.110-orangepi-rk3588 vmlinuz"
+    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s config-5.10.110-orangepi-rk3588 config"
+fi
 
 # DNS
 cp ${overlay_dir}/etc/resolv.conf ${chroot_dir}/etc/resolv.conf

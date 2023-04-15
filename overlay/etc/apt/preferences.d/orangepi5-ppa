@@ -1,0 +1,7 @@
+Package: *
+Pin: release o=LP-PPA-jjriek-orangepi5
+Pin-Priority: 1001
+
+Package: linux-libc-dev
+Pin: release o=LP-PPA-jjriek-orangepi5
+Pin-Priority: 1

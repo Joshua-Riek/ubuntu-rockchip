@@ -128,9 +128,10 @@ tar -xpJf "${rootfs}" -C ${mount_point}/writable
 
 # Create fstab entries
 boot_uuid="${boot_uuid:0:4}-${boot_uuid:4:4}"
+mkdir -p ${mount_point}/writable/boot/firmware
 cat > ${mount_point}/writable/etc/fstab << EOF
 # <file system>     <mount point>  <type>  <options>   <dump>  <fsck>
-UUID=${boot_uuid^^} /boot          vfat    defaults    0       2
+UUID=${boot_uuid^^} /boot/firmware vfat    defaults    0       2
 UUID=${root_uuid,,} /              ext4    defaults    0       1
 /swapfile           none           swap    sw          0       0
 EOF
@@ -144,7 +145,7 @@ cat > ${mount_point}/system-boot/boot.cmd << EOF
 
 env set bootargs "console=ttyS2,1500000 console=tty1 root=UUID=${root_uuid} rootfstype=ext4 rootwait rw cma=64M cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0 ${bootargs}"
 
-load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /dtb-5.10.110-orangepi/rk3588s-${device_tree}.dtb
+load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /dtb-5.10.110-orangepi-rk3588/rk3588s-${device_tree}.dtb
 fdt addr \${fdt_addr_r} && fdt resize 0x10000
 
 if test -e \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /overlays.txt; then
@@ -152,26 +153,30 @@ if test -e \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /ove
     env import -t \${fdtoverlay_addr_r} \${filesize}
 fi
 for overlay_file in \${overlays}; do
-    if load \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /dtb-5.10.110-orangepi/overlay/rk3588-\${overlay_file}.dtbo; then
-        echo "Applying device tree overlay: /dtb-5.10.110-orangepi/overlay/rk3588-\${overlay_file}.dtbo"
+    if load \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /dtb-5.10.110-orangepi-rk3588/overlay/rk3588-\${overlay_file}.dtbo; then
+        echo "Applying device tree overlay: /dtb-5.10.110-orangepi-rk3588/overlay/rk3588-\${overlay_file}.dtbo"
         fdt apply \${fdtoverlay_addr_r} || setenv overlay_error "true"
     fi
 done
 if test -n \${overlay_error}; then
     echo "Error applying device tree overlays, restoring original device tree"
-    load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /dtb-5.10.110-orangepi/rk3588s-${device_tree}.dtb
+    load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /dtb-5.10.110-orangepi-rk3588/rk3588s-${device_tree}.dtb
 fi
 
-load \${devtype} \${devnum}:\${distro_bootpart} \${kernel_addr_r} /vmlinuz-5.10.110-orangepi
-load \${devtype} \${devnum}:\${distro_bootpart} \${ramdisk_addr_r} /initrd.img-5.10.110-orangepi
+load \${devtype} \${devnum}:\${distro_bootpart} \${kernel_addr_r} /vmlinuz
+load \${devtype} \${devnum}:\${distro_bootpart} \${ramdisk_addr_r} /initrd.img
 
 booti \${kernel_addr_r} \${ramdisk_addr_r}:\${filesize} \${fdt_addr_r}
 EOF
 mkimage -A arm64 -O linux -T script -C none -n "Boot Script" -d ${mount_point}/system-boot/boot.cmd ${mount_point}/system-boot/boot.scr
 
+# Copy kernel and initrd to boot partition
+cp ${mount_point}/writable/boot/initrd.img-5.10.110-orangepi-rk3588 ${mount_point}/system-boot/initrd.img
+cp ${mount_point}/writable/boot/vmlinuz-5.10.110-orangepi-rk3588 ${mount_point}/system-boot/vmlinuz
+
 # Device tree overlays to load
 echo "overlays=" > ${mount_point}/system-boot/overlays.txt
-mv ${mount_point}/writable/boot/* ${mount_point}/system-boot
+mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot
 
 # Write bootloader to disk image
 dd if=idbloader.img of="${loop}" seek=64 conv=notrunc
