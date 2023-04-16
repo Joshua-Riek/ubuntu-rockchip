@@ -90,15 +90,12 @@ if [[ ${UBOOT_ONLY}  == "Y" ]]; then
     exit 0
 fi
 
-# Build the Linux kernel and Device Tree Blobs
 if [[ ${LAUNCHPAD} != "Y" ]]; then
     eval "${DOCKER}" ./scripts/build-kernel.sh
 fi
 
-# Build the U-Boot bootloader
 eval "${DOCKER}" ./scripts/build-u-boot.sh
 
-# Build the root file system
 eval "${DOCKER}" ./scripts/build-rootfs.sh
 
 exit 0
