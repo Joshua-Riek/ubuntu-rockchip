@@ -25,10 +25,12 @@ if [[ ${LAUNCHPAD} != "Y" ]]; then
     done
 fi
 
-# Download the orange pi firmware
-if [ ! -d orangepi-firmware ]; then
-    git clone --progress -b master https://github.com/Joshua-Riek/orangepi-firmware.git
-    git -C orangepi-firmware checkout 6abd78dd842fbd01e874a6be3bccdbdf35b366ea
+if [[ ${LAUNCHPAD} != "Y" ]]; then
+    if [ ! -d orangepi-firmware ]; then
+        git clone --progress -b master https://github.com/Joshua-Riek/orangepi-firmware.git
+        git -C orangepi-firmware checkout 6abd78dd842fbd01e874a6be3bccdbdf35b366ea
+        cd orangepi-firmware && ./debian/rules clean && ./debian/rules binary && cd ..
+    fi
 fi
 
 # These env vars can cause issues with chroot
@@ -108,6 +110,9 @@ mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
+# Package priority for orangepi5 ppa
+cp ${overlay_dir}/etc/apt/preferences.d/orangepi5-ppa ${chroot_dir}/etc/apt/preferences.d/orangepi5-ppa
+
 # Download and update packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
 set -eE 
@@ -116,6 +121,10 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 # Update localisation files
 locale-gen en_US.UTF-8
 update-locale LANG="en_US.UTF-8"
+
+# Add the orangepi5 ppa
+apt-get -y update && apt-get -y install software-properties-common
+add-apt-repository -y ppa:jjriek/orangepi5
 
 # Download and update installed packages
 apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
@@ -127,7 +136,7 @@ ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
 pigz wget curl lm-sensors bluez gdisk usb-modeswitch make gcc libc6-dev bison \
-libssl-dev flex
+libssl-dev flex wiringpi-opi flash-kernel
 
 # Remove cryptsetup and needrestart
 apt-get -y remove cryptsetup needrestart
@@ -147,35 +156,33 @@ mkswap /tmp/swapfile
 mv /tmp/swapfile /swapfile
 EOF
 
-# Install the kernel and firmware
+# Install the kernel and orangepi firmware
 if [[ ${LAUNCHPAD}  == "Y" ]]; then
-    cp ${overlay_dir}/etc/apt/preferences.d/orangepi5-ppa ${chroot_dir}/etc/apt/preferences.d/orangepi5-ppa
-    chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/orangepi5"
-    chroot ${chroot_dir} /bin/bash -c "apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade"
-    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588 flash-kernel orangepi-firmware"
-    chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.110-orangepi-rk3588"
-    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s initrd.img-5.10.110-orangepi-rk3588 initrd.img"
-    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s System.map-5.10.110-orangepi-rk3588 System.map"
-    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s vmlinuz-5.10.110-orangepi-rk3588 vmlinuz"
-    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s config-5.10.110-orangepi-rk3588 config"
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588 orangepi-firmware"
 else
-    cd orangepi-firmware && ./debian/rules clean && ./debian/rules binary && cd ..
-    cp orangepi-firmware_20230330.git034127ab-2_all.deb ${chroot_dir}/tmp
-    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/orangepi-firmware_20230330.git034127ab-2_all.deb && rm -rf /tmp/*"
+    cp orangepi-firmware_*.deb ${chroot_dir}/tmp
+    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/orangepi-firmware_*.deb"
     chroot ${chroot_dir} /bin/bash -c "apt-mark hold orangepi-firmware"
-
     cp linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb ${chroot_dir}/tmp
-    chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/orangepi5"
-    chroot ${chroot_dir} /bin/bash -c "apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade"
     chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb && rm -rf /tmp/*"
-    chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.110-orangepi-rk3588"
     chroot ${chroot_dir} /bin/bash -c "apt-mark hold linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588"
-    chroot ${chroot_dir} /bin/bash -c "apt-get install -y flash-kernel"
-    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s initrd.img-5.10.110-orangepi-rk3588 initrd.img"
-    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s System.map-5.10.110-orangepi-rk3588 System.map"
-    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s vmlinuz-5.10.110-orangepi-rk3588 vmlinuz"
-    chroot ${chroot_dir} /bin/bash -c "cd /boot && ln -s config-5.10.110-orangepi-rk3588 config"
 fi
+
+# Finish kernel install
+cat << EOF | chroot ${chroot_dir} /bin/bash
+set -eE 
+trap 'echo Error: in $0 on line $LINENO' ERR
+
+# Generate kernel module dependencies
+depmod -a 5.10.110-orangepi-rk3588
+
+# Create kernel and component symlinks
+cd /boot 
+ln -s initrd.img-5.10.110-orangepi-rk3588 initrd.img
+ln -s System.map-5.10.110-orangepi-rk3588 System.map
+ln -s vmlinuz-5.10.110-orangepi-rk3588 vmlinuz
+ln -s config-5.10.110-orangepi-rk3588 config
+EOF
 
 # DNS
 cp ${overlay_dir}/etc/resolv.conf ${chroot_dir}/etc/resolv.conf
@@ -201,9 +208,7 @@ cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
 # Audio naming rules
 cp ${overlay_dir}/etc/udev/rules.d/90-audio-naming.rules ${chroot_dir}/etc/udev/rules.d/90-audio-naming.rules
 
-# Install and hold wiringpi package
-cp ../debs/wiringpi/wiringpi_2.47.deb ${chroot_dir}/tmp
-chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/wiringpi_2.47.deb && apt-mark hold wiringpi && rm -rf /tmp/*.deb"
+# Set board type for the wiringpi package
 echo "BOARD=${BOARD}" > ${chroot_dir}/etc/orangepi-release
 
 # Realtek 8811CU/8821CU usb modeswitch support
