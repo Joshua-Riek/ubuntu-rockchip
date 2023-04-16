@@ -25,14 +25,6 @@ if [[ ${LAUNCHPAD} != "Y" ]]; then
     done
 fi
 
-if [[ ${LAUNCHPAD} != "Y" ]]; then
-    if [ ! -d orangepi-firmware ]; then
-        git clone --progress -b master https://github.com/Joshua-Riek/orangepi-firmware.git
-        git -C orangepi-firmware checkout 6abd78dd842fbd01e874a6be3bccdbdf35b366ea
-        cd orangepi-firmware && ./debian/rules clean && ./debian/rules binary && cd ..
-    fi
-fi
-
 # These env vars can cause issues with chroot
 unset TMP
 unset TEMP
@@ -131,12 +123,12 @@ apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
 
 # Download and install generic packages
 apt-get -y install dmidecode mtd-tools i2c-tools u-boot-tools cloud-init \
-bash-completion man-db manpages nano gnupg initramfs-tools usb-modeswitch-data \
+bash-completion man-db manpages nano gnupg initramfs-tools orangepi-firmware \
 ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
-pigz wget curl lm-sensors bluez gdisk usb-modeswitch make gcc libc6-dev bison \
-libssl-dev flex wiringpi-opi flash-kernel
+pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
+gcc libc6-dev bison libssl-dev flex wiringpi-opi flash-kernel
 
 # Remove cryptsetup and needrestart
 apt-get -y remove cryptsetup needrestart
@@ -156,13 +148,10 @@ mkswap /tmp/swapfile
 mv /tmp/swapfile /swapfile
 EOF
 
-# Install the kernel and orangepi firmware
+# Install the kernel
 if [[ ${LAUNCHPAD}  == "Y" ]]; then
-    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588 orangepi-firmware"
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588"
 else
-    cp orangepi-firmware_*.deb ${chroot_dir}/tmp
-    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/orangepi-firmware_*.deb"
-    chroot ${chroot_dir} /bin/bash -c "apt-mark hold orangepi-firmware"
     cp linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb ${chroot_dir}/tmp
     chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb && rm -rf /tmp/*"
     chroot ${chroot_dir} /bin/bash -c "apt-mark hold linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588"
