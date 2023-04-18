@@ -94,7 +94,9 @@ if [[ ${LAUNCHPAD} != "Y" ]]; then
     eval "${DOCKER}" ./scripts/build-kernel.sh
 fi
 
-eval "${DOCKER}" ./scripts/build-u-boot.sh
+if [[ ${LAUNCHPAD} != "Y" ]]; then
+    eval "${DOCKER}" ./scripts/build-u-boot.sh
+fi
 
 eval "${DOCKER}" ./scripts/build-rootfs.sh
 

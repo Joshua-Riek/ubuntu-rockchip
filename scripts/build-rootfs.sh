@@ -23,6 +23,12 @@ if [[ ${LAUNCHPAD} != "Y" ]]; then
             exit 1
         fi
     done
+    for file in u-boot-orangepi-rk3588_*.deb; do
+        if [ ! -e "$file" ]; then
+            echo "Error: missing u-boot deb, please run build-u-boot.sh"
+            exit 1
+        fi
+    done
 fi
 
 # These env vars can cause issues with chroot
@@ -150,11 +156,15 @@ EOF
 
 # Install the kernel
 if [[ ${LAUNCHPAD}  == "Y" ]]; then
-    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588"
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588 u-boot-orangepi-rk3588"
 else
     cp linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb ${chroot_dir}/tmp
     chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb && rm -rf /tmp/*"
     chroot ${chroot_dir} /bin/bash -c "apt-mark hold linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588"
+
+    cp u-boot-orangepi-rk3588_*.deb ${chroot_dir}/tmp
+    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/u-boot-orangepi-rk3588_*.deb && rm -rf /tmp/*"
+    chroot ${chroot_dir} /bin/bash -c "apt-mark hold u-boot-orangepi-rk3588"
 fi
 
 # Finish kernel install
