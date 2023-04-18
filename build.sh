@@ -15,6 +15,7 @@ Optional arguments:
   -d, --docker          use docker to build
   -k, --kernel-only     only compile the kernel
   -u, --uboot-only      only compile uboot
+  -l, --launchpad       use kernel and uboot from launchpad repo
   -v, --verbose         increase the verbosity of the bash script
 HEREDOC
 }
