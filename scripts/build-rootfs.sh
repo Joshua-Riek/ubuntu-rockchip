@@ -134,7 +134,7 @@ ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
 pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
-gcc libc6-dev bison libssl-dev flex wiringpi-opi flash-kernel
+gcc libc6-dev bison libssl-dev flex wiringpi-opi flash-kernel fake-hwclock
 
 # Remove cryptsetup and needrestart
 apt-get -y remove cryptsetup needrestart
@@ -250,9 +250,8 @@ chroot ${chroot_dir} /bin/bash -c "systemctl enable ap6275p-bluetooth"
 # Add realtek bluetooth firmware to initrd 
 cp ${overlay_dir}/usr/share/initramfs-tools/hooks/rtl-bt ${chroot_dir}/usr/share/initramfs-tools/hooks/rtl-bt
 
-# Synchronise system clock to hardware RTC
+# Service to synchronise system clock to hardware RTC
 cp ${overlay_dir}/usr/lib/systemd/system/rtc-hym8563.service ${chroot_dir}/usr/lib/systemd/system/rtc-hym8563.service
-chroot ${chroot_dir} /bin/bash -c "systemctl enable rtc-hym8563"
 
 # Set term for serial tty
 mkdir -p ${chroot_dir}/lib/systemd/system/serial-getty@.service.d
