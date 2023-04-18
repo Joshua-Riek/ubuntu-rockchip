@@ -11,7 +11,7 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
-# Download and build u-boot
+# Download the orangepi u-boot source
 if [ ! -d u-boot-orangepi ]; then
     git clone --progress -b v2017.09-rk3588 https://github.com/Joshua-Riek/u-boot-orangepi.git
     git -C u-boot-orangepi checkout 475ee26c3cc3697109ef459004836fb45f105716
