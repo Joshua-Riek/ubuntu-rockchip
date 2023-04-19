@@ -14,7 +14,7 @@ mkdir -p build && cd build
 # Download the orangepi u-boot source
 if [ ! -d u-boot-orangepi ]; then
     git clone --progress -b v2017.09-rk3588 https://github.com/Joshua-Riek/u-boot-orangepi.git
-    git -C u-boot-orangepi checkout 475ee26c3cc3697109ef459004836fb45f105716
+    git -C u-boot-orangepi checkout 679334d1a5009750e688f88ba14586bba0343a71
 fi
 cd u-boot-orangepi
 
