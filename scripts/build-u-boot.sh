@@ -11,10 +11,15 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
+if [[ -z ${BOARD} ]]; then
+    echo "Error: BOARD is not set"
+    exit 1
+fi
+
 # Download the orangepi u-boot source
 if [ ! -d u-boot-orangepi ]; then
     git clone --progress -b v2017.09-rk3588 https://github.com/Joshua-Riek/u-boot-orangepi.git
-    git -C u-boot-orangepi checkout 679334d1a5009750e688f88ba14586bba0343a71
+    git -C u-boot-orangepi checkout fd734ab8c51f4bd4fb2b2a3a683dbc9a791ea087
 fi
 cd u-boot-orangepi
 
@@ -23,5 +28,5 @@ export $(dpkg-architecture -aarm64)
 
 # Compile u-boot into a deb package
 CROSS_COMPILE=aarch64-linux-gnu- ./debian/rules clean
-CROSS_COMPILE=aarch64-linux-gnu- ./debian/rules build
-CROSS_COMPILE=aarch64-linux-gnu- ./debian/rules binary-arch
+CROSS_COMPILE=aarch64-linux-gnu- ./debian/rules build-"${BOARD}"
+CROSS_COMPILE=aarch64-linux-gnu- ./debian/rules binary-"${BOARD}"
