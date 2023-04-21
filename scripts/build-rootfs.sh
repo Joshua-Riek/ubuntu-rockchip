@@ -156,7 +156,7 @@ EOF
 
 # Install the kernel
 if [[ ${LAUNCHPAD}  == "Y" ]]; then
-    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588 u-boot-orangepi-rk3588"
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588 u-boot-${BOARD}-rk3588"
 else
     cp linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb ${chroot_dir}/tmp
     chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb && rm -rf /tmp/*"
@@ -385,17 +385,12 @@ addgroup --gid 29999 oem
 adduser --gecos "OEM Configuration (temporary user)" --add_extra_groups --disabled-password --gid 29999 --uid 29999 oem
 usermod -a -G adm,sudo -p "$(date +%s | sha256sum | base64 | head -c 32)" oem
 
-apt-get -y install --no-install-recommends oem-config-gtk ubiquity-frontend-gtk \
-ubiquity-ubuntu-artwork oem-config-slideshow-ubuntu
+apt-get -y install --no-install-recommends oem-config-slideshow-ubuntu oem-config \
+oem-config-gtk ubiquity-frontend-gtk ubiquity-ubuntu-artwork ubiquity 
 
 mkdir -p /var/log/installer
-touch /var/log/syslog
-touch /var/log/installer/debug
-cp -a /usr/lib/oem-config/oem-config.service /lib/systemd/system
-cp -a /usr/lib/oem-config/oem-config.target /lib/systemd/system
-systemctl enable oem-config.service
-systemctl enable oem-config.target
-systemctl set-default oem-config.target
+touch /var/log/{syslog,installer/debug}
+oem-config-prepare --quiet
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
