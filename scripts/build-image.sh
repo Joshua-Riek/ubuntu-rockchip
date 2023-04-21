@@ -4,15 +4,22 @@ set -eE
 trap 'echo Error: in $0 on line $LINENO' ERR
 
 cleanup_loopdev() {
+    local loop="$1"
+
     sync --file-system
     sync
 
+    sleep 1
+
     if [ -b "${loop}" ]; then
-        umount "${loop}"* 2> /dev/null || true
-        losetup -d "${loop}" 2> /dev/null || true
+        for part in "${loop}"p*; do
+            if mnt=$(findmnt -n -o target -S "$part"); then
+                umount "${mnt}"
+            fi
+        done
+        losetup -d "${loop}"
     fi
 }
-trap cleanup_loopdev EXIT
 
 wait_loopdev() {
     local loop="$1"
@@ -53,6 +60,9 @@ truncate -s "$(( size + 2048 + 512 ))M" "${img}"
 loop="$(losetup -f)"
 losetup "${loop}" "${img}"
 disk="${loop}"
+
+# Cleanup loopdev on early exit
+trap 'cleanup_loopdev ${loop}' EXIT
 
 # Ensure disk is not mounted
 mount_point=/tmp/mnt
@@ -194,6 +204,9 @@ umount "${disk}${partition_char}2"
 
 # Remove loop device
 losetup -d "${loop}"
+
+# Exit trap is no longer needed
+trap '' EXIT
 
 echo -e "\nCompressing $(basename "${img}.xz")\n"
 xz -3 --force --keep --quiet --threads=0 "${img}"
