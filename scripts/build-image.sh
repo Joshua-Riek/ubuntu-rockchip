@@ -160,7 +160,7 @@ for overlay_file in \${overlays}; do
 done
 if test -n \${overlay_error}; then
     echo "Error applying device tree overlays, restoring original device tree"
-    load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /dtb-5.10.110-orangepi-rk3588/rk3588s-${device_tree}.dtb
+    load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /dtbs/rk3588s-${device_tree}.dtb
 fi
 
 load \${devtype} \${devnum}:\${distro_bootpart} \${kernel_addr_r} /vmlinuz
