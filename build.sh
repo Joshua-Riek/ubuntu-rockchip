@@ -4,7 +4,7 @@ set -eE
 trap 'echo Error: in $0 on line $LINENO' ERR
 
 usage() {
-    cat << HEREDOC
+cat << HEREDOC
 Usage: $0 --board=[orangepi5|orangepi5b]
 
 Required arguments:
@@ -42,7 +42,7 @@ for i in "$@"; do
             shift
             ;;
         -d|--docker)
-            DOCKER="docker run --privileged --network=host --rm -it -v \"$(pwd)\":/opt -v /dev:/dev -e BOARD ubuntu-orange-pi5-build /bin/bash"
+            DOCKER="docker run --privileged --network=host --rm -it -v \"$(pwd)\":/opt -e BOARD -e LAUNCHPAD ubuntu-orange-pi5-build /bin/bash"
             docker build -t ubuntu-orange-pi5-build docker
             shift
             ;;
