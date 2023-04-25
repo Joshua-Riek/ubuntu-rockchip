@@ -13,8 +13,17 @@ mkdir -p build && cd build
 
 # Download the orangepi linux kernel source
 if [ ! -d linux-orangepi ]; then
-    git clone --progress -b orange-pi-5.10-rk3588 https://github.com/Joshua-Riek/linux-orangepi.git
-    git -C linux-orangepi checkout fd0ea0dd739878097eb3fc56b72f841881074288
+    git clone https://github.com/Joshua-Riek/linux-orangepi-debian.git
+    git -C linux-orangepi-debian checkout 544677b6f204afd1095d844da2584a8da925d490
+
+    # shellcheck source=/dev/null
+    source linux-orangepi-debian/upstream
+    git clone --single-branch --progress -b "${BRANCH}" "${GIT}"
+    git -C linux-orangepi checkout "${COMMIT}"
+    mv linux-orangepi-debian linux-orangepi/debian
+    for patch in linux-orangepi/debian/patches/*.patch; do
+        git -C linux-orangepi apply "$(readlink -f "${patch}")"
+    done
 fi
 cd linux-orangepi
 
