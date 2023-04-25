@@ -16,8 +16,15 @@ if [[ -z ${BOARD} ]]; then
     exit 1
 fi
 
+if [[ ${BOARD} =~ orangepi5|orangepi5b ]]; then
+    export VENDOR="orangepi"
+else
+    echo "Error: \"${BOARD}\" is an unsupported board"
+    exit 1
+fi
+
 if [[ ${LAUNCHPAD} != "Y" ]]; then
-    for file in linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb; do
+    for file in linux-{headers,image,dtb}-5.10.110-"${VENDOR}"-rk3588_*.deb; do
         if [ ! -e "$file" ]; then
             echo "Error: missing kernel debs, please run build-kernel.sh"
             exit 1
@@ -156,11 +163,11 @@ EOF
 
 # Install the kernel
 if [[ ${LAUNCHPAD}  == "Y" ]]; then
-    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588 u-boot-${BOARD}-rk3588"
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-${VENDOR}-rk3588 linux-headers-5.10.110-${VENDOR}-rk3588 linux-dtb-5.10.110-${VENDOR}-rk3588 u-boot-${BOARD}-rk3588"
 else
-    cp linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb ${chroot_dir}/tmp
-    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image,dtb}-5.10.110-orangepi-rk3588_*.deb && rm -rf /tmp/*"
-    chroot ${chroot_dir} /bin/bash -c "apt-mark hold linux-image-5.10.110-orangepi-rk3588 linux-headers-5.10.110-orangepi-rk3588 linux-dtb-5.10.110-orangepi-rk3588"
+    cp linux-{headers,image,dtb}-5.10.110-${VENDOR}-rk3588_*.deb ${chroot_dir}/tmp
+    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image,dtb}-5.10.110-${VENDOR}-rk3588_*.deb && rm -rf /tmp/*"
+    chroot ${chroot_dir} /bin/bash -c "apt-mark hold linux-image-5.10.110-${VENDOR}-rk3588 linux-headers-5.10.110-${VENDOR}-rk3588 linux-dtb-5.10.110-${VENDOR}-rk3588"
 
     cp u-boot-"${BOARD}"-rk3588_*.deb ${chroot_dir}/tmp
     chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/u-boot-${BOARD}-rk3588_*.deb && rm -rf /tmp/*"
@@ -173,14 +180,14 @@ set -eE
 trap 'echo Error: in $0 on line $LINENO' ERR
 
 # Generate kernel module dependencies
-depmod -a 5.10.110-orangepi-rk3588
+depmod -a 5.10.110-${VENDOR}-rk3588
 
 # Create kernel and component symlinks
 cd /boot 
-ln -s initrd.img-5.10.110-orangepi-rk3588 initrd.img
-ln -s System.map-5.10.110-orangepi-rk3588 System.map
-ln -s vmlinuz-5.10.110-orangepi-rk3588 vmlinuz
-ln -s config-5.10.110-orangepi-rk3588 config
+ln -s initrd.img-5.10.110-${VENDOR}-rk3588 initrd.img
+ln -s System.map-5.10.110-${VENDOR}-rk3588 System.map
+ln -s vmlinuz-5.10.110-${VENDOR}-rk3588 vmlinuz
+ln -s config-5.10.110-${VENDOR}-rk3588 config
 EOF
 
 # DNS
@@ -208,7 +215,7 @@ cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
 cp ${overlay_dir}/etc/udev/rules.d/90-audio-naming.rules ${chroot_dir}/etc/udev/rules.d/90-audio-naming.rules
 
 # Set board type for the wiringpi package
-echo "BOARD=${BOARD}" > ${chroot_dir}/etc/orangepi-release
+echo "BOARD=${BOARD}" > ${chroot_dir}/etc/${VENDOR}-release
 
 # Realtek 8811CU/8821CU usb modeswitch support
 cp ${chroot_dir}/lib/udev/rules.d/40-usb_modeswitch.rules ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules

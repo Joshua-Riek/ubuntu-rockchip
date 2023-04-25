@@ -16,21 +16,26 @@ if [[ -z ${BOARD} ]]; then
     exit 1
 fi
 
-# Download the orangepi u-boot source
-if [ ! -d u-boot-orangepi ]; then
-    git clone https://github.com/Joshua-Riek/u-boot-orangepi-debian.git
-    git -C u-boot-orangepi-debian checkout 53ec02881ff0a48719fb0b0c636eb43e657eeb6d
+# Download the linux kernel source and debian package template
+if [[ "${BOARD}" =~ orangepi5|orangepi5b ]]; then
+    if [ ! -d u-boot-orangepi ]; then
+        git clone https://github.com/Joshua-Riek/u-boot-orangepi-debian.git
+        git -C u-boot-orangepi-debian checkout 7544e59f88a21812766ad0ed3e7466d8bebd45ac
 
-    # shellcheck source=/dev/null
-    source u-boot-orangepi-debian/upstream
-    git clone --single-branch --progress -b "${BRANCH}" "${GIT}"
-    git -C u-boot-orangepi checkout "${COMMIT}"
-    mv u-boot-orangepi-debian u-boot-orangepi/debian
-    for patch in u-boot-orangepi/debian/patches/*.patch; do
-        git -C u-boot-orangepi apply "$(readlink -f "${patch}")"
-    done
+        # shellcheck source=/dev/null
+        source u-boot-orangepi-debian/upstream
+        git clone --single-branch --progress -b "${BRANCH}" "${GIT}"
+        git -C u-boot-orangepi checkout "${COMMIT}"
+        mv u-boot-orangepi-debian u-boot-orangepi/debian
+        for patch in u-boot-orangepi/debian/patches/*.patch; do
+            git -C u-boot-orangepi apply "$(readlink -f "${patch}")"
+        done
+    fi
+    cd u-boot-orangepi
+else
+    echo "Error: \"${BOARD}\" is an unsupported board"
+    exit 1
 fi
-cd u-boot-orangepi
 
 # shellcheck disable=SC2046
 export $(dpkg-architecture -aarm64)
