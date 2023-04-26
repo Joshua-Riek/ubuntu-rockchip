@@ -32,6 +32,21 @@ if [[ "${BOARD}" =~ orangepi5|orangepi5b ]]; then
         done
     fi
     cd linux-orangepi
+elif [[ "${BOARD}" =~ rock5b|rock5a ]]; then
+    if [ ! -d linux-radxa ]; then
+        git clone https://github.com/Joshua-Riek/linux-radxa-debian.git
+        git -C linux-radxa-debian checkout cffe1e86090c4dddcbb5d1e201b5cca5e83caeb0
+
+        # shellcheck source=/dev/null
+        source linux-radxa-debian/upstream
+        git clone --single-branch --progress -b "${BRANCH}" "${GIT}" linux-radxa
+        git -C linux-radxa checkout "${COMMIT}"
+        mv linux-radxa-debian linux-radxa/debian
+        for patch in linux-radxa/debian/patches/*.patch; do
+            git -C linux-radxa apply "$(readlink -f "${patch}")"
+        done
+    fi
+    cd linux-radxa
 else
     echo "Error: \"${BOARD}\" is an unsupported board"
     exit 1

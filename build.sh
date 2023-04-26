@@ -76,7 +76,7 @@ if [[ -z ${BOARD} ]]; then
     exit 1
 fi
 
-if [[ ! ${BOARD} =~ orangepi5|orangepi5b ]]; then
+if [[ ! ${BOARD} =~ orangepi5|orangepi5b|rock5b|rock5a ]]; then
     echo "Error: \"${BOARD}\" is an unsupported board"
     exit 1
 fi
