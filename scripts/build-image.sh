@@ -51,6 +51,22 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p images build && cd build
 
+if [[ -z ${BOARD} ]]; then
+    echo "Error: BOARD is not set"
+    exit 1
+fi
+
+if [[ -z ${VENDOR} ]]; then
+    echo "Error: VENDOR is not set"
+    exit 1
+fi
+
+if [[ "${BOARD}" = orangepi5 ]]; then
+    DEVICE_TREE=rk3588s-orangepi-5.dtb
+elif [[ "${BOARD}" = orangepi5b ]]; then
+    DEVICE_TREE=rk3588s-orangepi-5b.dtb
+fi
+
 # Create an empty disk image
 img="../images/$(basename "${rootfs}" .rootfs.tar.xz).img"
 size="$(xz -l "${rootfs}" | tail -n +2 | sed 's/,//g' | awk '{print int($5 + 1)}')"
@@ -134,7 +150,6 @@ tar -xpJf "${rootfs}" -C ${mount_point}/writable
 
 # Set boot args for the splash screen
 [ -z "${img##*desktop*}" ] && bootargs="quiet splash plymouth.ignore-serial-consoles" || bootargs=""
-[ -z "${img##*orangepi5b*}" ] && device_tree="orangepi-5b" || device_tree="orangepi-5"
 
 # Create fstab entries
 boot_uuid="${boot_uuid:0:4}-${boot_uuid:4:4}"
@@ -153,24 +168,37 @@ cat > ${mount_point}/system-boot/boot.cmd << EOF
 # Recompile with:
 # mkimage -A arm64 -O linux -T script -C none -n "Boot Script" -d boot.cmd boot.scr
 
-env set bootargs "console=ttyS2,1500000 console=tty1 root=UUID=${root_uuid} rootfstype=ext4 rootwait rw cma=64M cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0 ${bootargs}"
+setenv load_addr "0x9000000"
+setenv overlay_error "false"
 
-load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /dtbs/rk3588s-${device_tree}.dtb
+echo "Boot script loaded from \${devtype} \${devnum}"
+
+if test -e \${devtype} \${devnum}:\${distro_bootpart} /ubuntuEnv.txt; then
+	load \${devtype} \${devnum}:\${distro_bootpart} \${load_addr} /ubuntuEnv.txt
+	env import -t \${load_addr} \${filesize}
+else
+    env set bootargs "root=UUID=${root_uuid} rootfstype=ext4 rootwait rw console=ttyS2,1500000 console=tty1 cma=64M cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0 ${bootargs}"
+    env set fdtfile "${DEVICE_TREE}"
+fi
+
+load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /dtbs/\${fdtfile}
 fdt addr \${fdt_addr_r} && fdt resize 0x10000
 
-if test -e \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /overlays.txt; then
-    load \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /overlays.txt
-    env import -t \${fdtoverlay_addr_r} \${filesize}
-fi
 for overlay_file in \${overlays}; do
     if load \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /dtbs/overlays/rk3588-\${overlay_file}.dtbo; then
         echo "Applying device tree overlay: /dtbs/overlays/rk3588-\${overlay_file}.dtbo"
         fdt apply \${fdtoverlay_addr_r} || setenv overlay_error "true"
+    elif load \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /dtbs/overlays/\${overlay_file}.dtbo; then
+        echo "Applying device tree overlay: /dtbs/overlays/\${overlay_file}.dtbo"
+        fdt apply \${fdtoverlay_addr_r} || setenv overlay_error "true"
+    elif load \${devtype} \${devnum}:\${distro_bootpart} \${fdtoverlay_addr_r} /dtbs/overlays/\${overlay_file}; then
+        echo "Applying device tree overlay: /dtbs/overlays/\${overlay_file}"
+        fdt apply \${fdtoverlay_addr_r} || setenv overlay_error "true"
     fi
 done
-if test -n \${overlay_error}; then
+if test "\${overlay_error}" = "true"; then
     echo "Error applying device tree overlays, restoring original device tree"
-    load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /dtbs/rk3588s-${device_tree}.dtb
+    load \${devtype} \${devnum}:\${distro_bootpart} \${fdt_addr_r} /dtbs/\${fdtfile}
 fi
 
 load \${devtype} \${devnum}:\${distro_bootpart} \${kernel_addr_r} /vmlinuz
@@ -180,17 +208,23 @@ booti \${kernel_addr_r} \${ramdisk_addr_r}:\${filesize} \${fdt_addr_r}
 EOF
 mkimage -A arm64 -O linux -T script -C none -n "Boot Script" -d ${mount_point}/system-boot/boot.cmd ${mount_point}/system-boot/boot.scr
 
-# Copy kernel and initrd to boot partition
-cp ${mount_point}/writable/boot/initrd.img-5.10.110-orangepi-rk3588 ${mount_point}/system-boot/initrd.img
-cp ${mount_point}/writable/boot/vmlinuz-5.10.110-orangepi-rk3588 ${mount_point}/system-boot/vmlinuz
+# Uboot env
+cat > ${mount_point}/system-boot/ubuntuEnv.txt << EOF
+bootargs=root=UUID=${root_uuid} rootfstype=ext4 rootwait rw console=ttyS2,1500000 console=tty1 cma=64M cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0 ${bootargs}
+fdtfile=${DEVICE_TREE}
+overlays=
+EOF
 
-# Device tree overlays to load
-echo "overlays=" > ${mount_point}/system-boot/overlays.txt
+# Copy kernel and initrd to boot partition
+cp "${mount_point}/writable/boot/initrd.img-5.10.110-${VENDOR}-rk3588" ${mount_point}/system-boot/initrd.img
+cp "${mount_point}/writable/boot/vmlinuz-5.10.110-${VENDOR}-rk3588" ${mount_point}/system-boot/vmlinuz
+
+# Copy device trees to boot partition
 mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot
 
 # Write bootloader to disk image
-dd if=${mount_point}/writable/usr/lib/u-boot-orangepi-rk3588/idbloader.img of="${loop}" seek=64 conv=notrunc
-dd if=${mount_point}/writable/usr/lib/u-boot-orangepi-rk3588/u-boot.itb of="${loop}" seek=16384 conv=notrunc
+dd if="${mount_point}/writable/usr/lib/u-boot-${VENDOR}-rk3588/idbloader.img" of="${loop}" seek=64 conv=notrunc
+dd if="${mount_point}/writable/usr/lib/u-boot-${VENDOR}-rk3588/u-boot.itb" of="${loop}" seek=16384 conv=notrunc
 
 # Cloud init config for server image
 [ -z "${img##*server*}" ] && cp ../overlay/boot/firmware/{meta-data,user-data,network-config} ${mount_point}/system-boot
