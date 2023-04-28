@@ -27,17 +27,10 @@ if [ ! -d linux-"${VENDOR}" ]; then
     git clone --single-branch --progress -b "${BRANCH}" "${GIT}" linux-"${VENDOR}"
     git -C linux-"${VENDOR}" checkout "${COMMIT}"
     cp -r ../packages/linux-"${VENDOR}"/debian linux-"${VENDOR}"
-    for patch in ../packages/linux-"${VENDOR}"/debian/patches/*.patch; do
-        git -C linux-"${VENDOR}" apply "$(readlink -f "${patch}")"
-    done
 fi
 cd linux-"${VENDOR}"
 
-# shellcheck disable=SC2046
-export $(dpkg-architecture -aarm64)
-
 # Compile kernel into a deb package
-ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- ./debian/rules build
-ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- ./debian/rules binary-arch
+CROSS_COMPILE=aarch64-linux-gnu- dpkg-buildpackage -a "$(cat debian/arch)" -d -b -nc -uc
 
 rm -f ../*.buildinfo ../*.changes ../linux-libc-dev*

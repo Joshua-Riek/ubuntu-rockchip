@@ -16,10 +16,8 @@ if [[ -z ${BOARD} ]]; then
     exit 1
 fi
 
-if [[ ${BOARD} =~ orangepi5|orangepi5b ]]; then
-    export VENDOR="orangepi"
-else
-    echo "Error: \"${BOARD}\" is an unsupported board"
+if [[ -z ${VENDOR} ]]; then
+    echo "Error: VENDOR is not set"
     exit 1
 fi
 

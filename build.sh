@@ -42,7 +42,7 @@ for i in "$@"; do
             shift
             ;;
         -d|--docker)
-            DOCKER="docker run --privileged --network=host --rm -it -v \"$(pwd)\":/opt -e BOARD -e LAUNCHPAD ubuntu-orange-pi5-build /bin/bash"
+            DOCKER="docker run --privileged --network=host --rm -it -v \"$(pwd)\":/opt -e BOARD -e VENDOR -e LAUNCHPAD ubuntu-orange-pi5-build /bin/bash"
             docker build -t ubuntu-orange-pi5-build docker
             shift
             ;;
@@ -76,15 +76,13 @@ if [[ -z ${BOARD} ]]; then
     exit 1
 fi
 
-if [[ ! ${BOARD} =~ orangepi5|orangepi5b|rock5b|rock5a ]]; then
-    echo "Error: \"${BOARD}\" is an unsupported board"
-    exit 1
-fi
-
 if [[ ${BOARD} =~ orangepi5|orangepi5b ]]; then
     export VENDOR=orangepi
 elif [[ "${BOARD}" =~ rock5b|rock5a ]]; then
     export VENDOR=radxa
+else
+    echo "Error: \"${BOARD}\" is an unsupported board"
+    exit 1
 fi
 
 if [[ ${KERNEL_ONLY}  == "Y" ]]; then
