@@ -19,7 +19,7 @@ binary-arch:
 config:
 	cp debian/defconfig .config
 	echo $(VERSION)-1 | sed 's/^[^-]*-//' | bc > .version
-	$(MAKE) olddefconfig
+	$(MAKE) ARCH=arm64 olddefconfig
 
 clean:
 	rm -rf debian/*tmp debian/files
