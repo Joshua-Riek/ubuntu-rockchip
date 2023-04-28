@@ -1,0 +1,43 @@
+Source: linux-radxa-rk3588
+Section: kernel
+Priority: optional
+Standards-Version: 4.6.0
+Maintainer: Joshua Riek <jjriek@verizon.net>
+Build-Depends: bc, rsync, kmod, cpio, build-essential, u-boot-tools, bison, python3 | python, python-is-python3 | python-is-python2, flex | flex:native , , libssl-dev:native
+Homepage: https://radxa.com/
+Vcs-Browser: https://github.com/radxa/kernel
+Vcs-Git: https://github.com/radxa/kernel.git
+
+Package: linux-image-5.10.110-radxa-rk3588
+Architecture: arm64
+Provides: linux-image
+Description: Linux kernel, Rock 5 version 5.10.110-radxa-rk3588
+ This package contains the Linux kernel, modules and corresponding other
+ files, version: 5.10.110-radxa-rk3588.
+
+Package: linux-libc-dev
+Section: devel
+Provides: linux-kernel-headers
+Conflicts: linux-kernel-headers
+Replaces: linux-kernel-headers
+Architecture: arm64
+Description: Rock 5 Linux support headers for userspace development
+ This package provides userspaces headers from the Linux kernel.  These headers
+ are used by the installed headers for GNU glibc and other system libraries.
+Multi-Arch: same
+
+Package: linux-dtb-5.10.110-radxa-rk3588
+Architecture: arm64
+Provides: linux-dtb
+Description: Rock 5 Linux DTB, version 5.10.110-radxa-rk3588
+ This package contains device blobs from the Linux kernel, version 5.10.110-radxa-rk3588
+
+Package: linux-headers-5.10.110-radxa-rk3588
+Section: devel
+Architecture: arm64
+Provides: linux-headers
+Depends: make, gcc, libc6-dev, bison, flex, libssl-dev
+Description: Linux kernel headers for 5.10.110-radxa-rk3588 on arm64
+ This package provides kernel header files for 5.10.110-radxa-rk3588 on arm64
+ .
+ This is useful for people who need to build external modules

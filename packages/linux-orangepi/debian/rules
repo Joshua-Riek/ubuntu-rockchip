@@ -1,0 +1,28 @@
+#!/usr/bin/make -f
+
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+NJOBS := -j $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+else
+NJOBS := -j $(shell nproc)
+endif
+
+VERSION := $(shell dpkg-parsechangelog -SVersion -l debian/changelog)
+
+srctree ?= .
+
+build: config 
+	$(MAKE) KDEB_PKGVERSION=$(VERSION) $(NJOBS) KERNELRELEASE=5.10.110-orangepi-rk3588 ARCH=arm64 -f $(srctree)/Makefile
+
+binary-arch:
+	$(MAKE) KDEB_PKGVERSION=$(VERSION) $(NJOBS) KERNELRELEASE=5.10.110-orangepi-rk3588 ARCH=arm64 -f $(srctree)/Makefile intdeb-pkg
+
+config:
+	cp debian/defconfig .config
+	echo $(VERSION)-1 | sed 's/^[^-]*-//' | bc > .version
+	$(MAKE) olddefconfig
+
+clean:
+	rm -rf debian/*tmp debian/files
+	$(MAKE) clean
+
+binary: binary-arch

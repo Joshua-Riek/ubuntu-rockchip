@@ -1,0 +1,5 @@
+u-boot-orangepi-rk3588 (2017.09+20230417.gitd7c6b92f-1) jammy; urgency=medium
+
+  * arch: arm: mach-rockchip: fix srctree path
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 21 Apr 2023 22:07:08 -0400

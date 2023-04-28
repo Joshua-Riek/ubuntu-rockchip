@@ -1,0 +1,4 @@
+GIT=https://github.com/orangepi-xunlong/linux-orangepi.git
+COMMIT=0d1781e72fb7707a0bbc4419c8f1bc75a113f19a
+BRANCH=orange-pi-5.10-rk3588
+VERSION=5.10.110+20230406.git0d1781e7

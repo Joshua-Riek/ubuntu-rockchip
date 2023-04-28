@@ -81,6 +81,12 @@ if [[ ! ${BOARD} =~ orangepi5|orangepi5b|rock5b|rock5a ]]; then
     exit 1
 fi
 
+if [[ ${BOARD} =~ orangepi5|orangepi5b ]]; then
+    export VENDOR=orangepi
+elif [[ "${BOARD}" =~ rock5b|rock5a ]]; then
+    export VENDOR=radxa
+fi
+
 if [[ ${KERNEL_ONLY}  == "Y" ]]; then
     eval "${DOCKER}" ./scripts/build-kernel.sh
     exit 0

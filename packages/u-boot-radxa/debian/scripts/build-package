@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -eE 
+trap 'echo Error: in $0 on line $LINENO' ERR
+
+cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ../..
+
+status=$(git status --porcelain)
+if [ "$status" != "?? debian/" ] && [ -n "$status" ]; then
+    echo "Repo is unclean" >&2
+    exit 1
+fi
+
+opts=()
+version=$(dpkg-parsechangelog -SVersion)
+prev_version=$(dpkg-parsechangelog -SVersion -o1 -c1)
+if [ "${version%-*}" != "${prev_version%-*}" ] ; then
+    opts=("-sa")
+fi
+
+dpkg-buildpackage "${opts[@]}" "${@}"

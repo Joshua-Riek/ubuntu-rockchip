@@ -1,0 +1,7 @@
+0001-debianize-kernel-package.patch
+0002-revert-enable-writable-debugfs-files.patch
+0003-suppress-dw-dp-warning-msg.patch
+0004-suppress-unsupported-format-modifier.patch
+0005-improve-hdmi-sound.patch
+0006-enable-dmc.patch
+0007-change-model-name-for-orangepi5b.patch
