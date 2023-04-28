@@ -1,0 +1,82 @@
+#!/usr/bin/make -f
+
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+NJOBS := -j $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+else
+NJOBS := -j $(shell nproc)
+endif
+
+srctree ?= .
+
+parted_args:=mklabel gpt unit s mkpart idbloader 64 7167 unit s mkpart vnvm 7168 7679 \
+			unit s mkpart reserved_space 7680 8063 unit s mkpart reserved1 8064 8127 \
+			unit s mkpart uboot_env 8128 8191 unit s mkpart reserved2 8192 16383 \
+			unit s mkpart uboot 16384 32734
+
+build-rock5b:
+	make $(NJOBS) ARCH=arm O=debian/build/rock5b rock-5b-rk3588_defconfig
+	sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-radxa-rk3588"/g' debian/build/rock5b/.config && touch debian/build/rock5b/.scmversion
+	mkdir -p debian/build/rock5b/arch/arm/mach-rockchip && cp arch/arm/mach-rockchip/decode_bl31.py debian/build/rock5b/arch/arm/mach-rockchip/decode_bl31.py
+	make $(NJOBS) O=debian/build/rock5b ARCH=arm BL31=../../../debian/rkbin/rk3588_bl31_v1.27.elf spl/u-boot-spl.bin u-boot.dtb u-boot.itb
+	./debian/build/rock5b/tools/mkimage -n rk3588 -T rksd -d debian/rkbin/rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.08.bin:debian/build/rock5b/spl/u-boot-spl.bin debian/build/rock5b/idbloader.img
+
+	dd if=/dev/zero of=debian/build/rock5b/rkspi_loader.img bs=1M count=0 seek=16
+	parted -s debian/build/rock5b/rkspi_loader.img $(parted_args)
+	dd if=debian/build/rock5b/idbloader.img of=debian/build/rock5b/rkspi_loader.img seek=64 conv=notrunc
+	dd if=debian/build/rock5b/u-boot.itb of=debian/build/rock5b/rkspi_loader.img seek=16384 conv=notrunc
+
+build-rock5a:
+	make $(NJOBS) ARCH=arm O=debian/build/rock5a rock-5a-rk3588s_defconfig
+	sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-radxa-rk3588"/g' debian/build/rock5a/.config && touch debian/build/rock5a/.scmversion
+	mkdir -p debian/build/rock5a/arch/arm/mach-rockchip && cp arch/arm/mach-rockchip/decode_bl31.py debian/build/rock5a/arch/arm/mach-rockchip/decode_bl31.py
+	make $(NJOBS) ARCH=arm O=debian/build/rock5a BL31=../../../debian/rkbin/rk3588_bl31_v1.27.elf spl/u-boot-spl.bin u-boot.dtb u-boot.itb
+	./debian/build/rock5a/tools/mkimage -n rk3588 -T rksd -d debian/rkbin/rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.08.bin:debian/build/rock5a/spl/u-boot-spl.bin debian/build/rock5a/idbloader.img
+
+	dd if=/dev/zero of=debian/build/rock5a/rkspi_loader.img bs=1M count=0 seek=16
+	parted -s debian/build/rock5a/rkspi_loader.img $(parted_args)
+	dd if=debian/build/rock5a/idbloader.img of=debian/build/rock5a/rkspi_loader.img seek=64 conv=notrunc
+	dd if=debian/build/rock5a/u-boot.itb of=debian/build/rock5a/rkspi_loader.img seek=16384 conv=notrunc
+
+build: build-rock5b build-rock5a
+
+binary-rock5b:
+	rm -rf debian/tmp/rock5b
+	mkdir -m 755 -p debian/tmp/rock5b/usr/lib/u-boot-radxa-rk3588
+	cp debian/build/rock5b/u-boot.itb debian/tmp/rock5b/usr/lib/u-boot-radxa-rk3588/u-boot.itb
+	cp debian/build/rock5b/idbloader.img debian/tmp/rock5b/usr/lib/u-boot-radxa-rk3588/idbloader.img
+	cp debian/build/rock5b/rkspi_loader.img debian/tmp/rock5b/usr/lib/u-boot-radxa-rk3588/rkspi_loader.img
+
+	mkdir -m 755 -p "debian/tmp/rock5b/DEBIAN"
+	mkdir -p "debian/tmp/rock5b/usr/share/doc/u-boot-radxa-rk3588"
+	cp debian/copyright "debian/tmp/rock5b/usr/share/doc/u-boot-radxa-rk3588/"
+	cp debian/changelog "debian/tmp/rock5b/usr/share/doc/u-boot-radxa-rk3588/changelog.Debian"
+	gzip -9 "debian/tmp/rock5b/usr/share/doc/u-boot-radxa-rk3588/changelog.Debian"
+	sh -c "cd 'debian/tmp/rock5b'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
+	chown -R root:root "debian/tmp/rock5b" && chmod -R go-w "debian/tmp/rock5b" && chmod -R a+rX "debian/tmp/rock5b"
+	dpkg-gencontrol -pu-boot-rock5b-rk3588 -P"debian/tmp/rock5b"
+	dpkg --build "debian/tmp/rock5b" ..
+
+binary-rock5a:
+	rm -rf debian/tmp/rock5a
+	mkdir -m 755 -p debian/tmp/rock5a/usr/lib/u-boot-radxa-rk3588
+	cp debian/build/rock5a/u-boot.itb debian/tmp/rock5a/usr/lib/u-boot-radxa-rk3588/u-boot.itb
+	cp debian/build/rock5a/idbloader.img debian/tmp/rock5a/usr/lib/u-boot-radxa-rk3588/idbloader.img
+	cp debian/build/rock5a/rkspi_loader.img debian/tmp/rock5a/usr/lib/u-boot-radxa-rk3588/rkspi_loader.img
+
+	mkdir -m 755 -p "debian/tmp/rock5a/DEBIAN"
+	mkdir -p "debian/tmp/rock5a/usr/share/doc/u-boot-radxa-rk3588"
+	cp debian/copyright "debian/tmp/rock5a/usr/share/doc/u-boot-radxa-rk3588/"
+	cp debian/changelog "debian/tmp/rock5a/usr/share/doc/u-boot-radxa-rk3588/changelog.Debian"
+	gzip -9 "debian/tmp/rock5a/usr/share/doc/u-boot-radxa-rk3588/changelog.Debian"
+	sh -c "cd 'debian/tmp/rock5a'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
+	chown -R root:root "debian/tmp/rock5a" && chmod -R go-w "debian/tmp/rock5a" && chmod -R a+rX "debian/tmp/rock5a"
+	dpkg-gencontrol -pu-boot-rock5a-rk3588 -P"debian/tmp/rock5a"
+	dpkg --build "debian/tmp/rock5a" ..
+
+binary-arch: binary-rock5b binary-rock5a
+
+binary: binary-arch
+
+clean:
+	rm -rf debian/*tmp debian/tmp debian/build debian/files
+	$(MAKE) clean
