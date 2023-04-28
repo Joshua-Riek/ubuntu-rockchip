@@ -27,15 +27,10 @@ if [ ! -d u-boot-"${VENDOR}" ]; then
     git clone --single-branch --progress -b "${BRANCH}" "${GIT}" u-boot-"${VENDOR}"
     git -C u-boot-"${VENDOR}" checkout "${COMMIT}"
     cp -r ../packages/u-boot-"${VENDOR}"/debian u-boot-"${VENDOR}"
-    for patch in ../packages/u-boot-"${VENDOR}"/debian/patches/*.patch; do
-        git -C u-boot-"${VENDOR}" apply "$(readlink -f "${patch}")"
-    done
 fi
 cd u-boot-"${VENDOR}"
 
-# shellcheck disable=SC2046
-export $(dpkg-architecture -aarm64)
-
 # Compile u-boot into a deb package
-CROSS_COMPILE=aarch64-linux-gnu- ./debian/rules build-"${BOARD}"
-CROSS_COMPILE=aarch64-linux-gnu- ./debian/rules binary-"${BOARD}"
+CROSS_COMPILE=aarch64-linux-gnu- dpkg-buildpackage -a "$(cat debian/arch)" -d -b -nc -uc
+
+rm -f ../*.buildinfo ../*.changes
