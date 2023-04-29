@@ -4,7 +4,7 @@ Priority: optional
 Standards-Version: 4.6.0
 Maintainer: Joshua Riek <jjriek@verizon.net>
 Build-Depends: debhelper-compat (= 12), parted, gcc, make, bc, bison, python2, flex, device-tree-compiler, udev
-Homepage: http://www.orangepi.org/
+Homepage: https://github.com/orangepi-xunlong/u-boot-orangepi
 Vcs-Browser: https://github.com/orangepi-xunlong/u-boot-orangepi
 Vcs-Git: https://github.com/orangepi-xunlong/u-boot-orangepi.git
 
