@@ -20,7 +20,7 @@ orangepi_5 orangepi_5_sata orangepi_5b:
 	@mkdir -p debian/build/$@
 
 	make O=debian/build/$@ \
-	  CROSS_COMPILE=$(or $($(platform)_CROSS_COMPILE),$(CROSS_COMPILE)) \
+	  CROSS_COMPILE=$(CROSS_COMPILE) \
 	  ARCH=arm \
 	  $(NJOBS) \
 	  $@_defconfig
@@ -32,7 +32,7 @@ orangepi_5 orangepi_5_sata orangepi_5b:
 	@cp arch/arm/mach-rockchip/decode_bl31.py debian/build/$@/arch/arm/mach-rockchip/decode_bl31.py
 
 	make O=debian/build/$@ \
-	  CROSS_COMPILE=$(or $($(platform)_CROSS_COMPILE),$(CROSS_COMPILE)) \
+	  CROSS_COMPILE=$(CROSS_COMPILE) \
 	  ARCH=arm \
 	  $(NJOBS) \
 	  BL31=../../../debian/rkbin/$(BL31_BLOB) \
@@ -96,5 +96,5 @@ binary-arch: binary-orangepi_5 binary-orangepi_5b
 binary: binary-arch
 
 clean:
-	rm -rf debian/*tmp debian/tmp debian/build debian/files
+	@rm -rf debian/*tmp debian/tmp debian/build debian/files
 	$(MAKE) clean
