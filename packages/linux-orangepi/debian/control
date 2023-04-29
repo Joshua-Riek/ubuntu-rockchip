@@ -4,7 +4,7 @@ Priority: optional
 Standards-Version: 4.6.0
 Maintainer: Joshua Riek <jjriek@verizon.net>
 Build-Depends: bc, rsync, kmod, cpio, build-essential, u-boot-tools, bison, python3 | python, python-is-python3 | python-is-python2, flex | flex:native , , libssl-dev:native
-Homepage: http://www.orangepi.org/
+Homepage: https://github.com/orangepi-xunlong/linux-orangepi
 Vcs-Browser: https://github.com/orangepi-xunlong/linux-orangepi
 Vcs-Git: https://github.com/orangepi-xunlong/linux-orangepi.git
 

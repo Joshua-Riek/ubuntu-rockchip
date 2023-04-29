@@ -31,6 +31,6 @@ fi
 cd linux-"${VENDOR}"
 
 # Compile kernel into a deb package
-CROSS_COMPILE=aarch64-linux-gnu- dpkg-buildpackage -a "$(cat debian/arch)" -d -b -nc -uc
+dpkg-buildpackage -a "$(cat debian/arch)" -d -b -nc -uc
 
 rm -f ../*.buildinfo ../*.changes ../linux-libc-dev*
