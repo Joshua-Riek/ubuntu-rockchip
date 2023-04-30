@@ -1,11 +1,5 @@
-linux-orangepi-rk3588 (5.10.110+20230406.git0d1781e7-1) jammy; urgency=medium
+linux-orangepi-rk3588 (5.10.110+20230406.git0d1781e7-1) UNRELEASED; urgency=medium
 
-  * scripts: package: debianize kernel package
-  * Revert "ANDROID: clk: Enable writable debugfs files"
-  * drm/rockchip: dw-dp: suppress dw-dp warning msg
-  * drm/rockchip: vop2: suppress unsupported format modifier
-  * arm64: dts: rockchip: improve hdmi sound
-  * arm64: dts: rockchip: enable dmc
-  * arm64: dts: rockchip: change model name for orangepi5b
+  * Initial packaging.
 
- -- Joshua Riek <jjriek@verizon.net>  Fri, 21 Apr 2023 18:59:35 -0400
+ -- Joshua Riek <jjriek@verizon.net>  Sat, 29 Apr 2023 17:45:01 -0400

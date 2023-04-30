@@ -5,3 +5,7 @@ Pin-Priority: 1001
 Package: linux-libc-dev
 Pin: release o=LP-PPA-jjriek-orangepi5
 Pin-Priority: 1
+
+Package: alsa-ucm-conf
+Pin: release o=LP-PPA-jjriek-orangepi5
+Pin-Priority: 1
