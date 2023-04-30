@@ -163,7 +163,7 @@ EOF
 if [[ ${LAUNCHPAD}  == "Y" ]]; then
     chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.110-${VENDOR}-rk3588 linux-headers-5.10.110-${VENDOR}-rk3588 linux-dtb-5.10.110-${VENDOR}-rk3588 u-boot-${BOARD}-rk3588"
 else
-    cp linux-{headers,image,dtb}-5.10.110-${VENDOR}-rk3588_*.deb ${chroot_dir}/tmp
+    cp linux-{headers,image,dtb}-5.10.110-"${VENDOR}"-rk3588_*.deb ${chroot_dir}/tmp
     chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image,dtb}-5.10.110-${VENDOR}-rk3588_*.deb && rm -rf /tmp/*"
     chroot ${chroot_dir} /bin/bash -c "apt-mark hold linux-image-5.10.110-${VENDOR}-rk3588 linux-headers-5.10.110-${VENDOR}-rk3588 linux-dtb-5.10.110-${VENDOR}-rk3588"
 
@@ -213,7 +213,7 @@ cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
 cp ${overlay_dir}/etc/udev/rules.d/90-audio-naming.rules ${chroot_dir}/etc/udev/rules.d/90-audio-naming.rules
 
 # Set board type for the wiringpi package
-echo "BOARD=${BOARD}" > ${chroot_dir}/etc/${VENDOR}-release
+echo "BOARD=${BOARD}" > ${chroot_dir}/etc/"${VENDOR}"-release
 
 # Realtek 8811CU/8821CU usb modeswitch support
 cp ${chroot_dir}/lib/udev/rules.d/40-usb_modeswitch.rules ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
@@ -284,8 +284,8 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf "../ubuntu-22.04.2-preinstalled-server-arm64-${BOARD}.rootfs.tar.xz" . && cd ..
-../scripts/build-image.sh "ubuntu-22.04.2-preinstalled-server-arm64-${BOARD}.rootfs.tar.xz"
+cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-22.04.2-preinstalled-server-arm64-"${BOARD}".rootfs.tar.xz . && cd ..
+../scripts/build-image.sh ubuntu-22.04.2-preinstalled-server-arm64-"${BOARD}".rootfs.tar.xz
 
 # Mount the temporary API filesystems
 mkdir -p ${chroot_dir}/{proc,sys,run,dev,dev/pts}
@@ -479,5 +479,5 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf "../ubuntu-22.04.2-preinstalled-desktop-arm64-${BOARD}.rootfs.tar.xz" . && cd ..
-../scripts/build-image.sh "ubuntu-22.04.2-preinstalled-desktop-arm64-${BOARD}.rootfs.tar.xz"
+cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-22.04.2-preinstalled-desktop-arm64-"${BOARD}".rootfs.tar.xz . && cd ..
+../scripts/build-image.sh ubuntu-22.04.2-preinstalled-desktop-arm64-"${BOARD}".rootfs.tar.xz
