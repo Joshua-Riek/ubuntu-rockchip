@@ -3,3 +3,4 @@
 0003-suppress-dw-dp-warning-msg.patch
 0004-suppress-unsupported-format-modifier.patch
 0005-change-model-name-for-orangepi5b.patch
+0006-enable-reserved-memory.patch
