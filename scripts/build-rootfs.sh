@@ -406,16 +406,6 @@ EOF
 cp ${overlay_dir}/usr/lib/scripts/gdm-hack.sh ${chroot_dir}/usr/lib/scripts/gdm-hack.sh
 cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
 
-# Rockchip pulseaudio configs and rules
-cp -r ${overlay_dir}/etc/pulse ${chroot_dir}/etc
-cp -r ${overlay_dir}/usr/share/alsa ${chroot_dir}/usr/share
-cp -r ${overlay_dir}/usr/share/pulseaudio ${chroot_dir}/usr/share
-cp -r ${overlay_dir}/etc/udev/rules.d/90-pulseaudio-rockchip.rules ${chroot_dir}/etc/udev/rules.d/90-pulseaudio-rockchip.rules
-
-# Fix pulseaudio stuck on gdm user
-cp -r ${overlay_dir}/usr/lib/systemd/user/pulseaudio.service.d ${chroot_dir}/usr/lib/systemd/user
-cp -r ${overlay_dir}/usr/lib/systemd/user/pulseaudio.socket.d ${chroot_dir}/usr/lib/systemd/user
-
 # Set gstreamer environment variables
 cp ${overlay_dir}/etc/profile.d/gst.sh ${chroot_dir}/etc/profile.d/gst.sh
 
@@ -430,6 +420,9 @@ cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 
 # Use mpv as the default video player
 sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
+
+# Set default HDMI audio as default
+echo "set-default-sink alsa_output.platform-hdmi0-sound.stereo-fallback" >> ${chroot_dir}/etc/pulse/default.pa
 
 # Config file for xorg
 mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
