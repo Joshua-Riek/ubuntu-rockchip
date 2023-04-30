@@ -424,6 +424,14 @@ sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/app
 # Set default HDMI audio as default
 echo "set-default-sink alsa_output.platform-hdmi0-sound.stereo-fallback" >> ${chroot_dir}/etc/pulse/default.pa
 
+# Adjust hostname for desktop
+echo "localhost.localdomain" > ${chroot_dir}/etc/hostname
+
+# Adjust hosts file for desktop
+sed -i 's/127.0.0.1 localhost/127.0.0.1\tlocalhost.localdomain\tlocalhost\n::1\t\tlocalhost6.localdomain6\tlocalhost6/g' ${chroot_dir}/etc/hosts
+sed -i 's/::1 ip6-localhost ip6-loopback/::1     localhost ip6-localhost ip6-loopback/g' ${chroot_dir}/etc/hosts
+sed -i "/ff00::0 ip6-mcastprefix\b/d" ${chroot_dir}/etc/hosts
+
 # Config file for xorg
 mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
 cp ${overlay_dir}/etc/X11/xorg.conf.d/20-modesetting.conf ${chroot_dir}/etc/X11/xorg.conf.d/20-modesetting.conf
