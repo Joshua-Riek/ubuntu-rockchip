@@ -1,5 +1,12 @@
+u-boot-orangepi-rk3588 (2017.09+20230427.git90d4bd74-1) jammy; urgency=medium
+
+  * Rebased to upstream commit 90d4bd74d09562aa2007880a0a9790571d8d74dc
+    - Revert "gpt: return 1 directly when test the mbr sector"
+
+ -- Joshua Riek <jjriek@verizon.net>  Sun, 30 Apr 2023 11:01:18 -0400
+
 u-boot-orangepi-rk3588 (2017.09+20230417.gitd7c6b92f-1) jammy; urgency=medium
 
-  * arch: arm: mach-rockchip: fix srctree path
+  * Initial packaging.
 
  -- Joshua Riek <jjriek@verizon.net>  Fri, 21 Apr 2023 22:07:08 -0400
