@@ -312,7 +312,7 @@ apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
 EOF
 
 # Copy packages to the rootfs
-cp -r ../debs/* ${chroot_dir}/tmp
+cp -r ../packages/{rkaiq,rktoolkit} ${chroot_dir}/tmp
 
 # Install packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
