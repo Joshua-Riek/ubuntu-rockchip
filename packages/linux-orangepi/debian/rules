@@ -36,7 +36,7 @@ binary-arch:
 config:
 	@touch .scmversion
 	@cp debian/defconfig .config
-	@echo $(VERSION)-1 | sed 's/^[^-]*-//' | bc > .version
+	@echo $(KDEB_PKGVERSION)-1 | sed 's/^[^-]*-//' | bc > .version
 	$(MAKE) olddefconfig \
 	  CROSS_COMPILE=$(CROSS_COMPILE) \
 	  ARCH=arm64 \
