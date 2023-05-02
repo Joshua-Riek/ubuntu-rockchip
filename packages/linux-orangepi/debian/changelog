@@ -1,4 +1,4 @@
-linux-orangepi-rk3588 (5.10.110+20230406.git0d1781e7-1) UNRELEASED; urgency=medium
+linux-orangepi-rk3588 (5.10.110+20230406.git0d1781e7-1) jammy; urgency=medium
 
   * Initial packaging.
 

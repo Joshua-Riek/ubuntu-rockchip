@@ -1,4 +1,4 @@
-u-boot-orangepi-rk3588 (2017.09+20230427.git90d4bd74-1) UNRELEASED; urgency=medium
+u-boot-orangepi-rk3588 (2017.09+20230427.git90d4bd74-1) jammy; urgency=medium
 
   * Initial packaging.
 
