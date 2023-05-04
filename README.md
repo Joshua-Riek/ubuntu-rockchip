@@ -1,6 +1,6 @@
 ## Overview
 
-This repository provides a pre-installed Ubuntu 22.04 desktop/server image for the [Orange Pi 5](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5.html) and [5B](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5B.html), offering a default Ubuntu experience. With this port, you can experience the power and stability of Ubuntu on your Orange Pi 5, making it an excellent choice for a wide range of projects and applications.
+This repository provides a pre-installed Ubuntu 22.04 desktop/server image for the [Orange Pi 5](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5.html) and [5B](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5B.html), offering a default Ubuntu experience. With this port, you can experience the power and stability of Ubuntu on your Orange Pi 5, making it an excellent choice for a wide range of projects and applications. For additional information, please take a look at the documentation available on the [Wiki](https://github.com/Joshua-Riek/ubuntu-orange-pi5/wiki).
 
 This device is still new and undergoing continuous development. As a result, you may encounter bugs or missing features. I'll do my best to update this project with the most recent changes and fixes. If you find problems, please report them in the issues section, and I will be happy to assist!
 
@@ -16,10 +16,9 @@ This device is still new and undergoing continuous development. As a result, you
 * Chromium browser with smooth 4k youtube video playback
 * MPV video player capable of smooth 4k video playback
 * Gstreamer can be used as an alternative 4k video player from the command line
-* Boot from [SD Card, USB, NVMe or SATA SSD](#flash-bootloader-to-spi)
-* Working Bluetooth and WiFi from the [Orange Pi5 PCIe WiFi 6.0 module (AP6275P)](#pcie-wifi-60-module-ap6275p)
+* Boot from [SD Card, USB, NVMe or SATA SSD](https://github.com/Joshua-Riek/ubuntu-orange-pi5/wiki/Flash-Bootloader-to-SPI)
+* Working Bluetooth and WiFi from the [Orange Pi5 PCIe WiFi 6.0 module (AP6275P)](https://github.com/Joshua-Riek/ubuntu-orange-pi5/wiki/PCIe-WiFi-6.0-Module-(AP6275P))
 * Uses the 5.10.110 Linux kernel
-* On board Microphone
 * Audio over HDMI
 
 ## Prepare an SD Card
@@ -37,30 +36,6 @@ Insert your SD card into the slot on the board and power on the device. The firs
 For the server image you will be able to login through HDMI or a serial console connection. The predefined user is `ubuntu` and the password is `ubuntu`.
 
 For the desktop image you must connect through HDMI and follow the setup-wizard.
-
-## Flash Bootloader to SPI
-
-Booting directly from a USB, NVMe or SATA SSD requires flashing U-Boot to the SPI.
-
-For a **NVMe** SSD, please use the below comand:
-```
-sudo dd if=/lib/u-boot-orangepi-rk3588/rkspi_loader.img of=/dev/mtdblock0 conv=notrunc
-```
-
-For a **SATA** SSD, please use the below comands:
-```
-sudo dd if=/lib/u-boot-orangepi-rk3588/rkspi_loader_sata.img of=/dev/mtdblock0 conv=notrunc 
-echo "overlays=ssd-sata" | sudo tee /boot/firmware/overlays.txt
-```
-
-If you are using an older release replace the path **/lib/u-boot-orangepi-rk3588** with **/usr/share/orangepi**.
-
-## PCIe WiFi 6.0 module (AP6275P)
-
-To enable, please use the below command and reboot your system:
-```
-echo "overlays=wifi-ap6275p" | sudo tee /boot/firmware/overlays.txt
-```
 
 ## Build Requirements
 
