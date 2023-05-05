@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -eE 
+trap 'echo Error: in $0 on line $LINENO' ERR
+
+cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ../..
+
+# Current upstream commit and version
+. debian/upstream
+
+# Current package version
+version=$(dpkg-parsechangelog -SVersion)
+
+# New release version
+if [ "${version%-*}" = "${VERSION}" ] ; then
+    # Bump the upload number
+    upload=$(echo "${version}" | grep -o '[0-9]*$')
+    new_version=${version%"${upload}"}$((upload + 1))
+else
+    # New upstream version
+    new_version="${VERSION}-1"
+fi
+
+echo "${new_version}"

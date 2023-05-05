@@ -92,6 +92,8 @@ if [[ ${BOARD} =~ orangepi5|orangepi5b ]]; then
     export VENDOR=orangepi
 elif [[ "${BOARD}" =~ rock5b|rock5a ]]; then
     export VENDOR=radxa
+elif [[ "${BOARD}" =~ nanopir6c|nanopir6s ]]; then
+    export VENDOR=nanopi
 else
     echo "Error: \"${BOARD}\" is an unsupported board"
     exit 1
