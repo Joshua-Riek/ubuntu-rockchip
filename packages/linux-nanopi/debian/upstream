@@ -1,0 +1,4 @@
+GIT=https://github.com/friendlyarm/kernel-rockchip.git
+COMMIT=b88d3a8032d6a73c7d2ec6143a9848df5b33969d
+BRANCH=nanopi5-v5.10.y_opt
+VERSION=5.10.110+20230406.git0d1781e7
