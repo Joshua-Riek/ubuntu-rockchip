@@ -12,6 +12,7 @@ Required arguments:
 
 Optional arguments:
   -h, --help            show this help message and exit
+  -c, --clean           clean the build directory
   -d, --docker          use docker to build
   -k, --kernel-only     only compile the kernel
   -u, --uboot-only      only compile uboot
@@ -47,16 +48,19 @@ for i in "$@"; do
             shift
             ;;
         -k|--kernel-only)
-            KERNEL_ONLY=Y
+            export KERNEL_ONLY=Y
             shift
             ;;
         -u|--uboot-only)
-            UBOOT_ONLY=Y
+            export UBOOT_ONLY=Y
             shift
             ;;
         -l|--launchpad)
             export LAUNCHPAD=Y
             shift
+            ;;
+        -c|--clean)
+            export CLEAN=Y
             ;;
         -v|--verbose)
             set -x
@@ -76,6 +80,14 @@ if [[ -z ${BOARD} ]]; then
     exit 1
 fi
 
+if [[ ${CLEAN} == "Y" ]]; then
+    if [ -d build/rootfs ]; then
+        umount -lf build/rootfs/dev/pts 2> /dev/null || true
+        umount -lf build/rootfs/* 2> /dev/null || true
+    fi
+    rm -rf build
+fi
+
 if [[ ${BOARD} =~ orangepi5|orangepi5b ]]; then
     export VENDOR=orangepi
 elif [[ "${BOARD}" =~ rock5b|rock5a ]]; then
@@ -85,12 +97,12 @@ else
     exit 1
 fi
 
-if [[ ${KERNEL_ONLY}  == "Y" ]]; then
+if [[ ${KERNEL_ONLY} == "Y" ]]; then
     eval "${DOCKER}" ./scripts/build-kernel.sh
     exit 0
 fi
 
-if [[ ${UBOOT_ONLY}  == "Y" ]]; then
+if [[ ${UBOOT_ONLY} == "Y" ]]; then
     eval "${DOCKER}" ./scripts/build-u-boot.sh
     exit 0
 fi
