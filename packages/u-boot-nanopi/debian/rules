@@ -17,7 +17,7 @@ DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.09.bin
 BL31_BLOB := rk3588_bl31_v1.36.elf
 BL32_BLOB := rk3588_bl32_v1.12.bin
 
-nanopi6: 
+nanopi_r6s nanopi_r6c: 
 	@mkdir -p debian/build/$@
 
 	make O=debian/build/$@ \
@@ -49,25 +49,41 @@ nanopi6:
 
 	chown -R joshua debian
 
-build: nanopi6
+build: nanopi_r6s nanopi_r6c
 
-binary-nanopi6:
-	rm -rf debian/tmp/nanopi6
-	mkdir -m 755 -p debian/tmp/nanopi6/usr/lib/u-boot-nanopi-rk3588
-	cp debian/build/nanopi6/u-boot.itb debian/tmp/nanopi6/usr/lib/u-boot-nanopi-rk3588/u-boot.itb
-	cp debian/build/nanopi6/idbloader.img debian/tmp/nanopi6/usr/lib/u-boot-nanopi-rk3588/idbloader.img
+binary-nanopi_r6s:
+	rm -rf debian/tmp/nanopi_r6s
+	mkdir -m 755 -p debian/tmp/nanopi_r6s/usr/lib/u-boot-nanopi-rk3588
+	cp debian/build/nanopi_r6s/u-boot.itb debian/tmp/nanopi_r6s/usr/lib/u-boot-nanopi-rk3588/u-boot.itb
+	cp debian/build/nanopi_r6s/idbloader.img debian/tmp/nanopi_r6s/usr/lib/u-boot-nanopi-rk3588/idbloader.img
 
-	mkdir -m 755 -p "debian/tmp/nanopi6/DEBIAN"
-	mkdir -p "debian/tmp/nanopi6/usr/share/doc/u-boot-nanopi-rk3588"
-	cp debian/copyright "debian/tmp/nanopi6/usr/share/doc/u-boot-nanopi-rk3588/"
-	cp debian/changelog "debian/tmp/nanopi6/usr/share/doc/u-boot-nanopi-rk3588/changelog.Debian"
-	gzip -9 "debian/tmp/nanopi6/usr/share/doc/u-boot-nanopi-rk3588/changelog.Debian"
-	sh -c "cd 'debian/tmp/nanopi6'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
-	chown -R root:root "debian/tmp/nanopi6" && chmod -R go-w "debian/tmp/nanopi6" && chmod -R a+rX "debian/tmp/nanopi6"
-	dpkg-gencontrol -pu-boot-nanopir6-rk3588 -P"debian/tmp/nanopi6"
-	dpkg --build "debian/tmp/nanopi6" ..
+	mkdir -m 755 -p "debian/tmp/nanopi_r6s/DEBIAN"
+	mkdir -p "debian/tmp/nanopi_r6s/usr/share/doc/u-boot-nanopi-rk3588"
+	cp debian/copyright "debian/tmp/nanopi_r6s/usr/share/doc/u-boot-nanopi-rk3588/"
+	cp debian/changelog "debian/tmp/nanopi_r6s/usr/share/doc/u-boot-nanopi-rk3588/changelog.Debian"
+	gzip -9 "debian/tmp/nanopi_r6s/usr/share/doc/u-boot-nanopi-rk3588/changelog.Debian"
+	sh -c "cd 'debian/tmp/nanopi_r6s'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
+	chown -R root:root "debian/tmp/nanopi_r6s" && chmod -R go-w "debian/tmp/nanopi_r6s" && chmod -R a+rX "debian/tmp/nanopi_r6s"
+	dpkg-gencontrol -pu-boot-nanopir6s-rk3588 -P"debian/tmp/nanopi_r6s"
+	dpkg --build "debian/tmp/nanopi_r6s" ..
 
-binary-arch: binary-nanopi6
+binary-nanopi_r6c:
+	rm -rf debian/tmp/nanopi_r6c
+	mkdir -m 755 -p debian/tmp/nanopi_r6c/usr/lib/u-boot-nanopi-rk3588
+	cp debian/build/nanopi_r6c/u-boot.itb debian/tmp/nanopi_r6c/usr/lib/u-boot-nanopi-rk3588/u-boot.itb
+	cp debian/build/nanopi_r6c/idbloader.img debian/tmp/nanopi_r6c/usr/lib/u-boot-nanopi-rk3588/idbloader.img
+
+	mkdir -m 755 -p "debian/tmp/nanopi_r6c/DEBIAN"
+	mkdir -p "debian/tmp/nanopi_r6c/usr/share/doc/u-boot-nanopi-rk3588"
+	cp debian/copyright "debian/tmp/nanopi_r6c/usr/share/doc/u-boot-nanopi-rk3588/"
+	cp debian/changelog "debian/tmp/nanopi_r6c/usr/share/doc/u-boot-nanopi-rk3588/changelog.Debian"
+	gzip -9 "debian/tmp/nanopi_r6c/usr/share/doc/u-boot-nanopi-rk3588/changelog.Debian"
+	sh -c "cd 'debian/tmp/nanopi_r6c'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
+	chown -R root:root "debian/tmp/nanopi_r6c" && chmod -R go-w "debian/tmp/nanopi_r6c" && chmod -R a+rX "debian/tmp/nanopi_r6c"
+	dpkg-gencontrol -pu-boot-nanopir6c-rk3588 -P"debian/tmp/nanopi_r6c"
+	dpkg --build "debian/tmp/nanopi_r6c" ..
+
+binary-arch: binary-nanopi_r6s binary-nanopi_r6c
 
 binary: binary-arch
 
