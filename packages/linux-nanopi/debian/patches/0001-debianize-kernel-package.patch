@@ -5,9 +5,10 @@ Subject: [PATCH] scripts: package: debianize kernel package
 
 ---
  Makefile                 |  39 ++++-------
+ arch/arm64/Makefile      |  21 +-----
  scripts/package/builddeb | 144 +++++++++++++++++++--------------------
  scripts/package/mkdebian |  58 +++++++---------
- 3 files changed, 109 insertions(+), 132 deletions(-)
+ 4 files changed, 112 insertions(+), 150 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index 7a34638d3c35..e9109e20f2eb 100644
@@ -102,6 +103,50 @@ index 7a34638d3c35..e9109e20f2eb 100644
  
  kernelversion:
  	@echo $(KERNELVERSION)
+diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
+index 20018d342f8f..cdb72d6ff254 100644
+--- a/arch/arm64/Makefile
++++ b/arch/arm64/Makefile
+@@ -155,7 +155,7 @@ libs-$(CONFIG_EFI_STUB) += $(objtree)/drivers/firmware/efi/libstub/lib.a
+ 
+ # Default target when executing plain make
+ boot		:= arch/arm64/boot
+-KBUILD_IMAGE	:= $(boot)/Image.gz
++KBUILD_IMAGE	:= $(boot)/Image
+ 
+ # Don't compile Image in mixed build with "all" target
+ ifndef KBUILD_MIXED_TREE
+@@ -209,22 +209,7 @@ endef
+ 
+ MAKE_MODULES ?= y
+ 
+-kernel.img: Image
+-	$(Q)scripts/mkkrnlimg $(objtree)/arch/arm64/boot/Image $(objtree)/kernel.img >/dev/null
+-	@echo '  Image:  kernel.img is ready'
+-
+-ifeq ($(CONFIG_VENDOR_FRIENDLYELEC),y)
+-DTBS := rk3*-nanopi*-rev*.dtb
+-
+-nanopi4-images: dtbs kernel.img $(LOGO) $(LOGO_KERNEL)
+-	$(Q)$(srctree)/scripts/mkimg --dtb $(DTBS) --keep-dtb-name
+-
+-nanopi5-images: nanopi4-images
+-nanopi6-images: nanopi4-images
+-PHONY += nanopi4-images nanopi5-images nanopi6-images
+-endif
+-
+-%.img: kernel.img
++%.img:
+ ifeq ("$(CONFIG_MODULES)$(MAKE_MODULES)$(srctree)","yy$(objtree)")
+ 	$(Q)$(MAKE) rockchip/$*.dtb Image.lz4 modules
+ else
+@@ -233,4 +218,4 @@ endif
+ 	$(Q)$(srctree)/scripts/mkimg --dtb $*.dtb
+ 
+ CLEAN_DIRS += out
+-CLEAN_FILES += boot.img kernel.img resource.img zboot.img
++CLEAN_FILES += boot.img kernel.img resource.img zboot.img
+\ No newline at end of file
 diff --git a/scripts/package/builddeb b/scripts/package/builddeb
 index 91a502bb97e8..dc61cf9cf204 100755
 --- a/scripts/package/builddeb

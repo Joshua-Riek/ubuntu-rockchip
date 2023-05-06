@@ -65,6 +65,10 @@ if [[ "${BOARD}" = orangepi5 ]]; then
     DEVICE_TREE=rk3588s-orangepi-5.dtb
 elif [[ "${BOARD}" = orangepi5b ]]; then
     DEVICE_TREE=rk3588s-orangepi-5b.dtb
+elif [[ "${BOARD}" = nanopir6c ]]; then
+    DEVICE_TREE=rk3588s-nanopi-r6c.dtb
+elif [[ "${BOARD}" = nanopir6s ]]; then
+    DEVICE_TREE=rk3588s-nanopi-r6s.dtb
 fi
 
 # Create an empty disk image

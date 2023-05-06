@@ -1,2 +1,4 @@
 0001-fix-srctree-path.patch
 0002-fix_source_so_boot_scr_works.patch
+0003-add-defconfig-and-dtb-of-nanopir6c.patch
+0004-add-defconfig-and-dtb-of-nanopir6s.patch
