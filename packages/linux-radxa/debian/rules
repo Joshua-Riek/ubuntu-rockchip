@@ -1,23 +1,45 @@
 #!/usr/bin/make -f
 
+include /usr/share/dpkg/architecture.mk
+include /usr/share/dpkg/pkg-info.mk
+
+ifneq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
+CROSS_COMPILE ?= $(DEB_HOST_GNU_TYPE)-
+endif
+
 ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
 NJOBS := -j $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
 else
 NJOBS := -j $(shell nproc)
 endif
 
-VERSION := $(shell dpkg-parsechangelog -SVersion -l debian/changelog)
+KDEB_PKGVERSION := $(shell dpkg-parsechangelog -SVersion -l debian/changelog)
 
 srctree ?= .
 
 build: config 
-	$(MAKE) KDEB_PKGVERSION=$(VERSION) $(NJOBS) KERNELRELEASE=5.10.110-radxa-rk3588 ARCH=arm64 -f $(srctree)/Makefile
+	$(MAKE) -f $(srctree)/Makefile \
+	  KERNELRELEASE=5.10.110-radxa-rk3588 \
+	  KDEB_PKGVERSION=$(KDEB_PKGVERSION) \
+	  CROSS_COMPILE=$(CROSS_COMPILE) \
+	  ARCH=arm64 \
+	  $(NJOBS)
 
 binary-arch:
-	$(MAKE) KDEB_PKGVERSION=$(VERSION) $(NJOBS) KERNELRELEASE=5.10.110-radxa-rk3588 ARCH=arm64 -f $(srctree)/Makefile intdeb-pkg
+	$(MAKE) -f $(srctree)/Makefile intdeb-pkg \
+	  KERNELRELEASE=5.10.110-radxa-rk3588 \
+	  KDEB_PKGVERSION=$(KDEB_PKGVERSION) \
+	  CROSS_COMPILE=$(CROSS_COMPILE) \
+	  ARCH=arm64 \
+	  $(NJOBS) 
 
 config:
-	$(MAKE) ARCH=arm64 rockchip_linux_defconfig
+	@touch .scmversion
+	@echo $(KDEB_PKGVERSION)-1 | sed 's/^[^-]*-//' | bc > .version
+	$(MAKE) rockchip_linux_defconfig \
+	  CROSS_COMPILE=$(CROSS_COMPILE) \
+	  ARCH=arm64 \
+	  $(NJOBS) 
 	./scripts/config --disable CONFIG_DEBUG_INFO
 
 clean:
