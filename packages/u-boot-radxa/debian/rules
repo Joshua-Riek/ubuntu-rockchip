@@ -13,7 +13,7 @@ else
 NJOBS := -j $(shell nproc)
 endif
 
-DDR_BLOB := rk3588_spl_loader_v1.08.111.bin
+DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.09.bin
 BL31_BLOB := rk3588_bl31_v1.34.elf
 
 rock-5b-rk3588 rock-5a-rk3588s: 
@@ -32,8 +32,11 @@ rock-5b-rk3588 rock-5a-rk3588s:
 	@mkdir -p debian/build/$@/arch/arm/mach-rockchip
 	@cp arch/arm/mach-rockchip/decode_bl31.py debian/build/$@/arch/arm/mach-rockchip/decode_bl31.py
 
+	@cp debian/rkbin/$(BL31_BLOB) debian/build/$@/bl31.elf
+
 	make O=debian/build/$@ \
 	  CROSS_COMPILE=$(CROSS_COMPILE) \
+	  SOURCE_DATE_EPOCH=$(shell date +%s) \
 	  ARCH=arm \
 	  $(NJOBS) \
 	  BL31=../../../debian/rkbin/$(BL31_BLOB) \
