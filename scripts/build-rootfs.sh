@@ -209,9 +209,6 @@ cp ${overlay_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg ${chroot_dir}/etc/clou
 # Default adduser config
 cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
 
-# Audio naming rules
-cp ${overlay_dir}/etc/udev/rules.d/90-audio-naming.rules ${chroot_dir}/etc/udev/rules.d/90-audio-naming.rules
-
 # Set board type for the wiringpi package
 echo "BOARD=${BOARD}" > ${chroot_dir}/etc/"${VENDOR}"-release
 
@@ -242,10 +239,6 @@ chroot ${chroot_dir} /bin/bash -c "systemctl enable cpu-governor-performance"
 cp ${overlay_dir}/usr/lib/systemd/system/gpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/gpu-governor-performance.service
 chroot ${chroot_dir} /bin/bash -c "systemctl enable gpu-governor-performance"
 
-# Enable the USB 2.0 port on boot
-cp ${overlay_dir}/usr/lib/systemd/system/enable-usb2.service ${chroot_dir}/usr/lib/systemd/system/enable-usb2.service
-chroot ${chroot_dir} /bin/bash -c "systemctl --no-reload enable enable-usb2"
-
 # Enable bluetooth for AP6275P
 cp ${overlay_dir}/usr/lib/systemd/system/ap6275p-bluetooth.service ${chroot_dir}/usr/lib/systemd/system/ap6275p-bluetooth.service
 cp ${overlay_dir}/usr/lib/scripts/ap6275p-bluetooth.sh ${chroot_dir}/usr/lib/scripts/ap6275p-bluetooth.sh
@@ -275,6 +268,24 @@ true > ${chroot_dir}/etc/machine-id
 
 # Fix Intel AX210 not working after linux-firmware update
 [ -e ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.pnvm ] && mv ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.{pnvm,bak}
+
+# Board specific changes
+if [[ ${BOARD} =~ orangepi5|orangepi5b ]]; then
+    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8388-sound", ENV{SOUND_DESCRIPTION}="ES8388 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+
+    cp ${overlay_dir}/usr/lib/systemd/system/enable-usb2.service ${chroot_dir}/usr/lib/systemd/system/enable-usb2.service
+    chroot ${chroot_dir} /bin/bash -c "systemctl --no-reload enable enable-usb2"
+elif [[ "${BOARD}" =~ rock5b|rock5a ]]; then
+    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi1-sound", ENV{SOUND_DESCRIPTION}="HDMI1 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmiin-sound", ENV{SOUND_DESCRIPTION}="HDMI-In Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8316-sound", ENV{SOUND_DESCRIPTION}="ES8316 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+elif [[ "${BOARD}" =~ nanopir6c|nanopir6s ]]; then
+	echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+fi
 
 # Update initramfs
 chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
