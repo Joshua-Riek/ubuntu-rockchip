@@ -61,13 +61,17 @@ if [[ -z ${VENDOR} ]]; then
     exit 1
 fi
 
-if [[ "${BOARD}" = orangepi5 ]]; then
+if [[ "${BOARD}" == orangepi5 ]]; then
     DEVICE_TREE=rk3588s-orangepi-5.dtb
-elif [[ "${BOARD}" = orangepi5b ]]; then
+elif [[ "${BOARD}" == orangepi5b ]]; then
     DEVICE_TREE=rk3588s-orangepi-5b.dtb
-elif [[ "${BOARD}" = nanopir6c ]]; then
+elif [[ "${BOARD}" == rock5a ]]; then
+    DEVICE_TREE=rk3588-rock-5a.dtb
+elif [[ "${BOARD}" == rock5b ]]; then
+    DEVICE_TREE=rk3588-rock-5b.dtb
+elif [[ "${BOARD}" == nanopir6c ]]; then
     DEVICE_TREE=rk3588s-nanopi-r6c.dtb
-elif [[ "${BOARD}" = nanopir6s ]]; then
+elif [[ "${BOARD}" == nanopir6s ]]; then
     DEVICE_TREE=rk3588s-nanopi-r6s.dtb
 fi
 
