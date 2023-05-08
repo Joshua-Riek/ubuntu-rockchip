@@ -1,0 +1,44 @@
+From c35b602e2caade4071361ac0070eeb036bdfed52 Mon Sep 17 00:00:00 2001
+From: Joshua Riek <jjriek@verizon.net>
+Date: Sun, 7 May 2023 17:53:31 -0400
+Subject: [PATCH] mali_kbase_device_hw_csf: remove kbase debug assert
+
+---
+ .../device/backend/mali_kbase_device_hw_csf.c      | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/arm/bifrost/device/backend/mali_kbase_device_hw_csf.c b/drivers/gpu/arm/bifrost/device/backend/mali_kbase_device_hw_csf.c
+index 7939bfd8e..6289cb4c1 100644
+--- a/drivers/gpu/arm/bifrost/device/backend/mali_kbase_device_hw_csf.c
++++ b/drivers/gpu/arm/bifrost/device/backend/mali_kbase_device_hw_csf.c
+@@ -201,8 +201,11 @@ static bool kbase_is_register_accessible(u32 offset)
+ 
+ void kbase_reg_write(struct kbase_device *kbdev, u32 offset, u32 value)
+ {
+-	KBASE_DEBUG_ASSERT(kbdev->pm.backend.gpu_powered);
+-	KBASE_DEBUG_ASSERT(kbdev->dev != NULL);
++	if (WARN_ON(!kbdev->pm.backend.gpu_powered))
++		return;
++
++	if (WARN_ON(kbdev->dev == NULL))
++		return;
+ 
+ 	if (!kbase_is_register_accessible(offset))
+ 		return;
+@@ -222,8 +225,11 @@ u32 kbase_reg_read(struct kbase_device *kbdev, u32 offset)
+ {
+ 	u32 val;
+ 
+-	KBASE_DEBUG_ASSERT(kbdev->pm.backend.gpu_powered);
+-	KBASE_DEBUG_ASSERT(kbdev->dev != NULL);
++	if (WARN_ON(!kbdev->pm.backend.gpu_powered))
++		return 0;
++
++	if (WARN_ON(kbdev->dev == NULL))
++		return 0;
+ 
+ 	if (!kbase_is_register_accessible(offset))
+ 		return 0;
+-- 
+2.25.1
+
