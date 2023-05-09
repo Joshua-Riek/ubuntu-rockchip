@@ -3476,6 +3476,7 @@ CONFIG_PPS_CLIENT_GPIO=m
 # PTP clock support
 #
 CONFIG_PTP_1588_CLOCK=y
+CONFIG_PTP_1588_CLOCK_KVM=m
 
 #
 # Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks.
