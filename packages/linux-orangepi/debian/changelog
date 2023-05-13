@@ -1,3 +1,9 @@
+linux-orangepi-rk3588 (5.10.110+20230406.git0d1781e7-3) jammy; urgency=medium
+
+  * revert: patch: mali_kbase_device_hw_csf: remove kbase debug assert
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 12 May 2023 23:23:36 -0400
+
 linux-orangepi-rk3588 (5.10.110+20230406.git0d1781e7-2) jammy; urgency=medium
 
   * patch: mali_kbase_device_hw_csf: remove kbase debug assert
