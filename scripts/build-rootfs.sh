@@ -386,9 +386,6 @@ apt-get -y purge cloud-init landscape-common
 ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
 [ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64
 
-# Improve mesa performance 
-echo "PAN_MESA_DEBUG=gofaster" >> /etc/environment
-
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
