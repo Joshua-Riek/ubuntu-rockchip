@@ -1,3 +1,4 @@
+compression-level = 3
 compression = "xz"
 tar-ignore = .git
 diff-ignore

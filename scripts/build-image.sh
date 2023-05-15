@@ -66,7 +66,7 @@ if [[ "${BOARD}" == orangepi5 ]]; then
 elif [[ "${BOARD}" == orangepi5b ]]; then
     DEVICE_TREE=rk3588s-orangepi-5b.dtb
 elif [[ "${BOARD}" == rock5a ]]; then
-    DEVICE_TREE=rk3588-rock-5a.dtb
+    DEVICE_TREE=rk3588a-rock-5a.dtb
 elif [[ "${BOARD}" == rock5b ]]; then
     DEVICE_TREE=rk3588-rock-5b.dtb
 elif [[ "${BOARD}" == nanopir6c ]]; then
@@ -218,8 +218,8 @@ overlays=
 EOF
 
 # Copy kernel and initrd to boot partition
-cp ${mount_point}/writable/boot/initrd.img-5.10.110-"${VENDOR}"-rk3588 ${mount_point}/system-boot/initrd.img
-cp ${mount_point}/writable/boot/vmlinuz-5.10.110-"${VENDOR}"-rk3588 ${mount_point}/system-boot/vmlinuz
+cp ${mount_point}/writable/boot/initrd.img-5.10.110-rockchip-rk3588 ${mount_point}/system-boot/initrd.img
+cp ${mount_point}/writable/boot/vmlinuz-5.10.110-rockchip-rk3588 ${mount_point}/system-boot/vmlinuz
 
 # Copy device trees to boot partition
 mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot
