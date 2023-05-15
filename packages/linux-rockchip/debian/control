@@ -1,0 +1,38 @@
+Source: linux-rockchip-rk3588
+Section: kernel
+Priority: optional
+Maintainer: Joshua Riek <jjriek@verizon.net>
+Standards-Version: 4.6.0
+Rules-Requires-Root: no
+Build-Depends: bc, rsync, kmod, cpio, build-essential, u-boot-tools, bison, python3 | python, python-is-python3 | python-is-python2, flex | flex:native , , libssl-dev:native
+Homepage: https://github.com/Joshua-Riek/linux-rockchip
+Vcs-Browser: https://github.com/Joshua-Riek/linux-rockchip
+Vcs-Git: https://github.com/Joshua-Riek/linux-rockchip.git
+
+Package: linux-image-5.10.110-rockchip-rk3588
+Architecture: arm64
+Description: Linux kernel, version 5.10.110
+ This package contains the Linux kernel, modules and corresponding other
+ files, version: 5.10.110.
+
+Package: linux-libc-dev
+Section: devel
+Provides: linux-kernel-headers
+Architecture: arm64
+Description: Linux support headers for userspace development
+ This package provides userspaces headers from the Linux kernel.  These headers
+ are used by the installed headers for GNU glibc and other system libraries.
+Multi-Arch: same
+
+Package: linux-dtb-5.10.110-rockchip-rk3588
+Architecture: arm64
+Provides: linux-dtb
+Description: Linux DTB, version 5.10.110
+ This package contains device blobs from the Linux kernel, version 5.10.110
+
+Package: linux-headers-5.10.110-rockchip-rk3588
+Architecture: arm64
+Description: Linux kernel headers for 5.10.110 on arm64
+ This package provides kernel header files for 5.10.110 on arm64
+ .
+ This is useful for people who need to build external modules
