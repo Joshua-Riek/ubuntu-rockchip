@@ -47,8 +47,6 @@ nanopi_r6s nanopi_r6c:
 	  debian/rkbin/$(DDR_BLOB):debian/build/$@/spl/u-boot-spl.bin \
 	  debian/build/$@/idbloader.img
 
-	chown -R joshua debian
-
 build: nanopi_r6s nanopi_r6c
 
 binary-nanopi_r6s:
