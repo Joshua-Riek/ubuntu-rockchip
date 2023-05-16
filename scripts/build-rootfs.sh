@@ -284,7 +284,7 @@ elif [[ "${BOARD}" =~ rock5b|rock5a ]]; then
     echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
     echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8316-sound", ENV{SOUND_DESCRIPTION}="ES8316 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
 elif [[ "${BOARD}" =~ nanopir6c|nanopir6s ]]; then
-	echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
 fi
 
 # Update initramfs
@@ -429,9 +429,6 @@ cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 # Use mpv as the default video player
 sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
 
-# Set default HDMI audio as default
-echo "set-default-sink alsa_output.platform-hdmi0-sound.stereo-fallback" >> ${chroot_dir}/etc/pulse/default.pa
-
 # Adjust hostname for desktop
 echo "localhost.localdomain" > ${chroot_dir}/etc/hostname
 
@@ -478,6 +475,11 @@ cp ${overlay_dir}/etc/initramfs-tools/conf-hooks.d/plymouth ${chroot_dir}/etc/in
 
 # Fix Intel AX210 not working after linux-firmware update
 [ -e ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.pnvm ] && mv ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.{pnvm,bak}
+
+# Set HDMI as default audio output
+if [[ ${BOARD} =~ orangepi5|orangepi5b|nanopir6c|nanopir6s ]]; then
+    echo "set-default-sink alsa_output.platform-hdmi0-sound.stereo-fallback" >> ${chroot_dir}/etc/pulse/default.pa
+fi
 
 # Update initramfs
 chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
