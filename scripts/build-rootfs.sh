@@ -113,8 +113,8 @@ mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-# Package priority for orangepi5 ppa
-cp ${overlay_dir}/etc/apt/preferences.d/orangepi5-ppa ${chroot_dir}/etc/apt/preferences.d/orangepi5-ppa
+# Package priority for rockchip ppa
+cp ${overlay_dir}/etc/apt/preferences.d/rockchip-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-ppa
 
 # Download and update packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
@@ -125,21 +125,21 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 locale-gen en_US.UTF-8
 update-locale LANG="en_US.UTF-8"
 
-# Add the orangepi5 ppa
+# Add the rockchip ppa
 apt-get -y update && apt-get -y install software-properties-common
-add-apt-repository -y ppa:jjriek/orangepi5
+add-apt-repository -y ppa:jjriek/rockchip
 
 # Download and update installed packages
 apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
 
 # Download and install generic packages
 apt-get -y install dmidecode mtd-tools i2c-tools u-boot-tools cloud-init \
-bash-completion man-db manpages nano gnupg initramfs-tools orangepi-firmware \
+bash-completion man-db manpages nano gnupg initramfs-tools armbian-firmware \
 ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
 pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
-gcc libc6-dev bison libssl-dev flex wiringpi-opi flash-kernel fake-hwclock rfkill
+gcc libc6-dev bison libssl-dev flex flash-kernel fake-hwclock rfkill
 
 # Remove cryptsetup and needrestart
 apt-get -y remove cryptsetup needrestart
@@ -209,9 +209,6 @@ cp ${overlay_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg ${chroot_dir}/etc/clou
 # Default adduser config
 cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
 
-# Set board type for the wiringpi package
-echo "BOARD=${BOARD}" > ${chroot_dir}/etc/"${VENDOR}"-release
-
 # Realtek 8811CU/8821CU usb modeswitch support
 cp ${chroot_dir}/lib/udev/rules.d/40-usb_modeswitch.rules ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
 sed '/LABEL="modeswitch_rules_end"/d' -i ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
@@ -277,6 +274,9 @@ if [[ ${BOARD} =~ orangepi5|orangepi5b ]]; then
 
     cp ${overlay_dir}/usr/lib/systemd/system/enable-usb2.service ${chroot_dir}/usr/lib/systemd/system/enable-usb2.service
     chroot ${chroot_dir} /bin/bash -c "systemctl --no-reload enable enable-usb2"
+
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y install wiringpi-opi"
+    echo "BOARD=${BOARD}" > ${chroot_dir}/etc/"${VENDOR}"-release
 elif [[ "${BOARD}" =~ rock5b|rock5a ]]; then
     echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
     echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi1-sound", ENV{SOUND_DESCRIPTION}="HDMI1 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
@@ -315,8 +315,8 @@ set -eE
 trap 'echo Error: in $0 on line $LINENO' ERR
 
 # Add mesa and rockchip multimedia mirrors
-add-apt-repository -y ppa:jjriek/panfork-mesa
-add-apt-repository -y ppa:jjriek/rockchip-multimedia
+add-apt-repository -y ppa:liujianfeng1994/panfork-mesa
+add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia
 
 # Download and update installed packages
 apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
