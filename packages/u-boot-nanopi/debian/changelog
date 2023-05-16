@@ -1,5 +1,5 @@
-u-boot-nanopi-rk3588 (2017.09+20230114.git93ceeb4d-1) jammy; urgency=medium
+u-boot-nanopi-rk3588 (2017.09+20230413.gita2a9f1df-1) jammy; urgency=medium
 
-  * Initial packaging.
+  * Inital packaging. 
 
- -- Joshua Riek <jjriek@verizon.net>  Fri, 22 Apr 2023 22:07:08 -0400
+ -- Joshua Riek <jjriek@verizon.net>  Tue, 16 May 2023 09:05:52 -0400
