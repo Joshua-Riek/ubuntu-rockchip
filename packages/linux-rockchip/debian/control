@@ -3,7 +3,6 @@ Section: kernel
 Priority: optional
 Maintainer: Joshua Riek <jjriek@verizon.net>
 Standards-Version: 4.6.0
-Rules-Requires-Root: no
 Build-Depends: bc, rsync, kmod, cpio, build-essential, u-boot-tools, bison, python3 | python, python-is-python3 | python-is-python2, flex | flex:native , , libssl-dev:native
 Homepage: https://github.com/Joshua-Riek/linux-rockchip
 Vcs-Browser: https://github.com/Joshua-Riek/linux-rockchip

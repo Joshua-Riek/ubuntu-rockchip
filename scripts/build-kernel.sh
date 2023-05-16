@@ -12,8 +12,10 @@ cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
 if [ ! -d linux-rockchip ]; then
-    git clone --single-branch --progress -b linux-5.10-gen-rkr3.6 https://github.com/Joshua-Riek/linux-rockchip.git linux-rockchip
-    git -C linux-rockchip checkout 4604f673957a2cdcb71547ca1dbc82781a8b3118
+    # shellcheck source=/dev/null
+    source ../packages/linux-rockchip/debian/upstream
+    git clone --single-branch --progress -b "${BRANCH}" "${GIT}" linux-rockchip
+    git -C linux-rockchip checkout "${COMMIT}"
     cp -r ../packages/linux-rockchip/debian linux-rockchip
 fi
 cd linux-rockchip
