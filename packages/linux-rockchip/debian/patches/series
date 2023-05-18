@@ -1,0 +1,6 @@
+0001-customize-debian-packaging.patch
+0002-remove-unused-device-trees-and-overlays.patch
+0003-add-opi5b-device-tree.patch
+0004-add-opi5-device-tree-overlays.patch
+0005-revert-rock5b-swap-cursor-and-display-plane.patch
+0006-suppress-unsupported-format-modifier-spam.patch

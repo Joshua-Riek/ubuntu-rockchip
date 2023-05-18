@@ -18,12 +18,13 @@ KDEB_PKGVERSION := $(shell dpkg-parsechangelog -SVersion -l debian/changelog)
 srctree ?= .
 
 config:
+	@cp debian/configs/linux_rockchip_defconfig .config
+	@echo 1 > .version
 	@touch .scmversion
-	@echo $(KDEB_PKGVERSION)-1 | sed 's/^[^-]*-//' | bc > .version
-	$(MAKE) rockchip_linux_defconfig \
+	$(MAKE) olddefconfig \
 	  CROSS_COMPILE=$(CROSS_COMPILE) \
 	  ARCH=arm64 \
-	  $(NJOBS) 
+	  $(NJOBS)
 
 build-indep:
 build-arch: config
