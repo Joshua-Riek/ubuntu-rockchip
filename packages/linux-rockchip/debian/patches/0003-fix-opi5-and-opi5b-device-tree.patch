@@ -1,13 +1,17 @@
-From bf5be213fb1b4c811bd8acf87bb58eba23b912aa Mon Sep 17 00:00:00 2001
+From 01b504d698cf931bea64c71b0686d4b1280099f7 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
-Date: Wed, 17 May 2023 20:01:29 -0400
-Subject: [PATCH] arm64: dts: add opi5b device tree
+Date: Thu, 18 May 2023 10:21:45 -0400
+Subject: [PATCH 3/8] arm64: dts: fix opi5 and opi5b device tree
 
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
- .../boot/dts/rockchip/rk3588s-orangepi-5b.dts | 441 ++++++++++++++++++
- 2 files changed, 442 insertions(+)
- create mode 100644 arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5b.dts
+ .../boot/dts/rockchip/rk3588s-orangepi-5.dts  |   2 -
+ .../boot/dts/rockchip/rk3588s-orangepi-5.dtsi |  14 +-
+ .../boot/dts/rockchip/rk3588s-orangepi-5b.dts | 425 ++++++++++++++++++
+ .../boot/dts/rockchip/rk3588s-orangepi.dtsi   |  15 +-
+ .../boot/dts/rockchip/rk3588s-pinctrl.dtsi    |   6 +
+ 6 files changed, 445 insertions(+), 18 deletions(-)
+ create mode 100755 arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5b.dts
 
 diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
 index 13f5fe5fe3b2..f52e1232562e 100644
@@ -21,12 +25,71 @@ index 13f5fe5fe3b2..f52e1232562e 100644
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-rock-5a.dtb
  
  subdir-y := $(dts-dirs) overlay
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
+index 0307c1c45aa9..ac8ff3231ff2 100755
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
+@@ -18,8 +18,6 @@ / {
+ 	model = "Orange Pi 5";
+ 	compatible = "rockchip,rk3588s-orangepi-5", "rockchip,rk3588";
+ 
+-	/delete-node/ chosen;
+-
+ 	vcc_3v3_sd_s0: vcc-3v3-sd-s0 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc_3v3_sd_s0";
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dtsi
+index 8f8ebcb0db68..9aad27c238e3 100755
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dtsi
+@@ -71,8 +71,7 @@ wireless_bluetooth: wireless-bluetooth {
+ 		pinctrl-1 = <&uart9_gpios>;
+ 		BT,reset_gpio    = <&gpio3 RK_PA6 GPIO_ACTIVE_HIGH>;
+ 		BT,wake_gpio     = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
+-		BT,wake_host_irq = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
+-		status = "okay";
++		status = "disabled";
+ 	};
+ 
+ 	wireless_wlan: wireless-wlan {
+@@ -82,7 +81,7 @@ wireless_wlan: wireless-wlan {
+ 		pinctrl-0 = <&wifi_host_wake_irq>, <&wifi_poweren_gpio>;
+ 		WIFI,host_wake_irq = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+ 		WIFI,poweren_gpio = <&gpio0 RK_PD0 GPIO_ACTIVE_HIGH>;
+-		status = "okay";
++		status = "disabled";
+ 	};
+ 
+ 	vbus5v0_typec: vbus5v0-typec {
+@@ -289,12 +288,6 @@ lcd1_rst_gpio: lcd1-rst-gpio {
+ 		};
+ 	};
+ 
+-	gpio-func {
+-		leds_gpio: leds-gpio {
+-			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
+-
+ 	usb-typec {
+ 		usbc0_int: usbc0-int {
+ 			rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
+@@ -313,8 +306,7 @@ uart9_gpios: uart9-gpios {
+ 		bt_gpio: bt-gpio {
+ 			rockchip,pins =
+ 				<3 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>,
+-				<0 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>,
+-				<0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
++				<0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_up>;
+ 		};
+ 	};
+ 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5b.dts b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5b.dts
-new file mode 100644
-index 000000000000..60f6baecc00f
+new file mode 100755
+index 000000000000..2e20a58154d4
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5b.dts
-@@ -0,0 +1,441 @@
+@@ -0,0 +1,425 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
@@ -46,8 +109,6 @@ index 000000000000..60f6baecc00f
 +/ {
 +	model = "Orange Pi 5B";
 +	compatible = "rockchip,rk3588s-orangepi-5", "rockchip,rk3588";
-+
-+	/delete-node/ chosen;
 +
 +	vcc_3v3_sd_s0: vcc-3v3-sd-s0 {
 +		compatible = "regulator-fixed";
@@ -69,19 +130,6 @@ index 000000000000..60f6baecc00f
 +		regulator-boot-on;
 +		regulator-min-microvolt = <1100000>;
 +		regulator-max-microvolt = <1100000>;
-+		vin-supply = <&vcc5v0_sys>;
-+	};
-+
-+	vcc3v3_pcie2x1l2: vcc3v3-pcie2x1l2 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc3v3_pcie2x1l2";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+		enable-active-high;
-+		regulator-boot-on;
-+		regulator-always-on;
-+		gpios = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
-+		startup-delay-us = <50000>;
 +		vin-supply = <&vcc5v0_sys>;
 +	};
 +
@@ -390,46 +438,19 @@ index 000000000000..60f6baecc00f
 +
 +/* watchdog */
 +&wdt {
-+        status = "okay";
++	status = "okay";
 +};
 +
 +&sfc {
-+	status = "okay";
-+	max-freq = <100000000>;
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&fspim0_pins>;
-+
-+	spi_flash: spi-flash@0 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "jedec,spi-nor";
-+		reg = <0x0>;
-+		spi-max-frequency = <100000000>;
-+		spi-tx-bus-width = <1>;
-+		spi-rx-bus-width = <4>;
-+		status = "okay";
-+
-+		partitions {
-+			compatible = "fixed-partitions";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+
-+			loader@0 {
-+				label = "loader";
-+				reg = <0x0 0x1000000>;
-+			};
-+		};
-+	};
++	status = "disabled";
 +};
 +
 +&mipi_dcphy0 {
-+        status = "okay";
++	status = "okay";
 +};
 +
 +&mipi_dcphy1 {
-+        status = "okay";
++	status = "okay";
 +};
 +
 +&rkcif {
@@ -456,18 +477,113 @@ index 000000000000..60f6baecc00f
 +	status = "okay";
 +};
 +
-+&sata0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&sata_reset>;
-+	status = "disabled";
-+};
-+
 +&pcie2x1l2 {
 +	reset-gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_HIGH>;
-+	vpcie3v3-supply = <&vcc3v3_pcie2x1l2>;
 +	rockchip,skip-scan-in-resume;
 +	status = "okay";
 +};
++
++&wireless_bluetooth {
++	BT,reset_gpio    = <&gpio3 RK_PA6 GPIO_ACTIVE_HIGH>;
++	BT,wake_gpio     = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
++	BT,wake_host_irq = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
++	status = "okay";
++};
++
++&wireless_wlan {
++	WIFI,host_wake_irq = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
++	WIFI,poweren_gpio = <&gpio0 RK_PD0 GPIO_ACTIVE_HIGH>;
++	status = "okay";
++};
++
++&pinctrl
++{
++	wireless-bluetooth {
++		uart9_gpios: uart9-gpios {
++			rockchip,pins = <3 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		bt_gpio: bt-gpio {
++			rockchip,pins =
++				<3 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>,
++				<0 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>,
++				<0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
++
++&sdhci {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi
+index bef3ca70c06d..ab8a95afa4a0 100755
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi.dtsi
+@@ -466,7 +466,7 @@ &sdhci {
+ 	max-frequency = <200000000>;
+ 	mmc-hs400-1_8v;
+ 	mmc-hs400-enhanced-strobe;
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &sdmmc {
+@@ -566,6 +566,7 @@ &vdpu_mmu {
+ 
+ &vop {
+ 	status = "okay";
++	disable-win-move;
+ 	assigned-clocks = <&cru ACLK_VOP>;
+ 	assigned-clock-rates = <800000000>;
+ };
+@@ -580,23 +581,27 @@ &vepu {
+ 
+ /* vp0 & vp1 splice for 8K output */
+ &vp0 {
++	cursor-win-id=<ROCKCHIP_VOP2_ESMART0>;
+ 	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER0 | 1 << ROCKCHIP_VOP2_ESMART0)>;
+-	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART0>;
++	rockchip,primary-plane = <ROCKCHIP_VOP2_CLUSTER0>;
+ };
+ 
+ &vp1 {
++	cursor-win-id=<ROCKCHIP_VOP2_ESMART1>;
+ 	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER1 | 1 << ROCKCHIP_VOP2_ESMART1)>;
+-	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART1>;
++	rockchip,primary-plane = <ROCKCHIP_VOP2_CLUSTER1>;
+ };
+ 
+ &vp2 {
++	cursor-win-id=<ROCKCHIP_VOP2_ESMART2>;
+ 	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER2 | 1 << ROCKCHIP_VOP2_ESMART2)>;
+-	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART2>;
++	rockchip,primary-plane = <ROCKCHIP_VOP2_CLUSTER2>;
+ };
+ 
+ &vp3 {
++	cursor-win-id=<ROCKCHIP_VOP2_ESMART3>;
+ 	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER3 | 1 << ROCKCHIP_VOP2_ESMART3)>;
+-	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART3>;
++	rockchip,primary-plane = <ROCKCHIP_VOP2_CLUSTER3>;
+ };
+ 
+ /* Fix tty terminal out of screen, and most dclk of resolutions was not supported in hdmiphy clock from parent clock by default */
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi
+index 0aceee389623..da5f147391a3 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi
+@@ -3413,5 +3413,11 @@ tsadc_gpio_func: tsadc-gpio-func {
+ 			rockchip,pins =
+ 				<0 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
++
++		/omit-if-no-ref/
++		leds_gpio: leds-gpio {
++			rockchip,pins =
++				<0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
+ 	};
+ };
 -- 
 2.25.1
 

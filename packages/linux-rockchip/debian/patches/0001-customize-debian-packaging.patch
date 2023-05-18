@@ -1,7 +1,7 @@
-From ebc03db37698bab464d553f386e983e3f804438e Mon Sep 17 00:00:00 2001
+From 7341e8aa23362620feff30c9481509b47c943755 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Wed, 17 May 2023 16:10:57 -0400
-Subject: [PATCH] scripts: package: customize debian packaging
+Subject: [PATCH 1/8] scripts: package: customize debian packaging
 
 ---
  Makefile                 |  21 ++----
@@ -299,3 +299,4 @@ index 60a2a63a5e90..b1734168a124 100755
  if is_enabled CONFIG_MODULES; then
 -- 
 2.25.1
+

@@ -1,4 +1,4 @@
 GIT=https://github.com/Joshua-Riek/linux-rockchip.git
-COMMIT=24fe2a32c8e8a91f2788a5a7cfabcfbcb68fabf3
-BRANCH=rockchip-5.10-dev
-VERSION=5.10.110+20230517.git90292460-1
+COMMIT=44da34a5f95c81f2d755aec2c87e197f5146c8be
+BRANCH=rockchip-5.10
+VERSION=5.10.110+20230518.git44da34a5-1
