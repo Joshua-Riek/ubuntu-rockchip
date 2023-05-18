@@ -1,7 +1,8 @@
-From 3e99f0f5964d67df5c168fe7a476d6dd157febe7 Mon Sep 17 00:00:00 2001
+From 50b9636a7f0e9da83b8d69406926124f4ed78d5d Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Wed, 17 May 2023 18:36:54 -0400
-Subject: [PATCH] arm64: dts: rk3588: revert rock5b "swap cursor and display plane (#104)"
+Subject: [PATCH 5/8] arm64: dts: rk3588: revert rock5b "swap cursor and
+ display plane (#104)"
 
 ---
  arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts | 16 ++++++++--------

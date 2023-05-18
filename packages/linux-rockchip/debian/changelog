@@ -1,4 +1,4 @@
-linux-rockchip-rk3588 (5.10.110+20230517.git90292460-1) jammy; urgency=medium
+linux-rockchip-rk3588 (5.10.110+20230518.git44da34a5-1) jammy; urgency=medium
 
   * Initial packaging.
 
