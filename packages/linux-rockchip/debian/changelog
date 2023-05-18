@@ -1,3 +1,10 @@
+linux-rockchip-rk3588 (5.10.110+20230518.git44da34a5-2) jammy; urgency=medium
+
+  * patch: drivers: misc: fix khadas compile warning
+  * debian: rules: fix build version
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 18 May 2023 18:36:48 -0400
+
 linux-rockchip-rk3588 (5.10.110+20230518.git44da34a5-1) jammy; urgency=medium
 
   * Initial packaging.
