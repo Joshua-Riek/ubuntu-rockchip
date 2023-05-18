@@ -5,3 +5,4 @@
 0005-revert-rock5b-swap-cursor-and-display-plane.patch
 0006-suppress-unsupported-format-modifi.patch
 0007-suppress-use-tmds-mode-dev-info.patch
+0008-fix-khadas-compile-warning.patch

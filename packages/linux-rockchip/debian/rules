@@ -14,12 +14,13 @@ NJOBS := -j $(shell nproc)
 endif
 
 KDEB_PKGVERSION := $(shell dpkg-parsechangelog -SVersion -l debian/changelog)
+BUILD_VERSION := $(shell dpkg-parsechangelog -l debian/changelog | grep -c linux-rockchip-rk3588)
 
 srctree ?= .
 
 config:
 	@cp debian/configs/linux_rockchip_defconfig .config
-	@echo $(shell dpkg-parsechangelog -l debian/changelog | grep -c linux-rockchip-rk3588) > .version
+	@echo $(BUILD_VERSION)-1 | bc > .version
 	@touch .scmversion
 	$(MAKE) olddefconfig \
 	  CROSS_COMPILE=$(CROSS_COMPILE) \
