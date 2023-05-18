@@ -19,7 +19,7 @@ srctree ?= .
 
 config:
 	@cp debian/configs/linux_rockchip_defconfig .config
-	@echo 1 > .version
+	@echo $(shell dpkg-parsechangelog -l debian/changelog | grep -c linux-rockchip-rk3588) > .version
 	@touch .scmversion
 	$(MAKE) olddefconfig \
 	  CROSS_COMPILE=$(CROSS_COMPILE) \
