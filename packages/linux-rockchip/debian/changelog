@@ -1,5 +1,5 @@
-linux-rockchip-rk3588 (5.10.110-1) jammy; urgency=medium
+linux-rockchip-rk3588 (5.10.110+20230517.git90292460-1) jammy; urgency=medium
 
   * Initial packaging.
 
- -- Joshua Riek <jjriek@verizon.net>  Sat, 29 Apr 2023 17:45:01 -0400
+ -- Joshua Riek <jjriek@verizon.net>  Wed, 17 May 2023 20:24:13 -0400
