@@ -63,16 +63,22 @@ fi
 
 if [[ "${BOARD}" == orangepi5 ]]; then
     DEVICE_TREE=rk3588s-orangepi-5.dtb
+    OVERLAY_PREFIX=orangepi-5
 elif [[ "${BOARD}" == orangepi5b ]]; then
     DEVICE_TREE=rk3588s-orangepi-5b.dtb
+    OVERLAY_PREFIX=orangepi-5
 elif [[ "${BOARD}" == rock5a ]]; then
     DEVICE_TREE=rk3588a-rock-5a.dtb
+    OVERLAY_PREFIX=rock-5a
 elif [[ "${BOARD}" == rock5b ]]; then
     DEVICE_TREE=rk3588-rock-5b.dtb
+    OVERLAY_PREFIX=rock-5b
 elif [[ "${BOARD}" == nanopir6c ]]; then
     DEVICE_TREE=rk3588s-nanopi-r6c.dtb
+    OVERLAY_PREFIX=
 elif [[ "${BOARD}" == nanopir6s ]]; then
     DEVICE_TREE=rk3588s-nanopi-r6s.dtb
+    OVERLAY_PREFIX=
 fi
 
 # Create an empty disk image
@@ -190,8 +196,8 @@ load ${devtype} ${devnum}:${distro_bootpart} ${fdt_addr_r} /dtbs/${fdtfile}
 fdt addr ${fdt_addr_r} && fdt resize 0x10000
 
 for overlay_file in ${overlays}; do
-    if load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/overlays/rk3588-${overlay_file}.dtbo; then
-        echo "Applying device tree overlay: /dtbs/overlays/rk3588-${overlay_file}.dtbo"
+    if load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/overlays/${overlay_prefix}-${overlay_file}.dtbo; then
+        echo "Applying device tree overlay: /dtbs/overlays/${overlay_prefix}-${overlay_file}.dtbo"
         fdt apply ${fdtoverlay_addr_r} || setenv overlay_error "true"
     elif load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/overlays/${overlay_file}.dtbo; then
         echo "Applying device tree overlay: /dtbs/overlays/${overlay_file}.dtbo"
@@ -214,6 +220,7 @@ mkimage -A arm64 -O linux -T script -C none -n "Boot Script" -d ${mount_point}/s
 cat > ${mount_point}/system-boot/ubuntuEnv.txt << EOF
 bootargs=root=UUID=${root_uuid} rootfstype=ext4 rootwait rw console=ttyS2,1500000 console=tty1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0 ${bootargs}
 fdtfile=${DEVICE_TREE}
+overlay_prefix=${OVERLAY_PREFIX}
 overlays=
 EOF
 
