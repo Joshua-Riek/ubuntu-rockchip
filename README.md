@@ -1,10 +1,8 @@
 ## Overview
 
-This repository provides a pre-installed Ubuntu 22.04 desktop/server image for the [Orange Pi 5](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5.html) and [5B](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5B.html), offering a default Ubuntu experience. With this port, you can experience the power and stability of Ubuntu on your Orange Pi 5, making it an excellent choice for a wide range of projects and applications. For additional information, please take a look at the documentation available on the [Wiki](https://github.com/Joshua-Riek/ubuntu-orange-pi5/wiki).
+This project aims to provide a default Ubuntu 22.04 experience for Rockchip RK3588 devices. Get started today with an Ubuntu Server or Desktop image for a familiar environment. For additional information about this project or a specific device, please take a look at the documentation available on the [Wiki](https://github.com/Joshua-Riek/ubuntu-rockchip/wiki).
 
-This device is still new and undergoing continuous development. As a result, you may encounter bugs or missing features. I'll do my best to update this project with the most recent changes and fixes. If you find problems, please report them in the issues section, and I will be happy to assist!
-
-<img src="https://i.imgur.com/eQnRu1t.png" width="400">
+The supported devices are undergoing continuous development. As a result, you may encounter bugs or missing features. I'll do my best to update this project with the most recent changes and fixes. If you find problems, please report them in the issues or discussions section.
 
 ## Highlights
 
@@ -16,16 +14,24 @@ This device is still new and undergoing continuous development. As a result, you
 * Chromium browser with smooth 4k youtube video playback
 * MPV video player capable of smooth 4k video playback
 * Gstreamer can be used as an alternative 4k video player from the command line
-* Boot from [SD Card, USB, NVMe or SATA SSD](https://github.com/Joshua-Riek/ubuntu-orange-pi5/wiki/Flash-Bootloader-to-SPI)
-* Working Bluetooth and WiFi from the [Orange Pi5 PCIe WiFi 6.0 module (AP6275P)](https://github.com/Joshua-Riek/ubuntu-orange-pi5/wiki/PCIe-WiFi-6.0-Module-(AP6275P))
-* Uses the 5.10.110 Linux kernel
-* Audio over HDMI
+* 5.10.110 Linux kernel
 
-## Prepare an SD Card
+## Supported Boards
+
+* Orange Pi 5
+* Orange Pi 5B
+* Orange Pi 5 Plus (WIP hardware required)
+* NanoPi R6S
+* NanoPi R6C
+* Rock 5B
+* Rock 5A (WIP hardware required)
+* Indiedroid Nova (WIP)
+
+## Installation
 
 Make sure you use a good, reliable, and fast SD card. For example, suppose you encounter boot or stability troubles. Most of the time, this is due to either an insufficient power supply or related to your SD card (bad card, bad card reader, something went wrong when burning the image, or the card is too slow).
 
-Download your preferred version of Ubuntu from the latest [release](https://github.com/Joshua-Riek/ubuntu-orange-pi5/releases) on GitHub. Then write the xz compressed image to your SD card using [balenaEtcher](https://www.balena.io/etcher) since, unlike other tools, it can validate burning results, saving you from corrupted SD card contents.
+Download the Ubuntu image for your specific board from the latest [release](https://github.com/Joshua-Riek/ubuntu-rockchip/releases) on GitHub. Then write the xz compressed image to your SD card using [balenaEtcher](https://www.balena.io/etcher) since, unlike other tools, it can validate burning results, saving you from corrupted SD card contents.
 
 ## Boot the System
 
@@ -36,29 +42,3 @@ Insert your SD card into the slot on the board and power on the device. The firs
 For the server image you will be able to login through HDMI or a serial console connection. The predefined user is `ubuntu` and the password is `ubuntu`.
 
 For the desktop image you must connect through HDMI and follow the setup-wizard.
-
-## Build Requirements
-
-To to set up the build environment, please use a Ubuntu 22.04 machine, then install the below packages:
-
-```
-sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
-qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
-debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
-udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
-python-is-python3 fdisk
-```
-
-## Building
-
-To checkout the source and build:
-
-```
-git clone https://github.com/Joshua-Riek/ubuntu-orange-pi5.git
-cd ubuntu-orange-pi5
-sudo ./build.sh --board=orangepi5
-```
-
-## Known Limitations
-
-1. The Vulkan graphics API is not supported due to driver limitations.
