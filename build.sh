@@ -88,7 +88,7 @@ if [[ ${CLEAN} == "Y" ]]; then
     rm -rf build
 fi
 
-if [[ ${BOARD} =~ orangepi5|orangepi5b ]]; then
+if [[ ${BOARD} =~ orangepi5|orangepi5b|orangepi5plus ]]; then
     export VENDOR=orangepi
 elif [[ "${BOARD}" =~ rock5b|rock5a ]]; then
     export VENDOR=radxa

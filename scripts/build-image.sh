@@ -67,6 +67,9 @@ if [[ "${BOARD}" == orangepi5 ]]; then
 elif [[ "${BOARD}" == orangepi5b ]]; then
     DEVICE_TREE=rk3588s-orangepi-5b.dtb
     OVERLAY_PREFIX=orangepi-5
+elif [[ "${BOARD}" == orangepi5plus ]]; then
+    DEVICE_TREE=rk3588s-orangepi-5-plus.dtb
+    OVERLAY_PREFIX=orangepi-5-plus
 elif [[ "${BOARD}" == rock5a ]]; then
     DEVICE_TREE=rk3588a-rock-5a.dtb
     OVERLAY_PREFIX=rock-5a
