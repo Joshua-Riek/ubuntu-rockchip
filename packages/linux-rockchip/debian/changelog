@@ -1,3 +1,12 @@
+linux-rockchip-rk3588 (5.10.110+20230518.git44da34a5-4) jammy; urgency=medium
+
+  * patch:
+    - arm64: dts: disable win move on rock5b and rock5a
+    - arm64: dts: fix opi5 and opi5b device tree
+    - drm: rockchip: dw_hdmi: suppress use tmds mode dev info
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 19 May 2023 17:25:58 -0400
+
 linux-rockchip-rk3588 (5.10.110+20230518.git44da34a5-3) jammy; urgency=medium
 
   * patch: arm64: dts: remove chosen bootargs for opi5 and opi5b
