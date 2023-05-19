@@ -1,3 +1,13 @@
+u-boot-orangepi-rk3588 (2017.09+20230517.gite7fa0094-1) UNRELEASED; urgency=medium
+
+  * Miscellaneous upstream changes
+    - opi5: Set CONFIG_MTD_BLK_U_BOOT_OFFS=0x400
+    - opi5b: Set CONFIG_ROCKCHIP_EMMC_IOMUX=y
+    - opi5plus: Set CONFIG_MTD_BLK_U_BOOT_OFFS=0x400 and CONFIG_ROCKCHIP_EMMC_IOMUX=y
+    - Automatically detects boot devices and enters download mode if needed
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 19 May 2023 13:54:33 -0400
+
 u-boot-orangepi-rk3588 (2017.09+20230427.git90d4bd74-1) jammy; urgency=medium
 
   * Initial packaging.

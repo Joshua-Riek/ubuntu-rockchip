@@ -16,7 +16,7 @@ endif
 DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.08.bin
 BL31_BLOB := rk3588_bl31_v1.27.elf
 
-orangepi_5 orangepi_5_sata orangepi_5b: 
+orangepi_5 orangepi_5_sata orangepi_5b orangepi_5_plus: 
 	@mkdir -p debian/build/$@
 
 	make O=debian/build/$@ \
@@ -54,7 +54,7 @@ orangepi_5 orangepi_5_sata orangepi_5b:
 	@dd if=debian/build/$@/idbloader.img of=debian/build/$@/rkspi_loader.img seek=64 conv=notrunc
 	@dd if=debian/build/$@/u-boot.itb of=debian/build/$@/rkspi_loader.img seek=16384 conv=notrunc
 
-build: orangepi_5 orangepi_5_sata orangepi_5b
+build: orangepi_5 orangepi_5_sata orangepi_5b orangepi_5_plus
 
 binary-orangepi_5:
 	rm -rf debian/tmp/orangepi_5
@@ -91,7 +91,24 @@ binary-orangepi_5b:
 	dpkg-gencontrol -pu-boot-orangepi5b-rk3588 -P"debian/tmp/orangepi_5b"
 	dpkg --build "debian/tmp/orangepi_5b" ..
 
-binary-arch: binary-orangepi_5 binary-orangepi_5b
+binary-orangepi_5_plus:
+	rm -rf debian/tmp/orangepi_5_plus
+	mkdir -m 755 -p debian/tmp/orangepi_5_plus/usr/lib/u-boot-orangepi-rk3588
+	cp debian/build/orangepi_5_plus/u-boot.itb debian/tmp/orangepi_5_plus/usr/lib/u-boot-orangepi-rk3588/u-boot.itb
+	cp debian/build/orangepi_5_plus/idbloader.img debian/tmp/orangepi_5_plus/usr/lib/u-boot-orangepi-rk3588/idbloader.img
+	cp debian/build/orangepi_5_plus/rkspi_loader.img debian/tmp/orangepi_5_plus/usr/lib/u-boot-orangepi-rk3588/rkspi_loader.img
+
+	mkdir -m 755 -p "debian/tmp/orangepi_5_plus/DEBIAN"
+	mkdir -p "debian/tmp/orangepi_5_plus/usr/share/doc/u-boot-orangepi-rk3588"
+	cp debian/copyright "debian/tmp/orangepi_5_plus/usr/share/doc/u-boot-orangepi-rk3588/"
+	cp debian/changelog "debian/tmp/orangepi_5_plus/usr/share/doc/u-boot-orangepi-rk3588/changelog.Debian"
+	gzip -9 "debian/tmp/orangepi_5_plus/usr/share/doc/u-boot-orangepi-rk3588/changelog.Debian"
+	sh -c "cd 'debian/tmp/orangepi_5_plus'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
+	chown -R root:root "debian/tmp/orangepi_5_plus" && chmod -R go-w "debian/tmp/orangepi_5_plus" && chmod -R a+rX "debian/tmp/orangepi_5_plus"
+	dpkg-gencontrol -pu-boot-orangepi5plus-rk3588 -P"debian/tmp/orangepi_5_plus"
+	dpkg --build "debian/tmp/orangepi_5_plus" ..
+
+binary-arch: binary-orangepi_5 binary-orangepi_5b binary-orangepi_5_plus
 
 binary: binary-arch
 
