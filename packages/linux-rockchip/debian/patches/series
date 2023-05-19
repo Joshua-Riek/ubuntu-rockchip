@@ -2,8 +2,8 @@
 0002-remove-unused-device-trees-and-overlays.patch
 0003-fix-opi5-and-opi5b-device-tree.patch
 0004-add-opi5-device-tree-overlays.patch
-0005-revert-rock5b-swap-cursor-and-display-plane.patch
-0006-suppress-unsupported-format-modifi.patch
+0005-disable-win-move-on-rock5b-and-rock5a.patch
+0006-suppress-unsupported-format-modifier.patch
 0007-suppress-use-tmds-mode-dev-info.patch
 0008-fix-khadas-compile-warning.patch
 0009-remove-chosen-bootargs-for-opi5-and-opi5b.patch
