@@ -1,0 +1,4 @@
+GIT=https://github.com/stvhay/u-boot.git
+COMMIT=2f6e967dc901ae570f522d1b47309e7c34acf542
+BRANCH=rockchip-rk3588-unified
+VERSION=2017.09+20230321.git2f6e967d

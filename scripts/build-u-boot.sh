@@ -11,11 +11,6 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
-if [[ -z ${BOARD} ]]; then
-    echo "Error: BOARD is not set"
-    exit 1
-fi
-
 if [[ -z ${VENDOR} ]]; then
     echo "Error: VENDOR is not set"
     exit 1
