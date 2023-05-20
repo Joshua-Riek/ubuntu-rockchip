@@ -1,14 +1,14 @@
-From ab6caa4e7fd7274d6f2e42a0ab25cd1afdda7743 Mon Sep 17 00:00:00 2001
+From fd34887e1adfecd7a8a1c9542a6f1c2efbfe8352 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Thu, 18 May 2023 13:10:19 -0400
-Subject: [PATCH 7/8] drm: rockchip: dw_hdmi: suppress use tmds mode dev info
+Subject: [PATCH 7/9] drm: rockchip: dw_hdmi: suppress use tmds mode dev info
 
 ---
  drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
-index ed06757c8280..e73b0b2bc036 100644
+index ed06757c8280..dc778e28741a 100644
 --- a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
 +++ b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
 @@ -806,7 +806,7 @@ static void hdmi_select_link_config(struct rockchip_hdmi *hdmi,

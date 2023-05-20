@@ -1,18 +1,18 @@
-From fed0f26fb8d201a8fcba9a7e7f3ca7f84860c033 Mon Sep 17 00:00:00 2001
+From 67d14bdfffddbb6429aff95ffd2dcd001dae51ef Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Wed, 17 May 2023 16:19:00 -0400
-Subject: [PATCH 2/8] arm64: dts: remove unused device trees and overlays
+Subject: [PATCH 2/9] arm64: dts: remove unused device trees and overlays
 
 ---
- arch/arm64/boot/dts/rockchip/Makefile         | 165 ------------------
+ arch/arm64/boot/dts/rockchip/Makefile         | 167 ------------------
  arch/arm64/boot/dts/rockchip/overlay/Makefile |  11 --
- 2 files changed, 176 deletions(-)
+ 2 files changed, 178 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
-index 58c8673c357a..13f5fe5fe3b2 100644
+index fb6115bff4b2..13f5fe5fe3b2 100644
 --- a/arch/arm64/boot/dts/rockchip/Makefile
 +++ b/arch/arm64/boot/dts/rockchip/Makefile
-@@ -1,174 +1,9 @@
+@@ -1,176 +1,9 @@
  # SPDX-License-Identifier: GPL-2.0
 -dtb-$(CONFIG_ARCH_ROCKCHIP) += px30-evb.dtb
 -dtb-$(CONFIG_ARCH_ROCKCHIP) += px30-evb-ddr3-v10.dtb
@@ -126,6 +126,8 @@ index 58c8673c357a..13f5fe5fe3b2 100644
 -dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nvr-demo-v10-linux-spi-nand.dtb
 -dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nvr-demo-v12-linux.dtb
 -dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nvr-demo-v12-linux-spi-nand.dtb
+-dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-radxa-e25.dtb
+-dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-rock-3a.dtb
 -dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-blueberry-edge-v10-linux.dtb
 -dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-blueberry-edge-v12-linux.dtb
 -dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-blueberry-minipc-linux.dtb
