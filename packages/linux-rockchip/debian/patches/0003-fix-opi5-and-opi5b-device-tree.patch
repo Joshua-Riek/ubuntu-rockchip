@@ -1,15 +1,15 @@
-From 07109ca4723dfc38c097481e273b25c86c0ed59b Mon Sep 17 00:00:00 2001
+From fed8e19ad795175972e62106a28d357f91a685ab Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Thu, 18 May 2023 10:21:45 -0400
-Subject: [PATCH] arm64: dts: fix opi5 and opi5b device tree
+Subject: [PATCH 3/9] arm64: dts: fix opi5 and opi5b device tree
 
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
+ .../boot/dts/rockchip/rk3588s-orangepi-5.dts  |  17 +-
  .../boot/dts/rockchip/rk3588s-orangepi-5.dtsi |  14 +-
- .../boot/dts/rockchip/rk3588s-orangepi-5b.dts | 427 ++++++++++++++++++
+ .../boot/dts/rockchip/rk3588s-orangepi-5b.dts | 434 ++++++++++++++++++
  .../boot/dts/rockchip/rk3588s-orangepi.dtsi   |  15 +-
- .../boot/dts/rockchip/rk3588s-pinctrl.dtsi    |   6 +
- 5 files changed, 447 insertions(+), 16 deletions(-)
+ 5 files changed, 462 insertions(+), 19 deletions(-)
  create mode 100755 arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5b.dts
 
 diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
@@ -24,6 +24,48 @@ index 13f5fe5fe3b2..f52e1232562e 100644
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-rock-5a.dtb
  
  subdir-y := $(dts-dirs) overlay
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
+index 0307c1c45aa9..38fa53bb3f8b 100755
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
+@@ -361,7 +361,7 @@ &pwm1 {
+ 
+ /* watchdog */
+ &wdt {
+-        status = "okay";
++	status = "okay";
+ };
+ 
+ &sfc {
+@@ -396,11 +396,11 @@ loader@0 {
+ };
+ 
+ &mipi_dcphy0 {
+-        status = "okay";
++	status = "okay";
+ };
+ 
+ &mipi_dcphy1 {
+-        status = "okay";
++	status = "okay";
+ };
+ 
+ &rkcif {
+@@ -439,3 +439,14 @@ &pcie2x1l2 {
+ 	rockchip,skip-scan-in-resume;
+ 	status = "okay";
+ };
++
++&pinctrl
++{
++	gpio-func {
++		leds_gpio: leds-gpio {
++			rockchip,pins =
++				<1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
++
 diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dtsi
 index 8f8ebcb0db68..9aad27c238e3 100755
 --- a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dtsi
@@ -72,10 +114,10 @@ index 8f8ebcb0db68..9aad27c238e3 100755
  
 diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5b.dts b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5b.dts
 new file mode 100755
-index 000000000000..b66ab41524e8
+index 000000000000..136b92d5c377
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5b.dts
-@@ -0,0 +1,427 @@
+@@ -0,0 +1,434 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
@@ -498,6 +540,13 @@ index 000000000000..b66ab41524e8
 +				<0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +	};
++
++	gpio-func {
++		leds_gpio: leds-gpio {
++			rockchip,pins =
++				<1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
 +};
 +
 +&sdhci {
@@ -556,21 +605,6 @@ index bef3ca70c06d..ab8a95afa4a0 100755
  };
  
  /* Fix tty terminal out of screen, and most dclk of resolutions was not supported in hdmiphy clock from parent clock by default */
-diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi
-index 0aceee389623..da5f147391a3 100644
---- a/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi
-@@ -3413,5 +3413,11 @@ tsadc_gpio_func: tsadc-gpio-func {
- 			rockchip,pins =
- 				<0 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
- 		};
-+
-+		/omit-if-no-ref/
-+		leds_gpio: leds-gpio {
-+			rockchip,pins =
-+				<0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
- 	};
- };
 -- 
 2.25.1
+

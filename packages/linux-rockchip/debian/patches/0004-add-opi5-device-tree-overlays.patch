@@ -1,7 +1,7 @@
-From 7bb5edf3ca2270b1549d2d0e5c593f4a372f1b96 Mon Sep 17 00:00:00 2001
+From 5458cff69039287104ccc831fce2ff4b2f9db067 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Wed, 17 May 2023 20:48:34 -0400
-Subject: [PATCH 4/8] arm64: dts: add opi5 device tree overlays
+Subject: [PATCH 4/9] arm64: dts: add opi5 device tree overlays
 
 ---
  arch/arm64/boot/dts/rockchip/overlay/Makefile |  27 +++++

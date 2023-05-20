@@ -6,3 +6,5 @@
 0006-suppress-unsupported-format-modifier.patch
 0007-suppress-use-tmds-mode-dev-info.patch
 0008-fix-khadas-compile-warning.patch
+0009-add-opi5-plus-device-tree.patch
+
