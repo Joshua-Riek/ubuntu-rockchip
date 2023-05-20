@@ -94,6 +94,8 @@ elif [[ "${BOARD}" =~ rock5b|rock5a ]]; then
     export VENDOR=radxa
 elif [[ "${BOARD}" =~ nanopir6c|nanopir6s ]]; then
     export VENDOR=nanopi
+elif [[ "${BOARD}" =~ indiedroid-nova ]]; then
+    export VENDOR=9tripod
 else
     echo "Error: \"${BOARD}\" is an unsupported board"
     exit 1
