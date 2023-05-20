@@ -1,7 +1,7 @@
-From fed8e19ad795175972e62106a28d357f91a685ab Mon Sep 17 00:00:00 2001
+From e5f45052f3cb6284bdba5649fe16b29d79ef5b42 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Thu, 18 May 2023 10:21:45 -0400
-Subject: [PATCH 3/9] arm64: dts: fix opi5 and opi5b device tree
+Subject: [PATCH 07/11] arm64: dts: fix opi5 and opi5b device tree
 
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
