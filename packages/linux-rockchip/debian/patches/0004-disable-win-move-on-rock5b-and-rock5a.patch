@@ -1,7 +1,7 @@
-From 9a3221147da0ba2f460d5e2fc23efa82ae6d722a Mon Sep 17 00:00:00 2001
+From 07013935ff5f7c0f67eca5c44613f796ade93931 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Fri, 19 May 2023 16:59:03 -0400
-Subject: [PATCH 5/9] arm64: dts: disable win move on rock5b and rock5a
+Subject: [PATCH 04/11] arm64: dts: disable win move on rock5b and rock5a
 
 ---
  arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts  | 1 +

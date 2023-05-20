@@ -1,7 +1,7 @@
-From 1e011f109767d7affcf61e890ae0d398a32e6683 Mon Sep 17 00:00:00 2001
+From b016bccc2681a61a577c6a28496d6c1689e8f7c5 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Sat, 20 May 2023 13:17:22 -0400
-Subject: [PATCH 9/9] arm64: dts: add opi5 plus device tree
+Subject: [PATCH 08/11] arm64: dts: add opi5 plus device tree
 
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +

@@ -1,7 +1,7 @@
-From 67d14bdfffddbb6429aff95ffd2dcd001dae51ef Mon Sep 17 00:00:00 2001
+From 8dfaad2f3f976219238e9135be4cff30e0c60957 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Wed, 17 May 2023 16:19:00 -0400
-Subject: [PATCH 2/9] arm64: dts: remove unused device trees and overlays
+Subject: [PATCH 06/11] arm64: dts: remove unused device trees and overlays
 
 ---
  arch/arm64/boot/dts/rockchip/Makefile         | 167 ------------------

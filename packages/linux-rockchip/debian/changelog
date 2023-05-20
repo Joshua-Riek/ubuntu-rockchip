@@ -1,3 +1,17 @@
+linux-rockchip-rk3588 (5.10.110+20230519.git6547fdab-1) UNRELEASED; urgency=medium
+
+  * upstream changes
+    - arm64:dts: Add new board rock-3a and radxa-e25
+
+  * patch changes
+    - arm64: dts: add opi5 plus device tree
+    - arm64: dts: add overlays for opi5 and opi5 plus
+    - drivers: bluetooth: realtek 8852b stuff extracted from xunlong
+    - rockchip: hdmirx: more stuff extracted from xunlong
+    - debian: reorder patch numbers
+
+ -- Joshua Riek <jjriek@verizon.net>  Sat, 20 May 2023 17:25:11 -0400
+
 linux-rockchip-rk3588 (5.10.110+20230518.git44da34a5-4) jammy; urgency=medium
 
   * patch:

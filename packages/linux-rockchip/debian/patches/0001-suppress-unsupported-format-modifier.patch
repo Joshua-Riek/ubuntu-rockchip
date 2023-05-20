@@ -1,8 +1,8 @@
-From 01377174a2d9e2f26116f900a415a84683e27647 Mon Sep 17 00:00:00 2001
+From 791abf87499df8a685eb0b373a8d26f96e06038b Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Wed, 17 May 2023 15:59:47 -0400
-Subject: [PATCH 6/9] drm: rockchip: vop2: suppress unsupported format modifier
- spam
+Subject: [PATCH 01/11] drm: rockchip: vop2: suppress unsupported format
+ modifier spam
 
 ---
  drivers/gpu/drm/rockchip/rockchip_drm_vop2.c | 5 +----
