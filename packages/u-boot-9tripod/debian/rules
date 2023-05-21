@@ -62,16 +62,16 @@ build: indiedroid
 
 binary-indiedroid:
 	rm -rf debian/tmp/indiedroid
-	mkdir -m 755 -p debian/tmp/indiedroid/usr/lib/u-boot-indiedroid-nova-rk3588
-	cp debian/build/indiedroid/u-boot.itb debian/tmp/indiedroid/usr/lib/u-boot-indiedroid-nova-rk3588/u-boot.itb
-	cp debian/build/indiedroid/idbloader.img debian/tmp/indiedroid/usr/lib/u-boot-indiedroid-nova-rk3588/idbloader.img
-	cp debian/build/indiedroid/rkspi_loader.img debian/tmp/indiedroid/usr/lib/u-boot-indiedroid-nova-rk3588/rkspi_loader.img
+	mkdir -m 755 -p debian/tmp/indiedroid/usr/lib/u-boot-9tripod-rk3588
+	cp debian/build/indiedroid/u-boot.itb debian/tmp/indiedroid/usr/lib/u-boot-9tripod-rk3588/u-boot.itb
+	cp debian/build/indiedroid/idbloader.img debian/tmp/indiedroid/usr/lib/u-boot-9tripod-rk3588/idbloader.img
+	cp debian/build/indiedroid/rkspi_loader.img debian/tmp/indiedroid/usr/lib/u-boot-9tripod-rk3588/rkspi_loader.img
 
 	mkdir -m 755 -p "debian/tmp/indiedroid/DEBIAN"
-	mkdir -p "debian/tmp/indiedroid/usr/share/doc/u-boot-indiedroid-nova-rk3588"
-	cp debian/copyright "debian/tmp/indiedroid/usr/share/doc/u-boot-indiedroid-nova-rk3588/"
-	cp debian/changelog "debian/tmp/indiedroid/usr/share/doc/u-boot-indiedroid-nova-rk3588/changelog.Debian"
-	gzip -9 "debian/tmp/indiedroid/usr/share/doc/u-boot-indiedroid-nova-rk3588/changelog.Debian"
+	mkdir -p "debian/tmp/indiedroid/usr/share/doc/u-boot-9tripod-rk3588"
+	cp debian/copyright "debian/tmp/indiedroid/usr/share/doc/u-boot-9tripod-rk3588/"
+	cp debian/changelog "debian/tmp/indiedroid/usr/share/doc/u-boot-9tripod-rk3588/changelog.Debian"
+	gzip -9 "debian/tmp/indiedroid/usr/share/doc/u-boot-9tripod-rk3588/changelog.Debian"
 	sh -c "cd 'debian/tmp/indiedroid'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
 	chown -R root:root "debian/tmp/indiedroid" && chmod -R go-w "debian/tmp/indiedroid" && chmod -R a+rX "debian/tmp/indiedroid"
 	dpkg-gencontrol -pu-boot-indiedroid-nova-rk3588 -P"debian/tmp/indiedroid"
