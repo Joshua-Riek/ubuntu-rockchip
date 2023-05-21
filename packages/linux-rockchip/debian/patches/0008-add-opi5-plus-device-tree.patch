@@ -618,7 +618,7 @@ index 000000000000..9b22698125b5
 +		#size-cells = <2>;
 +		ranges;
 +
-+		/* Reserve 128MB memory for hdmirx-controller@fdee0000 */
++		/* Reserve 256MB memory for hdmirx-controller@fdee0000 */
 +		cma {
 +			compatible = "shared-dma-pool";
 +			reusable;
