@@ -1,7 +1,8 @@
-linux-rockchip-rk3588 (5.10.110+20230519.git6547fdab-1) UNRELEASED; urgency=medium
+linux-rockchip-rk3588 (5.10.110+20230522.git9e451a29-1) UNRELEASED; urgency=medium
 
   * upstream changes
     - arm64:dts: Add new board rock-3a and radxa-e25
+    - Revert "khadas: sound/soc"
 
   * patch changes
     - arm64: dts: add opi5 plus device tree
