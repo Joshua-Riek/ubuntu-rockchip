@@ -113,8 +113,10 @@ mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-# Package priority for rockchip ppa
+# Package priority for ppa
 cp ${overlay_dir}/etc/apt/preferences.d/rockchip-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-ppa
+cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
+cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
 
 # Download and update packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
@@ -128,6 +130,10 @@ update-locale LANG="en_US.UTF-8"
 # Add the rockchip ppa
 apt-get -y update && apt-get -y install software-properties-common
 add-apt-repository -y ppa:jjriek/rockchip
+
+# Add mesa and rockchip multimedia ppa
+add-apt-repository -y ppa:liujianfeng1994/panfork-mesa
+add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia
 
 # Download and update installed packages
 apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
@@ -317,23 +323,6 @@ mount -t proc /proc ${chroot_dir}/proc
 mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
-
-# Pin packages from ppa
-cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
-cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
-
-# Add mesa and rockchip multimedia mirrors
-cat << EOF | chroot ${chroot_dir} /bin/bash
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
-
-# Add mesa and rockchip multimedia mirrors
-add-apt-repository -y ppa:liujianfeng1994/panfork-mesa
-add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia
-
-# Download and update installed packages
-apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
-EOF
 
 # Copy packages to the rootfs
 cp -r ../packages/rkaiq ${chroot_dir}/tmp
