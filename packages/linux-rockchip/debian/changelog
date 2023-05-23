@@ -1,10 +1,11 @@
-linux-rockchip-rk3588 (5.10.110+20230522.git9e451a29-1) UNRELEASED; urgency=medium
+linux-rockchip-rk3588 (5.10.110+20230523.git9a5e6d1d-1) UNRELEASED; urgency=medium
 
   * upstream changes
     - arm64:dts: Add new board rock-3a and radxa-e25
     - Revert "khadas: sound/soc"
 
   * patch changes
+    - net: wireless: add drivers for rtl8811cu and rtl8821c
     - debian: reorder patch files
 
  -- Joshua Riek <jjriek@verizon.net>  Sat, 20 May 2023 17:25:11 -0400
