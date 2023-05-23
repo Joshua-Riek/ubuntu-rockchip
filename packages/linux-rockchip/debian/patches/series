@@ -5,7 +5,4 @@
 0005-customize-debian-packaging.patch
 0006-remove-unused-device-trees-and-overlays.patch
 0007-fix-opi5-and-opi5b-device-tree.patch
-0008-add-opi5-plus-device-tree.patch
-0009-add-overlays-for-opi5-and-opi5-plus.patch
-0010-realtek-8852b-stuff-extracted-from-xunlong.patch
-0011-more-stuff-extracted-from-xunlong.patch
+0008-add-opi5-device-tree-overlays.patch
