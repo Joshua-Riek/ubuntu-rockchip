@@ -1,6 +1,6 @@
-u-boot-orangepi-rk3588 (2017.09+20230517.gite7fa0094-1) UNRELEASED; urgency=medium
+u-boot-orangepi-rk3588 (2017.09+20230517.gite7fa0094-1) jammy; urgency=medium
 
-  * Miscellaneous upstream changes
+  * upstream changes
     - opi5: Set CONFIG_MTD_BLK_U_BOOT_OFFS=0x400
     - opi5b: Set CONFIG_ROCKCHIP_EMMC_IOMUX=y
     - opi5plus: Set CONFIG_MTD_BLK_U_BOOT_OFFS=0x400 and CONFIG_ROCKCHIP_EMMC_IOMUX=y
