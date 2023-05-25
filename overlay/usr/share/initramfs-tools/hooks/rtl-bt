@@ -16,9 +16,10 @@ esac
 . /usr/share/initramfs-tools/scripts/functions
 . /usr/share/initramfs-tools/hook-functions
 
-files=$(find /usr/lib/firmware/rtl_bt)
-for file in $files; do
-    copy_exec "${file}" /usr/lib/firmware/rtl_bt
+for file in /usr/lib/firmware/rtl_bt/*; do
+    if [ -f "${file}" ]; then
+        copy_exec "${file}" /usr/lib/firmware/rtl_bt
+    fi
 done
 
 exit 0
