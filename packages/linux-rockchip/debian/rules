@@ -14,7 +14,7 @@ NJOBS := -j $(shell nproc)
 endif
 
 KDEB_PKGVERSION := $(shell dpkg-parsechangelog -SVersion -l debian/changelog)
-BUILD_VERSION := $(shell dpkg-parsechangelog -l debian/changelog | grep -c linux-rockchip-rk3588)
+BUILD_VERSION := $(shell dpkg-parsechangelog -l debian/changelog --all | grep -c linux-rockchip-rk3588)
 
 srctree ?= .
 
