@@ -6,5 +6,9 @@
 0006-remove-unused-device-trees-and-overlays.patch
 0007-fix-opi5-and-opi5b-device-tree.patch
 0008-add-opi5-device-tree-overlays.patch
-0009-add-indiedroid-nova-device-tree.patch
+0009-add-9tripod-device-tree.patch
 0010-fix-cursor-and-display-plane-for-9tripod.patch
+0011-9Tripod-Updated-wifi-bt-drivers.patch
+0012-9Tripod-Revert-use-of-kernel-AES-encrypt-function.patch
+0013-9Tripod-Added-initial-wifi-support.patch
+0014-9Tripod-Revise-hardware-tables.patch

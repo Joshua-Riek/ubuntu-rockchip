@@ -1,0 +1,115 @@
+From 74c0bf816e8f02077fd518f24188008b94b7a7f7 Mon Sep 17 00:00:00 2001
+From: Steve Hay <me@stevenhay.com>
+Date: Thu, 16 Feb 2023 19:38:25 +0100
+Subject: [PATCH] 9Tripod / Added initial wifi support
+
+- Modified kernel Makefile to ignore warnings generated from Rockchip wifi code
+- Modified DTS to add chipset and other information to the device tree
+- Added rockchip,grf property to wireless-wlan
+- Modified Kconfig and Makefiles to include the rtl8821cs driver into the build process.
+
+Signed-off-by: Steve Hay <me@stevenhay.com>
+---
+ .../devicetree/bindings/net/realtek-bluetooth.yaml   |  1 +
+ Makefile                                             |  3 +++
+ drivers/net/wireless/rockchip_wlan/Kconfig           |  1 +
+ drivers/net/wireless/rockchip_wlan/Makefile          |  3 ++-
+ drivers/net/wireless/rockchip_wlan/rtl8821cs/Kconfig |  2 +-
+ .../net/wireless/rockchip_wlan/rtl8821cs/Makefile    | 12 ++++++------
+ 6 files changed, 14 insertions(+), 8 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml b/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
+index 4f485df69ac3..3dde9df40532 100644
+--- a/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
++++ b/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
+@@ -20,6 +20,7 @@ properties:
+     oneOf:
+       - const: "realtek,rtl8723bs-bt"
+       - const: "realtek,rtl8723cs-bt"
++      - const: "realtek,rtl8821cs-bt"
+       - const: "realtek,rtl8822cs-bt"
+ 
+   device-wake-gpios:
+diff --git a/Makefile b/Makefile
+index 6bbc15bea093..bf71852dec59 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1001,6 +1001,9 @@ KBUILD_CFLAGS += $(call cc-disable-warning, restrict)
+ # Enabled with W=2, disabled by default as noisy
+ KBUILD_CFLAGS += $(call cc-disable-warning, maybe-uninitialized)
+ 
++# Added because of Rockchip wireless lan drivers
++KBUILD_CFLAGS   += $(call cc-disable-warning, implicit-fallthrough)
++
+ # disable invalid "can't wrap" optimizations for signed / pointers
+ KBUILD_CFLAGS	+= -fno-strict-overflow
+ 
+diff --git a/drivers/net/wireless/rockchip_wlan/Kconfig b/drivers/net/wireless/rockchip_wlan/Kconfig
+index bd0bf734c832..d7e9ee89092a 100644
+--- a/drivers/net/wireless/rockchip_wlan/Kconfig
++++ b/drivers/net/wireless/rockchip_wlan/Kconfig
+@@ -40,5 +40,6 @@ source "drivers/net/wireless/rockchip_wlan/cywdhd/Kconfig"
+ source "drivers/net/wireless/rockchip_wlan/infineon/Kconfig"
+ source "drivers/net/wireless/rockchip_wlan/rtl8852be/Kconfig"
+ source "drivers/net/wireless/rockchip_wlan/rtl8852bu/Kconfig"
++source "drivers/net/wireless/rockchip_wlan/rtl8821cs/Kconfig"
+ 
+ endif # WL_ROCKCHIP
+diff --git a/drivers/net/wireless/rockchip_wlan/Makefile b/drivers/net/wireless/rockchip_wlan/Makefile
+index e0fbdc172477..9076afed44b4 100644
+--- a/drivers/net/wireless/rockchip_wlan/Makefile
++++ b/drivers/net/wireless/rockchip_wlan/Makefile
+@@ -4,4 +4,5 @@ obj-$(CONFIG_CYW_BCMDHD)	+= cywdhd/
+ obj-$(CONFIG_INFINEON_DHD)	+= infineon/
+ 
+ obj-$(CONFIG_RTL8852BE)		+= rtl8852be/
+-obj-$(CONFIG_RTL8852BU)		+= rtl8852bu/
+\ No newline at end of file
++obj-$(CONFIG_RTL8852BU)		+= rtl8852bu/
++obj-$(CONFIG_RTL8821CS) 	+= rtl8821cs/
+\ No newline at end of file
+diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/Kconfig b/drivers/net/wireless/rockchip_wlan/rtl8821cs/Kconfig
+index 68da3417e2f5..769480f12987 100644
+--- a/drivers/net/wireless/rockchip_wlan/rtl8821cs/Kconfig
++++ b/drivers/net/wireless/rockchip_wlan/rtl8821cs/Kconfig
+@@ -1,4 +1,4 @@
+ config RTL8821CS
+-	tristate "Realtek 8821C SDIO WiFi"
++	tristate "Realtek 8821CS SDIO WiFi"
+ 	help
+ 	  Help message of RTL8821CS
+diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/Makefile b/drivers/net/wireless/rockchip_wlan/rtl8821cs/Makefile
+index a3313c7fe0fb..e62e8c070b13 100644
+--- a/drivers/net/wireless/rockchip_wlan/rtl8821cs/Makefile
++++ b/drivers/net/wireless/rockchip_wlan/rtl8821cs/Makefile
+@@ -1431,13 +1431,13 @@ EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+ EXTRA_CFLAGS += -DCONFIG_PLATFORM_ARM_SUN50IW1P1
+ EXTRA_CFLAGS += -DCONFIG_TRAFFIC_PROTECT
+ # default setting for Android 4.1, 4.2
+-EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
+-EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
+-EXTRA_CFLAGS += -DCONFIG_RESUME_IN_WORKQUEUE
+-EXTRA_CFLAGS += -DCONFIG_PLATFORM_OPS
++# EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
++# EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
++# EXTRA_CFLAGS += -DCONFIG_RESUME_IN_WORKQUEUE
++# EXTRA_CFLAGS += -DCONFIG_PLATFORM_OPS
+ 
+ # Enable this for Android 5.0
+-EXTRA_CFLAGS += -DCONFIG_RADIO_WORK
++# EXTRA_CFLAGS += -DCONFIG_RADIO_WORK
+ 
+ ifeq ($(CONFIG_USB_HCI), y)
+ EXTRA_CFLAGS += -DCONFIG_USE_USB_BUFFER_ALLOC_TX
+@@ -1500,7 +1500,7 @@ EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
+ EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
+ EXTRA_CFLAGS += -DCONFIG_SKIP_SIGNAL_SCALE_MAPPING
+ ifeq ($(CONFIG_SDIO_HCI), y)
+-EXTRA_CFLAGS += -DCONFIG_RESUME_IN_WORKQUEUE
++# EXTRA_CFLAGS += -DCONFIG_RESUME_IN_WORKQUEUE
+ endif
+ endif
+ 
+-- 
+2.25.1
+
