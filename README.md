@@ -24,7 +24,7 @@ The supported devices are undergoing continuous development. As a result, you ma
 * NanoPi R6S
 * NanoPi R6C
 * Rock 5B
-* Rock 5A (WIP hardware required)
+* Rock 5A (WIP)
 * Indiedroid Nova (WIP)
 
 ## Installation
