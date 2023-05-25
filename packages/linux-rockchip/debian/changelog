@@ -1,3 +1,11 @@
+linux-rockchip-rk3588 (5.10.110+20230523.git9a5e6d1d-2) UNRELEASED; urgency=medium
+
+  * downstream changes
+    - arm64: dts: add 9tripod device tree
+    - arm64: dts: fix cursor and display plane for 9tripod
+
+ -- Joshua Riek <jjriek@verizon.net>  Wed, 24 May 2023 20:10:08 -0400
+
 linux-rockchip-rk3588 (5.10.110+20230523.git9a5e6d1d-1) jammy; urgency=medium
 
   * upstream changes
