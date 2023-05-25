@@ -82,6 +82,9 @@ elif [[ "${BOARD}" == nanopir6c ]]; then
 elif [[ "${BOARD}" == nanopir6s ]]; then
     DEVICE_TREE=rk3588s-nanopi-r6s.dtb
     OVERLAY_PREFIX=
+elif [[ "${BOARD}" == indiedroid-nova ]]; then
+    DEVICE_TREE=rk3588s-9tripod-linux.dtb
+    OVERLAY_PREFIX=
 fi
 
 # Create an empty disk image
