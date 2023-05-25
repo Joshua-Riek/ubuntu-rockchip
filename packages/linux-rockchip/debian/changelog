@@ -3,6 +3,10 @@ linux-rockchip-rk3588 (5.10.110+20230523.git9a5e6d1d-2) UNRELEASED; urgency=medi
   * downstream changes
     - arm64: dts: add 9tripod device tree
     - arm64: dts: fix cursor and display plane for 9tripod
+    - 9Tripod / Updated wifi/bt drivers.
+    - 9Tripod / Revert use of kernel AES encrypt function.
+    - 9Tripod / Added initial wifi support
+    - 9Tripod / Revise hardware tables
 
  -- Joshua Riek <jjriek@verizon.net>  Wed, 24 May 2023 20:10:08 -0400
 

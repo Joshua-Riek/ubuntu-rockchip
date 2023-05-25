@@ -304,6 +304,22 @@ elif [[ "${BOARD}" =~ rock5b ]]; then
     echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8316-sound", ENV{SOUND_DESCRIPTION}="ES8316 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
 elif [[ "${BOARD}" =~ nanopir6c|nanopir6s ]]; then
     echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+elif [[ "${BOARD}" =~ indiedroid-nova ]]; then
+    pushd ${chroot_dir}/tmp
+    git clone https://github.com/stvhay/rkwifibt
+    cd rkwifibt && make -C realtek/rtk_hciattach
+
+    mkdir -p ../../lib/firmware/rtl_bt
+    cp -fr realtek/RTL8821CS/* ../../lib/firmware/rtl_bt/
+    cp -f  realtek/rtk_hciattach/rtk_hciattach ../../usr/bin/
+    cp -f  bt_load_rtk_firmware ../../usr/bin/
+    chmod +x ../../usr/bin/{rtk_hciattach,bt_load_rtk_firmware}
+    echo hci_uart >> ../../etc/modules
+    cd .. && rm -rf rkwifibt
+	popd
+
+    cp ${overlay_dir}/usr/lib/systemd/system/rtl8821cs-bluetooth.service ${chroot_dir}/usr/lib/systemd/system/rtl8821cs-bluetooth.service
+    chroot ${chroot_dir} /bin/bash -c "systemctl enable rtl8821cs-bluetooth"
 fi
 
 # Update initramfs

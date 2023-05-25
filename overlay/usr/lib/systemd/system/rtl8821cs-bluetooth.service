@@ -1,0 +1,13 @@
+[Unit]
+Description=Bluetooth RTL8821CS
+After=network.target
+
+[Service]
+Type=oneshot
+Environment=BT_TTY_DEV=/dev/ttyS9
+ExecStart=/usr/bin/bt_load_rtk_firmware
+RemainAfterExit=true
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
