@@ -307,13 +307,12 @@ elif [[ "${BOARD}" =~ nanopir6c|nanopir6s ]]; then
 elif [[ "${BOARD}" =~ indiedroid-nova ]]; then
     pushd ${chroot_dir}/tmp
     git clone https://github.com/stvhay/rkwifibt
-    cd rkwifibt && make -C realtek/rtk_hciattach
-
+    cd rkwifibt && make CROSS_COMPILE=aarch64-linux-gnu- -C realtek/rtk_hciattach
     mkdir -p ../../lib/firmware/rtl_bt
+    chmod +x realtek/rtk_hciattach/rtk_hciattach bt_load_rtk_firmware
     cp -fr realtek/RTL8821CS/* ../../lib/firmware/rtl_bt/
-    cp -f  realtek/rtk_hciattach/rtk_hciattach ../../usr/bin/
-    cp -f  bt_load_rtk_firmware ../../usr/bin/
-    chmod +x ../../usr/bin/{rtk_hciattach,bt_load_rtk_firmware}
+    cp -f realtek/rtk_hciattach/rtk_hciattach ../../usr/bin/
+    cp -f bt_load_rtk_firmware ../../usr/bin/
     echo hci_uart >> ../../etc/modules
     cd .. && rm -rf rkwifibt
 	popd
