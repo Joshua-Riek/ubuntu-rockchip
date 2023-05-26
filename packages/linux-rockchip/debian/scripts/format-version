@@ -9,4 +9,4 @@ cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ../..
 . debian/upstream
 
 # Display version based off current commit and date
-echo "$(git show -s --date=format:'5.10.110+%Y%m%d' --format=%cd "${COMMIT}").git${COMMIT::8}"
+echo "$(git show -s --date=format:'5.10.160+%Y%m%d' --format=%cd "${COMMIT}").git${COMMIT::8}"

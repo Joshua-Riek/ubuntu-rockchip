@@ -8,11 +8,11 @@ Homepage: https://github.com/Joshua-Riek/linux-rockchip
 Vcs-Browser: https://github.com/Joshua-Riek/linux-rockchip
 Vcs-Git: https://github.com/Joshua-Riek/linux-rockchip.git
 
-Package: linux-image-5.10.110-rockchip-rk3588
+Package: linux-image-5.10.160-rockchip-rk3588
 Architecture: arm64
-Description: Linux kernel, version 5.10.110
+Description: Linux kernel, version 5.10.160
  This package contains the Linux kernel, modules and corresponding other
- files, version: 5.10.110.
+ files, version: 5.10.160.
 
 Package: linux-libc-dev
 Section: devel
@@ -23,15 +23,16 @@ Description: Linux support headers for userspace development
  are used by the installed headers for GNU glibc and other system libraries.
 Multi-Arch: same
 
-Package: linux-dtb-5.10.110-rockchip-rk3588
+Package: linux-dtb-5.10.160-rockchip-rk3588
 Architecture: arm64
 Provides: linux-dtb
-Description: Linux DTB, version 5.10.110
- This package contains device blobs from the Linux kernel, version 5.10.110
+Replaces: linux-dtb
+Description: Linux DTB, version 5.10.160
+ This package contains device blobs from the Linux kernel, version 5.10.160
 
-Package: linux-headers-5.10.110-rockchip-rk3588
+Package: linux-headers-5.10.160-rockchip-rk3588
 Architecture: arm64
-Description: Linux kernel headers for 5.10.110 on arm64
- This package provides kernel header files for 5.10.110 on arm64
+Description: Linux kernel headers for 5.10.160 on arm64
+ This package provides kernel header files for 5.10.160 on arm64
  .
  This is useful for people who need to build external modules

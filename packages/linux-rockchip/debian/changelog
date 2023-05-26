@@ -1,6 +1,15 @@
-linux-rockchip-rk3588 (5.10.110+20230522.git9e451a29-1) UNRELEASED; urgency=medium
+linux-rockchip-rk3588 (5.10.160+20230526.git03c936ee-1) UNRELEASED; urgency=medium
+
+  * upstream changes
+    - usb: typec: tcpm: add devicetree property faster-pd-negotiation to make pd negotiation faster
+    - arm64: dts: NanoPC-T6: Enable onboard pwm-fan node 
+    - arm64: dts: Add device tree for NanoPC T6 
+    - arm64: dts: rock 5b: add property faster-pd-negotiation to make pd negotiation faster
+    - arm64: dts: Add new board hinlink-h66k and hinlink-h68k
+    - rebase onto linux-5.10-gen-rkr4
 
   * downstream changes
+    - drop: arm64: dts: remove unused device trees and overlays
     - arm64: dts: add 9tripod device tree
     - arm64: dts: fix cursor and display plane for 9tripod
     - 9Tripod / Updated wifi/bt drivers.

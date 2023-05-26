@@ -1,0 +1,216 @@
+From 42f6b20ae42db9380a77e0c55addd7c5461c079a Mon Sep 17 00:00:00 2001
+From: Steve Hay <me@stevenhay.com>
+Date: Fri, 24 Feb 2023 00:05:26 +0100
+Subject: [PATCH] 9Tripod / Revert use of kernel AES encrypt function.
+
+Kernel panics were observed associated with AES after the update was applied.
+
+Signed-off-by: Steve Hay <me@stevenhay.com>
+---
+ .../rtl8821cs/core/crypto/aes-ccm.c            | 18 +++++++++---------
+ .../rtl8821cs/core/crypto/aes-ctr.c            |  2 +-
+ .../rtl8821cs/core/crypto/aes-gcm.c            |  6 +++---
+ .../rtl8821cs/core/crypto/aes-internal-enc.c   | 10 +++++++++-
+ .../rtl8821cs/core/crypto/aes-omac1.c          |  6 +++---
+ .../rockchip_wlan/rtl8821cs/core/crypto/aes.h  |  4 ++--
+ 6 files changed, 27 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-ccm.c b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-ccm.c
+index dceec778a6d7..313b280511cb 100644
+--- a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-ccm.c
++++ b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-ccm.c
+@@ -40,7 +40,7 @@ static void aes_ccm_auth_start(void *aes, size_t M, size_t L, const u8 *nonce,
+ 	WPA_PUT_BE16(&b[AES_BLOCK_SIZE - L], plain_len);
+ 
+ 	wpa_hexdump_key(_MSG_EXCESSIVE_, "CCM B_0", b, AES_BLOCK_SIZE);
+-	aes_encrypt(aes, b, x); /* X_1 = E(K, B_0) */
++	rockchip_wlan_aes_encrypt(aes, b, x); /* X_1 = E(K, B_0) */
+ 
+ 	if (!aad_len)
+ 		return;
+@@ -50,12 +50,12 @@ static void aes_ccm_auth_start(void *aes, size_t M, size_t L, const u8 *nonce,
+ 	os_memset(aad_buf + 2 + aad_len, 0, sizeof(aad_buf) - 2 - aad_len);
+ 
+ 	xor_aes_block(aad_buf, x);
+-	aes_encrypt(aes, aad_buf, x); /* X_2 = E(K, X_1 XOR B_1) */
++	rockchip_wlan_aes_encrypt(aes, aad_buf, x); /* X_2 = E(K, X_1 XOR B_1) */
+ 
+ 	if (aad_len > AES_BLOCK_SIZE - 2) {
+ 		xor_aes_block(&aad_buf[AES_BLOCK_SIZE], x);
+ 		/* X_3 = E(K, X_2 XOR B_2) */
+-		aes_encrypt(aes, &aad_buf[AES_BLOCK_SIZE], x);
++		rockchip_wlan_aes_encrypt(aes, &aad_buf[AES_BLOCK_SIZE], x);
+ 	}
+ }
+ 
+@@ -69,13 +69,13 @@ static void aes_ccm_auth(void *aes, const u8 *data, size_t len, u8 *x)
+ 		/* X_i+1 = E(K, X_i XOR B_i) */
+ 		xor_aes_block(x, data);
+ 		data += AES_BLOCK_SIZE;
+-		aes_encrypt(aes, x, x);
++		rockchip_wlan_aes_encrypt(aes, x, x);
+ 	}
+ 	if (last) {
+ 		/* XOR zero-padded last block */
+ 		for (i = 0; i < last; i++)
+ 			x[i] ^= *data++;
+-		aes_encrypt(aes, x, x);
++		rockchip_wlan_aes_encrypt(aes, x, x);
+ 	}
+ }
+ 
+@@ -98,14 +98,14 @@ static void aes_ccm_encr(void *aes, size_t L, const u8 *in, size_t len, u8 *out,
+ 	for (i = 1; i <= len / AES_BLOCK_SIZE; i++) {
+ 		WPA_PUT_BE16(&a[AES_BLOCK_SIZE - 2], i);
+ 		/* S_i = E(K, A_i) */
+-		aes_encrypt(aes, a, out);
++		rockchip_wlan_aes_encrypt(aes, a, out);
+ 		xor_aes_block(out, in);
+ 		out += AES_BLOCK_SIZE;
+ 		in += AES_BLOCK_SIZE;
+ 	}
+ 	if (last) {
+ 		WPA_PUT_BE16(&a[AES_BLOCK_SIZE - 2], i);
+-		aes_encrypt(aes, a, out);
++		rockchip_wlan_aes_encrypt(aes, a, out);
+ 		/* XOR zero-padded last block */
+ 		for (i = 0; i < last; i++)
+ 			*out++ ^= *in++;
+@@ -121,7 +121,7 @@ static void aes_ccm_encr_auth(void *aes, size_t M, u8 *x, u8 *a, u8 *auth)
+ 	wpa_hexdump_key(_MSG_EXCESSIVE_, "CCM T", x, M);
+ 	/* U = T XOR S_0; S_0 = E(K, A_0) */
+ 	WPA_PUT_BE16(&a[AES_BLOCK_SIZE - 2], 0);
+-	aes_encrypt(aes, a, tmp);
++	rockchip_wlan_aes_encrypt(aes, a, tmp);
+ 	for (i = 0; i < M; i++)
+ 		auth[i] = x[i] ^ tmp[i];
+ 	wpa_hexdump_key(_MSG_EXCESSIVE_, "CCM U", auth, M);
+@@ -136,7 +136,7 @@ static void aes_ccm_decr_auth(void *aes, size_t M, u8 *a, const u8 *auth, u8 *t)
+ 	wpa_hexdump_key(_MSG_EXCESSIVE_, "CCM U", auth, M);
+ 	/* U = T XOR S_0; S_0 = E(K, A_0) */
+ 	WPA_PUT_BE16(&a[AES_BLOCK_SIZE - 2], 0);
+-	aes_encrypt(aes, a, tmp);
++	rockchip_wlan_aes_encrypt(aes, a, tmp);
+ 	for (i = 0; i < M; i++)
+ 		t[i] = auth[i] ^ tmp[i];
+ 	wpa_hexdump_key(_MSG_EXCESSIVE_, "CCM T", t, M);
+diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-ctr.c b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-ctr.c
+index 6c06851ddc68..1625dd2b6c17 100644
+--- a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-ctr.c
++++ b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-ctr.c
+@@ -36,7 +36,7 @@ int aes_ctr_encrypt(const u8 *key, size_t key_len, const u8 *nonce,
+ 	os_memcpy(counter, nonce, AES_BLOCK_SIZE);
+ 
+ 	while (left > 0) {
+-		aes_encrypt(ctx, counter, buf);
++		rockchip_wlan_aes_encrypt(ctx, counter, buf);
+ 
+ 		len = (left < AES_BLOCK_SIZE) ? left : AES_BLOCK_SIZE;
+ 		for (j = 0; j < len; j++)
+diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-gcm.c b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-gcm.c
+index 47088102b9cc..3d7c014fc0dd 100644
+--- a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-gcm.c
++++ b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-gcm.c
+@@ -154,7 +154,7 @@ static void aes_gctr(void *aes, const u8 *icb, const u8 *x, size_t xlen, u8 *y)
+ 	os_memcpy(cb, icb, AES_BLOCK_SIZE);
+ 	/* Full blocks */
+ 	for (i = 0; i < n; i++) {
+-		aes_encrypt(aes, cb, ypos);
++		rockchip_wlan_aes_encrypt(aes, cb, ypos);
+ 		xor_block(ypos, xpos);
+ 		xpos += AES_BLOCK_SIZE;
+ 		ypos += AES_BLOCK_SIZE;
+@@ -164,7 +164,7 @@ static void aes_gctr(void *aes, const u8 *icb, const u8 *x, size_t xlen, u8 *y)
+ 	last = x + xlen - xpos;
+ 	if (last) {
+ 		/* Last, partial block */
+-		aes_encrypt(aes, cb, tmp);
++		rockchip_wlan_aes_encrypt(aes, cb, tmp);
+ 		for (i = 0; i < last; i++)
+ 			*ypos++ = *xpos++ ^ tmp[i];
+ 	}
+@@ -181,7 +181,7 @@ static void * aes_gcm_init_hash_subkey(const u8 *key, size_t key_len, u8 *H)
+ 
+ 	/* Generate hash subkey H = AES_K(0^128) */
+ 	os_memset(H, 0, AES_BLOCK_SIZE);
+-	aes_encrypt(aes, H, H);
++	rockchip_wlan_aes_encrypt(aes, H, H);
+ 	wpa_hexdump_key(_MSG_EXCESSIVE_, "Hash subkey H for GHASH",
+ 			H, AES_BLOCK_SIZE);
+ 	return aes;
+diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-internal-enc.c b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-internal-enc.c
+index 17c8ed5f527d..d24ff23fd161 100644
+--- a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-internal-enc.c
++++ b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-internal-enc.c
+@@ -18,7 +18,7 @@
+ 
+ #include "aes_i.h"
+ 
+-static void rijndaelEncrypt(const u32 rk[], int Nr, const u8 pt[16], u8 ct[16])
++static void rockchip_wlan_rijndaelEncrypt(const u32 rk[], int Nr, const u8 pt[16], u8 ct[16])
+ {
+ 	u32 s0, s1, s2, s3, t0, t1, t2, t3;
+ #ifndef FULL_UNROLL
+@@ -122,6 +122,14 @@ int aes_encrypt(void *ctx, const u8 *plain, u8 *crypt)
+ }
+ */
+ 
++int rockchip_wlan_aes_encrypt(void *ctx, const u8 *plain, u8 *crypt)
++{
++	u32 *rk = ctx;
++	rockchip_wlan_rijndaelEncrypt(ctx, rk[AES_PRIV_NR_POS], plain, crypt);
++	return 0;
++}
++
++
+ void aes_encrypt_deinit(void *ctx)
+ {
+ 	os_memset(ctx, 0, AES_PRIV_SIZE);
+diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-omac1.c b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-omac1.c
+index 30b52629f4be..e9a1692ee0e5 100644
+--- a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-omac1.c
++++ b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes-omac1.c
+@@ -81,12 +81,12 @@ int omac1_aes_vector(const u8 *key, size_t key_len, size_t num_elem,
+ 			}
+ 		}
+ 		if (left > AES_BLOCK_SIZE)
+-			aes_encrypt(ctx, cbc, cbc);
++			rockchip_wlan_aes_encrypt(ctx, cbc, cbc);
+ 		left -= AES_BLOCK_SIZE;
+ 	}
+ 
+ 	os_memset(pad, 0, AES_BLOCK_SIZE);
+-	aes_encrypt(ctx, pad, pad);
++	rockchip_wlan_aes_encrypt(ctx, pad, pad);
+ 	gf_mulx(pad);
+ 
+ 	if (left || total_len == 0) {
+@@ -110,7 +110,7 @@ int omac1_aes_vector(const u8 *key, size_t key_len, size_t num_elem,
+ 
+ 	for (i = 0; i < AES_BLOCK_SIZE; i++)
+ 		pad[i] ^= cbc[i];
+-	aes_encrypt(ctx, pad, mac);
++	rockchip_wlan_aes_encrypt(ctx, pad, mac);
+ 	aes_encrypt_deinit(ctx);
+ 	return 0;
+ }
+diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes.h b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes.h
+index 8ab3de2ee83f..f6911e0dd00b 100644
+--- a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes.h
++++ b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/crypto/aes.h
+@@ -12,10 +12,10 @@
+ #define AES_BLOCK_SIZE 16
+ 
+ void * aes_encrypt_init(const u8 *key, size_t len);
+-int aes_encrypt(void *ctx, const u8 *plain, u8 *crypt);
++int rockchip_wlan_aes_encrypt(void *ctx, const u8 *plain, u8 *crypt);
+ void aes_encrypt_deinit(void *ctx);
+ void * aes_decrypt_init(const u8 *key, size_t len);
+-int aes_decrypt(void *ctx, const u8 *crypt, u8 *plain);
++int rockchip_wlan_aes_decrypt(void *ctx, const u8 *crypt, u8 *plain);
+ void aes_decrypt_deinit(void *ctx);
+ 
+ #endif /* AES_H */
+-- 
+2.25.1
+
