@@ -5,7 +5,7 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi5|orangepi5b]
+Usage: $0 --board=[orangepi5|orangepi5b|orangepi5plus|rock5b|rock5a|nanopir6c|nanopir6s|indiedroid-nova]
 
 Required arguments:
   -b, --board=BOARD     target board 
