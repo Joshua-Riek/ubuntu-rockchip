@@ -1,3 +1,10 @@
+u-boot-orangepi-rk3588 (2017.09+20230525.gitac3b1ca9-1) UNRELEASED; urgency=medium
+
+  * upstream changes
+    - opi5plus: fixed spiflash not starting
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 26 May 2023 18:06:33 -0400
+
 u-boot-orangepi-rk3588 (2017.09+20230517.gite7fa0094-1) jammy; urgency=medium
 
   * upstream changes
