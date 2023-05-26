@@ -30,7 +30,7 @@ config:
 build-indep:
 build-arch: config
 	$(MAKE) -f $(srctree)/Makefile \
-	  KERNELRELEASE=5.10.110-rockchip-rk3588 \
+	  KERNELRELEASE=5.10.160-rockchip-rk3588 \
 	  KDEB_PKGVERSION=$(KDEB_PKGVERSION) \
 	  CROSS_COMPILE=$(CROSS_COMPILE) \
 	  ARCH=arm64 \
@@ -41,7 +41,7 @@ build: build-arch
 binary-indep:
 binary-arch: build-arch
 	$(MAKE) -f $(srctree)/Makefile intdeb-pkg \
-	  KERNELRELEASE=5.10.110-rockchip-rk3588 \
+	  KERNELRELEASE=5.10.160-rockchip-rk3588 \
 	  KDEB_PKGVERSION=$(KDEB_PKGVERSION) \
 	  CROSS_COMPILE=$(CROSS_COMPILE) \
 	  ARCH=arm64 \
