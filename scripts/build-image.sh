@@ -242,7 +242,12 @@ dd if=${mount_point}/writable/usr/lib/u-boot-"${VENDOR}"-rk3588/idbloader.img of
 dd if=${mount_point}/writable/usr/lib/u-boot-"${VENDOR}"-rk3588/u-boot.itb of="${loop}" seek=16384 conv=notrunc
 
 # Cloud init config for server image
-[ -z "${img##*server*}" ] && cp ../overlay/boot/firmware/{meta-data,user-data,network-config} ${mount_point}/system-boot
+if [ -z "${img##*server*}" ]; then
+    cp ../overlay/boot/firmware/{meta-data,user-data,network-config} ${mount_point}/system-boot
+    if [[ "${BOARD}" == indiedroid-nova ]]; then
+        sed -i 's/eth0:/enP4p65s0:/g' ${mount_point}/system-boot/network-config
+    fi
+fi
 
 sync --file-system
 sync
