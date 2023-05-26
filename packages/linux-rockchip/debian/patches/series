@@ -12,3 +12,5 @@
 0012-9Tripod-Revert-use-of-kernel-AES-encrypt-function.patch
 0013-9Tripod-Added-initial-wifi-support.patch
 0014-9Tripod-Revise-hardware-tables.patch
+0015-add-drivers-for-rtl8811cu-and-rtl8821c.patch
+
