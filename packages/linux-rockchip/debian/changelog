@@ -15,6 +15,7 @@ linux-rockchip-rk3588 (5.10.160+20230526.git03c936ee-1) jammy; urgency=medium
     - 9Tripod / Revert use of kernel AES encrypt function.
     - 9Tripod / Added initial wifi support
     - 9Tripod / Revise hardware tables
+    - clk: disable CLOCK_ALLOW_WRITE_DEBUGFS notice
 
   * dropped changes
     - arm64: dts: remove unused device trees and overlays

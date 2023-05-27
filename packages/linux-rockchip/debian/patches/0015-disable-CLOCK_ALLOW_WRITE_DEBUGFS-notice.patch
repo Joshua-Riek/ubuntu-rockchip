@@ -1,0 +1,24 @@
+From 529038a430720a83d57b32b367cb5c3ddb96be05 Mon Sep 17 00:00:00 2001
+From: Joshua Riek <jjriek@verizon.net>
+Date: Sat, 27 May 2023 14:59:20 -0400
+Subject: [PATCH] clk: disable CLOCK_ALLOW_WRITE_DEBUGFS notice
+
+---
+ drivers/clk/clk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index 3d82193fce86..33d5fe9dfc99 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -3420,7 +3420,7 @@ static int __init clk_debug_init(void)
+ {
+ 	struct clk_core *core;
+ 
+-#ifdef CLOCK_ALLOW_WRITE_DEBUGFS
++#if 0
+ 	pr_warn("\n");
+ 	pr_warn("********************************************************************\n");
+ 	pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE           **\n");
+-- 
+2.25.1
