@@ -1,4 +1,4 @@
-From f4e8be5987475c2f804bc9eb79f1260ee8eebf6a Mon Sep 17 00:00:00 2001
+From bbdc7912cd48ff9e13e2d0e67eb5e533b8441883 Mon Sep 17 00:00:00 2001
 From: Steve Hay <me@stevenhay.com>
 Date: Fri, 17 Feb 2023 02:43:35 +0100
 Subject: [PATCH] 9Tripod / Updated wifi/bt drivers.
@@ -66,7 +66,7 @@ Signed-off-by: Steve Hay <me@stevenhay.com>
  .../rockchip_wlan/rtl8821cs/core/rtw_odm.c    |    33 +-
  .../rockchip_wlan/rtl8821cs/core/rtw_p2p.c    |    35 +-
  .../rtl8821cs/core/rtw_pwrctrl.c              |   155 +-
- .../rockchip_wlan/rtl8821cs/core/rtw_recv.c   |   426 +-
+ .../rockchip_wlan/rtl8821cs/core/rtw_recv.c   |   425 +-
  .../rockchip_wlan/rtl8821cs/core/rtw_rf.c     |   265 +-
  .../rockchip_wlan/rtl8821cs/core/rtw_rm.c     |    67 +-
  .../rockchip_wlan/rtl8821cs/core/rtw_rm_fsm.c |     1 -
@@ -695,7 +695,7 @@ Signed-off-by: Steve Hay <me@stevenhay.com>
  .../platform/platform_zte_zx296716_sdio.c     |     1 -
  .../platform/platform_zte_zx296716_sdio.h     |     1 -
  .../rockchip_wlan/rtl8821cs/rtl8821c.mk       |     1 -
- 687 files changed, 34032 insertions(+), 24011 deletions(-)
+ 687 files changed, 34031 insertions(+), 24011 deletions(-)
 
 diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/Kconfig b/drivers/net/wireless/rockchip_wlan/rtl8821cs/Kconfig
 index 4b4fd2e70f4e..68da3417e2f5 100644
@@ -13956,7 +13956,7 @@ index cc3101867f55..a617590c60b2 100644
  	if (pwrctrlpriv->pno_ssid_list != NULL)
  		printk("****** pno_ssid_list memory leak********\n");
 diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/rtw_recv.c b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/rtw_recv.c
-index e68c5b30da4d..4d29d664b015 100644
+index e68c5b30da4d..15d426c0dc7a 100644
 --- a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/rtw_recv.c
 +++ b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/rtw_recv.c
 @@ -1,4 +1,3 @@
@@ -14682,16 +14682,15 @@ index e68c5b30da4d..4d29d664b015 100644
  				RTW_INFO("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\n", *(ptr + i),
  					*(ptr + i + 1), *(ptr + i + 2) , *(ptr + i + 3) , *(ptr + i + 4), *(ptr + i + 5), *(ptr + i + 6), *(ptr + i + 7));
  				RTW_INFO("#############################\n");
-@@ -3645,6 +3903,8 @@ int validate_mp_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
+@@ -3645,6 +3903,7 @@ int validate_mp_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
  				_rtw_memcpy(pmppriv->mplink_buf, ptr, precv_frame->u.hdr.len);
  				pmppriv->mplink_rx_len = precv_frame->u.hdr.len;
  				pmppriv->mplink_brx =_TRUE;
 +			}
-+
  		}
  	}
  	if (pmppriv->bloopback) {
-@@ -4587,7 +4847,7 @@ s32 pre_recv_entry(union recv_frame *precvframe, u8 *pphy_status)
+@@ -4587,7 +4846,7 @@ s32 pre_recv_entry(union recv_frame *precvframe, u8 *pphy_status)
  		/* UC frame */
  		iface = rtw_get_iface_by_macddr(primary_padapter , ra);
  		if (!iface) {
@@ -14700,7 +14699,7 @@ index e68c5b30da4d..4d29d664b015 100644
  			if (_rtw_memcmp(ra, adapter_pno_mac_addr(primary_padapter), ETH_ALEN))
  				goto query_phy_status;
  			#endif
-@@ -4639,7 +4899,7 @@ s32 pre_recv_entry(union recv_frame *precvframe, u8 *pphy_status)
+@@ -4639,7 +4898,7 @@ s32 pre_recv_entry(union recv_frame *precvframe, u8 *pphy_status)
  			goto exit;
  		}
  	}
@@ -14709,7 +14708,7 @@ index e68c5b30da4d..4d29d664b015 100644
  query_phy_status:
  #endif
  	if (pphy_status) {
-@@ -4665,9 +4925,13 @@ thread_return rtw_recv_thread(thread_context context)
+@@ -4665,9 +4924,13 @@ thread_return rtw_recv_thread(thread_context context)
  	s32 err = _SUCCESS;
  #ifdef RTW_RECV_THREAD_HIGH_PRIORITY
  #ifdef PLATFORM_LINUX
@@ -90967,3 +90966,4 @@ index 30b74c2b7407..28e21cdc9ab5 100644
  ifeq ($(CONFIG_USB_HCI), y)
 -- 
 2.25.1
+
