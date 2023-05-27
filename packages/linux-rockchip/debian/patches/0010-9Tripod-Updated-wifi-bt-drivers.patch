@@ -1,4 +1,4 @@
-From 90c00804e94cfb3c2ce4a63ddbb0d4882e6a40dd Mon Sep 17 00:00:00 2001
+From f4e8be5987475c2f804bc9eb79f1260ee8eebf6a Mon Sep 17 00:00:00 2001
 From: Steve Hay <me@stevenhay.com>
 Date: Fri, 17 Feb 2023 02:43:35 +0100
 Subject: [PATCH] 9Tripod / Updated wifi/bt drivers.
@@ -31,7 +31,7 @@ Signed-off-by: Steve Hay <me@stevenhay.com>
  .../rtl8821cs/core/crypto/sha256.h            |     1 -
  .../rtl8821cs/core/crypto/sha256_i.h          |     1 -
  .../rtl8821cs/core/crypto/wlancrypto_wrap.h   |    13 +-
- .../rtl8821cs/core/efuse/rtw_efuse.c          |    45 +-
+ .../rtl8821cs/core/efuse/rtw_efuse.c          |    48 +-
  .../rtl8821cs/core/mesh/rtw_mesh.c            |    38 +-
  .../rtl8821cs/core/mesh/rtw_mesh.h            |     1 -
  .../rtl8821cs/core/mesh/rtw_mesh_hwmp.c       |     1 -
@@ -66,7 +66,7 @@ Signed-off-by: Steve Hay <me@stevenhay.com>
  .../rockchip_wlan/rtl8821cs/core/rtw_odm.c    |    33 +-
  .../rockchip_wlan/rtl8821cs/core/rtw_p2p.c    |    35 +-
  .../rtl8821cs/core/rtw_pwrctrl.c              |   155 +-
- .../rockchip_wlan/rtl8821cs/core/rtw_recv.c   |   422 +-
+ .../rockchip_wlan/rtl8821cs/core/rtw_recv.c   |   426 +-
  .../rockchip_wlan/rtl8821cs/core/rtw_rf.c     |   265 +-
  .../rockchip_wlan/rtl8821cs/core/rtw_rm.c     |    67 +-
  .../rockchip_wlan/rtl8821cs/core/rtw_rm_fsm.c |     1 -
@@ -695,7 +695,7 @@ Signed-off-by: Steve Hay <me@stevenhay.com>
  .../platform/platform_zte_zx296716_sdio.c     |     1 -
  .../platform/platform_zte_zx296716_sdio.h     |     1 -
  .../rockchip_wlan/rtl8821cs/rtl8821c.mk       |     1 -
- 687 files changed, 34027 insertions(+), 24009 deletions(-)
+ 687 files changed, 34032 insertions(+), 24011 deletions(-)
 
 diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/Kconfig b/drivers/net/wireless/rockchip_wlan/rtl8821cs/Kconfig
 index 4b4fd2e70f4e..68da3417e2f5 100644
@@ -1232,7 +1232,7 @@ index 919931db3127..b909a43932aa 100644
  	const u8 *pn, int keyid, size_t *encrypted_len);
  
 diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/efuse/rtw_efuse.c b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/efuse/rtw_efuse.c
-index 1f301e651517..1768cb2e0e2b 100644
+index 1f301e651517..fbd8cdadd04c 100644
 --- a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/efuse/rtw_efuse.c
 +++ b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/efuse/rtw_efuse.c
 @@ -1,4 +1,3 @@
@@ -1291,7 +1291,23 @@ index 1f301e651517..1768cb2e0e2b 100644
  #endif /* CONFIG_BT_EFUSE_MASK */
  
  	return 0;
-@@ -3237,7 +3266,14 @@ void EFUSE_ShadowMapUpdate(
+@@ -939,13 +968,14 @@ void rtw_efuse_analyze(PADAPTER	padapter, u8 Type, u8 Fake)
+ 	j = 0;
+ 
+ 	for (i = 0; i < mapLen; i++) {
+-		if (i % 16 == 0)
++		if (i % 16 == 0) {
+ 			RTW_PRINT_SEL(RTW_DBGDUMP, "0x%03x: ", i);
+ 			_RTW_PRINT_SEL(RTW_DBGDUMP, "%02X%s"
+ 				, pEfuseHal->fakeEfuseInitMap[i]
+ 				, ((i + 1) % 16 == 0) ? "\n" : (((i + 1) % 8 == 0) ? "	  " : " ")
+ 			);
+ 		}
++	}
+ 	_RTW_PRINT_SEL(RTW_DBGDUMP, "\n");
+ 
+ out_free_buffer:
+@@ -3237,7 +3267,14 @@ void EFUSE_ShadowMapUpdate(
  	/* PlatformMoveMemory((void *)&pHalData->EfuseMap[EFUSE_MODIFY_MAP][0], */
  	/* (void *)&pHalData->EfuseMap[EFUSE_INIT_MAP][0], mapLen); */
  #endif /* !RTW_HALMAC */
@@ -1306,7 +1322,7 @@ index 1f301e651517..1768cb2e0e2b 100644
  	rtw_mask_map_read(pAdapter, 0x00, mapLen, pHalData->efuse_eeprom_data);
  
  	rtw_dump_cur_efuse(pAdapter);
-@@ -3384,7 +3420,7 @@ u8 rtw_efuse_file_read(PADAPTER padapter, u8 *filepath, u8 *buf, u32 len)
+@@ -3384,7 +3421,7 @@ u8 rtw_efuse_file_read(PADAPTER padapter, u8 *filepath, u8 *buf, u32 len)
  	return _TRUE;
  }
  
@@ -1315,7 +1331,7 @@ index 1f301e651517..1768cb2e0e2b 100644
  u8 rtw_efuse_file_store(PADAPTER padapter, u8 *filepath, u8 *buf, u32 len)
  {
  	int err = 0, i = 0, j = 0, mapLen = 0 ;
-@@ -3420,6 +3456,7 @@ u8 rtw_efuse_file_store(PADAPTER padapter, u8 *filepath, u8 *buf, u32 len)
+@@ -3420,6 +3457,7 @@ u8 rtw_efuse_file_store(PADAPTER padapter, u8 *filepath, u8 *buf, u32 len)
  
  	return err;
  }
@@ -1323,7 +1339,7 @@ index 1f301e651517..1768cb2e0e2b 100644
  
  #ifdef CONFIG_EFUSE_CONFIG_FILE
  u32 rtw_read_efuse_from_file(const char *path, u8 *buf, int map_size)
-@@ -3432,10 +3469,10 @@ u32 rtw_read_efuse_from_file(const char *path, u8 *buf, int map_size)
+@@ -3432,10 +3470,10 @@ u32 rtw_read_efuse_from_file(const char *path, u8 *buf, int map_size)
  	u32 ret = _FAIL;
  
  	u8 *file_data = NULL;
@@ -13940,7 +13956,7 @@ index cc3101867f55..a617590c60b2 100644
  	if (pwrctrlpriv->pno_ssid_list != NULL)
  		printk("****** pno_ssid_list memory leak********\n");
 diff --git a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/rtw_recv.c b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/rtw_recv.c
-index e68c5b30da4d..b82b2cd7d2c5 100644
+index e68c5b30da4d..4d29d664b015 100644
 --- a/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/rtw_recv.c
 +++ b/drivers/net/wireless/rockchip_wlan/rtl8821cs/core/rtw_recv.c
 @@ -1,4 +1,3 @@
@@ -14657,7 +14673,25 @@ index e68c5b30da4d..b82b2cd7d2c5 100644
  		, __func__
  		, preorder_ctrl->rec_abba_rsp_ack
  		, preorder_ctrl->indicate_seq);
-@@ -4587,7 +4845,7 @@ s32 pre_recv_entry(union recv_frame *precvframe, u8 *pphy_status)
+@@ -3637,7 +3895,7 @@ int validate_mp_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
+ 			int i;
+ 			RTW_INFO("############ type:0x%02x subtype:0x%02x #################\n", type, subtype);
+ 
+-			for (i = 0; i < precv_frame->u.hdr.len; i = i + 8)
++			for (i = 0; i < precv_frame->u.hdr.len; i = i + 8) {
+ 				RTW_INFO("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\n", *(ptr + i),
+ 					*(ptr + i + 1), *(ptr + i + 2) , *(ptr + i + 3) , *(ptr + i + 4), *(ptr + i + 5), *(ptr + i + 6), *(ptr + i + 7));
+ 				RTW_INFO("#############################\n");
+@@ -3645,6 +3903,8 @@ int validate_mp_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
+ 				_rtw_memcpy(pmppriv->mplink_buf, ptr, precv_frame->u.hdr.len);
+ 				pmppriv->mplink_rx_len = precv_frame->u.hdr.len;
+ 				pmppriv->mplink_brx =_TRUE;
++			}
++
+ 		}
+ 	}
+ 	if (pmppriv->bloopback) {
+@@ -4587,7 +4847,7 @@ s32 pre_recv_entry(union recv_frame *precvframe, u8 *pphy_status)
  		/* UC frame */
  		iface = rtw_get_iface_by_macddr(primary_padapter , ra);
  		if (!iface) {
@@ -14666,7 +14700,7 @@ index e68c5b30da4d..b82b2cd7d2c5 100644
  			if (_rtw_memcmp(ra, adapter_pno_mac_addr(primary_padapter), ETH_ALEN))
  				goto query_phy_status;
  			#endif
-@@ -4639,7 +4897,7 @@ s32 pre_recv_entry(union recv_frame *precvframe, u8 *pphy_status)
+@@ -4639,7 +4899,7 @@ s32 pre_recv_entry(union recv_frame *precvframe, u8 *pphy_status)
  			goto exit;
  		}
  	}
@@ -14675,7 +14709,7 @@ index e68c5b30da4d..b82b2cd7d2c5 100644
  query_phy_status:
  #endif
  	if (pphy_status) {
-@@ -4665,9 +4923,13 @@ thread_return rtw_recv_thread(thread_context context)
+@@ -4665,9 +4925,13 @@ thread_return rtw_recv_thread(thread_context context)
  	s32 err = _SUCCESS;
  #ifdef RTW_RECV_THREAD_HIGH_PRIORITY
  #ifdef PLATFORM_LINUX
@@ -90933,4 +90967,3 @@ index 30b74c2b7407..28e21cdc9ab5 100644
  ifeq ($(CONFIG_USB_HCI), y)
 -- 
 2.25.1
-
