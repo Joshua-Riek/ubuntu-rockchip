@@ -496,6 +496,8 @@ cp ${overlay_dir}/etc/initramfs-tools/conf-hooks.d/plymouth ${chroot_dir}/etc/in
 # Set HDMI as default audio output
 if [[ ${BOARD} =~ orangepi5|orangepi5b|nanopir6c|nanopir6s ]]; then
     echo "set-default-sink alsa_output.platform-hdmi0-sound.stereo-fallback" >> ${chroot_dir}/etc/pulse/default.pa
+elif [[ ${BOARD} =~ indiedroid-nova ]]; then
+    echo "set-default-sink 1" >> ${chroot_dir}/etc/pulse/default.pa
 fi
 
 # Update initramfs
