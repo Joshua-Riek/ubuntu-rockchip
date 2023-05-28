@@ -14,7 +14,7 @@ The supported devices are undergoing continuous development. As a result, you ma
 * Chromium browser with smooth 4k youtube video playback
 * MPV video player capable of smooth 4k video playback
 * Gstreamer can be used as an alternative 4k video player from the command line
-* 5.10.110 Linux kernel
+* 5.10.160 Linux kernel
 
 ## Supported Boards
 
@@ -23,9 +23,10 @@ The supported devices are undergoing continuous development. As a result, you ma
 * Orange Pi 5 Plus (WIP hardware required)
 * NanoPi R6S
 * NanoPi R6C
+* NanoPC-T6 (WIP hardware required)
 * Rock 5B
-* Rock 5A (WIP)
-* Indiedroid Nova (WIP)
+* Rock 5A
+* Indiedroid Nova
 
 ## Installation
 
