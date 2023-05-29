@@ -1,4 +1,4 @@
-u-boot-orangepi-rk3588 (2017.09+20230525.gitac3b1ca9-1) UNRELEASED; urgency=medium
+u-boot-orangepi-rk3588 (2017.09+20230525.gitac3b1ca9-1) jammy; urgency=medium
 
   * upstream changes
     - opi5plus: fixed spiflash not starting
