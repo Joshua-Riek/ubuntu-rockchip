@@ -23,13 +23,6 @@ Description: Linux support headers for userspace development
  are used by the installed headers for GNU glibc and other system libraries.
 Multi-Arch: same
 
-Package: linux-dtb-5.10.160-rockchip-rk3588
-Architecture: arm64
-Provides: linux-dtb
-Replaces: linux-dtb
-Description: Linux DTB, version 5.10.160
- This package contains device blobs from the Linux kernel, version 5.10.160
-
 Package: linux-headers-5.10.160-rockchip-rk3588
 Architecture: arm64
 Description: Linux kernel headers for 5.10.160 on arm64
