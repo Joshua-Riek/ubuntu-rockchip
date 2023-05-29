@@ -1,3 +1,10 @@
+linux-rockchip-rk3588 (5.10.160~20230526.git03c936ee-2) jammy; urgency=medium
+
+  * downstream changes
+    - debain: configs: fix indiedroid nova wifi
+
+ -- Joshua Riek <jjriek@verizon.net>  Mon, 29 May 2023 15:16:14 -0400
+
 linux-rockchip-rk3588 (5.10.160~20230526.git03c936ee-1) jammy; urgency=medium
 
   * upstream changes
