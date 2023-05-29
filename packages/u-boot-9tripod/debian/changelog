@@ -1,4 +1,4 @@
-u-boot-9tripod-rk3588 (2017.09+20230413.gita2a9f1df-1) jammy; urgency=medium
+u-boot-9tripod-rk3588 (2017.09+20230321.git2f6e967d-1) jammy; urgency=medium
 
   * Initial packaging.
 
