@@ -22,7 +22,7 @@ if [[ -z ${VENDOR} ]]; then
 fi
 
 if [[ ${LAUNCHPAD} != "Y" ]]; then
-    for file in linux-{headers,image,dtb}-5.10.160-rockchip-rk3588_*.deb; do
+    for file in linux-{headers,image}-5.10.160-rockchip-rk3588_*.deb; do
         if [ ! -e "$file" ]; then
             echo "Error: missing kernel debs, please run build-kernel.sh"
             exit 1
@@ -145,7 +145,7 @@ ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
 pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
-gcc libc6-dev bison libssl-dev flex flash-kernel fake-hwclock rfkill
+gcc libc6-dev bison libssl-dev flex flash-kernel fake-hwclock rfkill wireless-regdb
 
 # Remove cryptsetup and needrestart
 apt-get -y remove cryptsetup needrestart
@@ -167,11 +167,11 @@ EOF
 
 # Install the kernel
 if [[ ${LAUNCHPAD}  == "Y" ]]; then
-    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.160-rockchip-rk3588 linux-headers-5.10.160-rockchip-rk3588 linux-dtb-5.10.160-rockchip-rk3588 u-boot-${BOARD}-rk3588"
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.160-rockchip-rk3588 linux-headers-5.10.160-rockchip-rk3588 u-boot-${BOARD}-rk3588"
 else
-    cp linux-{headers,image,dtb}-5.10.160-rockchip-rk3588_*.deb ${chroot_dir}/tmp
-    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image,dtb}-5.10.160-rockchip-rk3588_*.deb && rm -rf /tmp/*"
-    chroot ${chroot_dir} /bin/bash -c "apt-mark hold linux-image-5.10.160-rockchip-rk3588 linux-headers-5.10.160-rockchip-rk3588 linux-dtb-5.10.160-rockchip-rk3588"
+    cp linux-{headers,image}-5.10.160-rockchip-rk3588_*.deb ${chroot_dir}/tmp
+    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image}-5.10.160-rockchip-rk3588_*.deb && rm -rf /tmp/*"
+    chroot ${chroot_dir} /bin/bash -c "apt-mark hold linux-image-5.10.160-rockchip-rk3588 linux-headers-5.10.160-rockchip-rk3588"
 
     cp u-boot-"${BOARD}"-rk3588_*.deb ${chroot_dir}/tmp
     chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/u-boot-${BOARD}-rk3588_*.deb && rm -rf /tmp/*"
@@ -192,6 +192,11 @@ ln -s initrd.img-5.10.160-rockchip-rk3588 initrd.img
 ln -s System.map-5.10.160-rockchip-rk3588 System.map
 ln -s vmlinuz-5.10.160-rockchip-rk3588 vmlinuz
 ln -s config-5.10.160-rockchip-rk3588 config
+
+# Copy device trees and overlays
+mkdir -p /boot/firmware/dtbs/overlays
+cp /usr/lib/linux-image-5.10.160-rockchip-rk3588/rockchip/*.dtb /boot/firmware/dtbs
+cp /usr/lib/linux-image-5.10.160-rockchip-rk3588/rockchip/overlay/*.dtbo /boot/firmware/dtbs/overlays
 EOF
 
 # DNS
@@ -268,6 +273,9 @@ cp ${overlay_dir}/etc/update-manager/release-upgrades ${chroot_dir}/etc/update-m
 # Let systemd create machine id on first boot
 rm -f ${chroot_dir}/var/lib/dbus/machine-id
 true > ${chroot_dir}/etc/machine-id 
+
+# Do not create bak files for flash-kernel
+echo "NO_CREATE_DOT_BAK_FILES=true" >> ${chroot_dir}/etc/environment
 
 # Fix Intel AX210 not working after linux-firmware update
 [ -e ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.pnvm ] && mv ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.{pnvm,bak}
