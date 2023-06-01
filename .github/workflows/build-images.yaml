@@ -69,10 +69,10 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.board }}-server-image
-          path: ./build/images/ubuntu-22.04.2-preinstalled-server-arm64-${{ matrix.board }}.img.xz
+          path: ./images/ubuntu-22.04.2-preinstalled-server-arm64-${{ matrix.board }}.img.xz
 
       - name: Upload desktop image
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.board }}-desktop-image
-          path: ./build/images/ubuntu-22.04.2-preinstalled-desktop-arm64-${{ matrix.board }}.img.xz
+          path: ./images/ubuntu-22.04.2-preinstalled-desktop-arm64-${{ matrix.board }}.img.xz
