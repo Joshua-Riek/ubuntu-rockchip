@@ -19,10 +19,11 @@ jobs:
       - name: Cache build directory
         uses: actions/cache@v2
         with:
-          path: ../build
-          key: ${{ runner.os }}-build-${{ env.BOARD }}-${{ hashFiles('./build/**') }}
+          path: ./build
+          key: ${{ runner.os }}-build-${{ github.sha }}-${{ env.BOARD }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.BOARD }}-
+            ${{ runner.os }}-build-${{ github.sha }}-${{ env.BOARD }}
+            ${{ runner.os }}-build-${{ github.sha }}-
             ${{ runner.os }}-build-
 
       - name: Install dependencies
@@ -34,44 +35,35 @@ jobs:
         run: |
           sudo ./build.sh -b ${{ matrix.board }} -k
 
-      - name: Cache after step 1
-        uses: actions/cache@v2
-        with:
-          path: ./build
-          key: ${{ runner.os }}-build-step1-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-step1-
+      - name: Run debug scripts
+        run: |
+          pwd || true
+          ls -alh || true
+          ls -alh build || true
+          ls -alh images || true
 
       - name: Build Uboot for ${{ matrix.board }}
         run: |
           sudo ./build.sh -b ${{ matrix.board }} -u
-
-      - name: Cache after step 2
-        uses: actions/cache@v2
-        with:
-          path: ./build
-          key: ${{ runner.os }}-build-step2-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-step2-
-
-      - name: Run build script
-        run: |
-          sudo ./build.sh -b ${{ matrix.board }}
-
-      - name: Cache after step 3
-        uses: actions/cache@v2
-        with:
-          path: ./build
-          key: ${{ runner.os }}-build-step3-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-step3-
 
       - name: Run debug scripts
         run: |
           pwd
           ls -alh
           ls -alh build
-          ls -alh build/images
+          ls -alh images || true
+
+
+      - name: Run build script
+        run: |
+          sudo ./build.sh -b ${{ matrix.board }}
+
+      - name: Run debug scripts
+        run: |
+          pwd
+          ls -alh
+          ls -alh build
+          ls -alh images
 
       - name: Upload server image
         uses: actions/upload-artifact@v2
