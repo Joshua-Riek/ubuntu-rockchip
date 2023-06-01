@@ -13,3 +13,4 @@
 0013-add-drivers-for-rtl8811cu-and-rtl8821c.patch
 0014-disable-CLOCK_ALLOW_WRITE_DEBUGFS-notice.patch
 0015-add-opi5-plus-device-tree.patch
+0016-add-driver-for-rtl88x2bu-chipset.patch
