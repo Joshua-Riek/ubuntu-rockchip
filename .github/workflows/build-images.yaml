@@ -7,8 +7,8 @@ jobs:
   build:
     strategy:
       matrix:
-        board: [orangepi5, orangepi5b, orangepi5plus, rock5a, rock5b, nanopir6c, nanopir6s, indiedroid-nova]
-    runs-on: ubuntu-latest
+        board: [orangepi5] #, orangepi5b, orangepi5plus, rock5a, rock5b, nanopir6c, nanopir6s, indiedroid-nova
+    runs-on: buildjet-8vcpu-ubuntu-2204-arm
     env:
       BOARD: ${{ matrix.board }}
     steps:
