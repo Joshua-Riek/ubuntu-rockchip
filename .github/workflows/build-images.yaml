@@ -1,0 +1,46 @@
+name: Build OrangePi Image
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        board: [orangepi5, orangepi5b, orangepi5plus, rock5a, rock5b, nanopir6c, nanopir6s, indiedroid-nova]
+    runs-on: ubuntu-latest
+    env:
+      BOARD: ${{ matrix.board }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Cache build directory
+      uses: actions/cache@v2
+      with:
+        path: ../build
+        key: ${{ runner.os }}-build-${{ env.BOARD }}-${{ hashFiles('**/build.sh') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.BOARD }}-
+          ${{ runner.os }}-build-
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf bc git wget make libc6-dev libncurses5-dev libncursesw5-dev libssl-dev flex bison
+
+    - name: Run build scripts
+      run: |
+        ./build.sh -b ${BOARD} -k
+        ./build.sh -b ${BOARD} -u
+        ./build.sh -b ${BOARD}
+
+    - name: Upload server image
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.board }}-server-image
+        path: ./build/images/ubuntu-22.04.2-preinstalled-server-arm64-"${BOARD}".rootfs.tar.xz
+
+    - name: Upload desktop image
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.board }}-desktop-image
+        path: ./build/images/ubuntu-22.04.2-preinstalled-desktop-arm64-"${BOARD}".rootfs.tar.xz
