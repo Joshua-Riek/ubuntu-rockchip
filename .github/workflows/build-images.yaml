@@ -1,9 +1,6 @@
 name: Build OrangePi Image
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -33,7 +30,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf bc git wget make libc6-dev libncurses5-dev libncursesw5-dev libssl-dev flex bison
           sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 python-is-python3 fdisk
 
-      - name: Run build script - step 1
+      - name: Build Kernel for ${{ matrix.board }}
         run: |
           sudo ./build.sh -b ${{ matrix.board }} -k
 
@@ -45,7 +42,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-step1-
 
-      - name: Run build script - step 2
+      - name: Build Uboot for ${{ matrix.board }}
         run: |
           sudo ./build.sh -b ${{ matrix.board }} -u
 
@@ -57,7 +54,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-step2-
 
-      - name: Run build script - step 3
+      - name: Run build script
         run: |
           sudo ./build.sh -b ${{ matrix.board }}
 
@@ -68,17 +65,6 @@ jobs:
           key: ${{ runner.os }}-build-step3-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-build-step3-
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        with:
-          draft: false
-          prerelease: false
-          release_name: Release ${{ github.run_number }}
-          tag_name: ${{ github.ref }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run debug scripts
         run: |
