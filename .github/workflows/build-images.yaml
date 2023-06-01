@@ -1,6 +1,9 @@
 name: Build OrangePi Image
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -8,41 +11,90 @@ jobs:
     strategy:
       matrix:
         board: [orangepi5] #, orangepi5b, orangepi5plus, rock5a, rock5b, nanopir6c, nanopir6s, indiedroid-nova
+
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
     env:
       BOARD: ${{ matrix.board }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Cache build directory
-      uses: actions/cache@v2
-      with:
-        path: ../build
-        key: ${{ runner.os }}-build-${{ env.BOARD }}-${{ hashFiles('**/build.sh') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.BOARD }}-
-          ${{ runner.os }}-build-
+      - name: Cache build directory
+        uses: actions/cache@v2
+        with:
+          path: ../build
+          key: ${{ runner.os }}-build-${{ env.BOARD }}-${{ hashFiles('./build/**') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.BOARD }}-
+            ${{ runner.os }}-build-
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf bc git wget make libc6-dev libncurses5-dev libncursesw5-dev libssl-dev flex bison
-        sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 python-is-python3 fdisk
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf bc git wget make libc6-dev libncurses5-dev libncursesw5-dev libssl-dev flex bison
+          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 python-is-python3 fdisk
 
-    - name: Run build scripts
-      run: |
-        sudo ./build.sh -b ${BOARD} -k
-        sudo ./build.sh -b ${BOARD} -u
-        sudo ./build.sh -b ${BOARD}
+      - name: Run build script - step 1
+        run: |
+          sudo ./build.sh -b ${{ matrix.board }} -k
 
-    - name: Upload server image
-      uses: actions/upload-artifact@v2
-      with:
-        name: ${{ matrix.board }}-server-image
-        path: ./build/images/ubuntu-22.04.2-preinstalled-server-arm64-"${BOARD}".rootfs.tar.xz
+      - name: Cache after step 1
+        uses: actions/cache@v2
+        with:
+          path: ./build
+          key: ${{ runner.os }}-build-step1-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-step1-
 
-    - name: Upload desktop image
-      uses: actions/upload-artifact@v2
-      with:
-        name: ${{ matrix.board }}-desktop-image
-        path: ./build/images/ubuntu-22.04.2-preinstalled-desktop-arm64-"${BOARD}".rootfs.tar.xz
+      - name: Run build script - step 2
+        run: |
+          sudo ./build.sh -b ${{ matrix.board }} -u
+
+      - name: Cache after step 2
+        uses: actions/cache@v2
+        with:
+          path: ./build
+          key: ${{ runner.os }}-build-step2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-step2-
+
+      - name: Run build script - step 3
+        run: |
+          sudo ./build.sh -b ${{ matrix.board }}
+
+      - name: Cache after step 3
+        uses: actions/cache@v2
+        with:
+          path: ./build
+          key: ${{ runner.os }}-build-step3-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-step3-
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          draft: false
+          prerelease: false
+          release_name: Release ${{ github.run_number }}
+          tag_name: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run debug scripts
+        run: |
+          pwd
+          ls -alh
+          ls -alh build
+          ls -alh build/images
+
+      - name: Upload server image
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.board }}-server-image
+          path: ./build/images/ubuntu-22.04.2-preinstalled-server-arm64-${{ matrix.board }}.img.xz
+
+      - name: Upload desktop image
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.board }}-desktop-image
+          path: ./build/images/ubuntu-22.04.2-preinstalled-desktop-arm64-${{ matrix.board }}.img.xz
