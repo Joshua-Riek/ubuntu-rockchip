@@ -29,9 +29,9 @@ jobs:
 
     - name: Run build scripts
       run: |
-        ./build.sh -b ${BOARD} -k
-        ./build.sh -b ${BOARD} -u
-        ./build.sh -b ${BOARD}
+        sudo ./build.sh -b ${BOARD} -k
+        sudo ./build.sh -b ${BOARD} -u
+        sudo ./build.sh -b ${BOARD}
 
     - name: Upload server image
       uses: actions/upload-artifact@v2
