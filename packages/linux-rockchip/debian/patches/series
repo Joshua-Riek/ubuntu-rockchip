@@ -12,3 +12,4 @@
 0012-9Tripod-Revise-hardware-tables.patch
 0013-add-drivers-for-rtl8811cu-and-rtl8821c.patch
 0014-disable-CLOCK_ALLOW_WRITE_DEBUGFS-notice.patch
+0015-add-opi5-plus-device-tree.patch
