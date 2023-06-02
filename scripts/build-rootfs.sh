@@ -11,29 +11,8 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
-if [[ -z ${BOARD} ]]; then
-    echo "Error: BOARD is not set"
-    exit 1
-fi
-
-if [[ -z ${VENDOR} ]]; then
-    echo "Error: VENDOR is not set"
-    exit 1
-fi
-
-if [[ ${LAUNCHPAD} != "Y" ]]; then
-    for file in linux-{headers,image}-5.10.160-rockchip-rk3588_*.deb; do
-        if [ ! -e "$file" ]; then
-            echo "Error: missing kernel debs, please run build-kernel.sh"
-            exit 1
-        fi
-    done
-    for file in u-boot-"${BOARD}"-rk3588_*.deb; do
-        if [ ! -e "$file" ]; then
-            echo "Error: missing u-boot deb, please run build-u-boot.sh"
-            exit 1
-        fi
-    done
+if [[ -f ubuntu-22.04.2-preinstalled-server-arm64.rootfs.tar.xz && -f ubuntu-22.04.2-preinstalled-desktop-arm64.rootfs.tar.xz ]]; then
+    exit 0
 fi
 
 # These env vars can cause issues with chroot
@@ -165,40 +144,6 @@ mkswap /tmp/swapfile
 mv /tmp/swapfile /swapfile
 EOF
 
-# Install the kernel
-if [[ ${LAUNCHPAD}  == "Y" ]]; then
-    chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.160-rockchip-rk3588 linux-headers-5.10.160-rockchip-rk3588 u-boot-${BOARD}-rk3588"
-else
-    cp linux-{headers,image}-5.10.160-rockchip-rk3588_*.deb ${chroot_dir}/tmp
-    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image}-5.10.160-rockchip-rk3588_*.deb && rm -rf /tmp/*"
-    chroot ${chroot_dir} /bin/bash -c "apt-mark hold linux-image-5.10.160-rockchip-rk3588 linux-headers-5.10.160-rockchip-rk3588"
-
-    cp u-boot-"${BOARD}"-rk3588_*.deb ${chroot_dir}/tmp
-    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/u-boot-${BOARD}-rk3588_*.deb && rm -rf /tmp/*"
-    chroot ${chroot_dir} /bin/bash -c "apt-mark hold u-boot-${BOARD}-rk3588"
-fi
-
-# Finish kernel install
-cat << EOF | chroot ${chroot_dir} /bin/bash
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
-
-# Generate kernel module dependencies
-depmod -a 5.10.160-rockchip-rk3588
-
-# Create kernel and component symlinks
-cd /boot 
-ln -s initrd.img-5.10.160-rockchip-rk3588 initrd.img
-ln -s System.map-5.10.160-rockchip-rk3588 System.map
-ln -s vmlinuz-5.10.160-rockchip-rk3588 vmlinuz
-ln -s config-5.10.160-rockchip-rk3588 config
-
-# Copy device trees and overlays
-mkdir -p /boot/firmware/dtbs/overlays
-cp /usr/lib/linux-image-5.10.160-rockchip-rk3588/rockchip/*.dtb /boot/firmware/dtbs
-cp /usr/lib/linux-image-5.10.160-rockchip-rk3588/rockchip/overlay/*.dtbo /boot/firmware/dtbs/overlays
-EOF
-
 # DNS
 cp ${overlay_dir}/etc/resolv.conf ${chroot_dir}/etc/resolv.conf
 
@@ -280,65 +225,12 @@ echo "NO_CREATE_DOT_BAK_FILES=true" >> ${chroot_dir}/etc/environment
 # Fix Intel AX210 not working after linux-firmware update
 [ -e ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.pnvm ] && mv ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.{pnvm,bak}
 
-# Board specific changes
-if [[ ${BOARD} =~ orangepi5|orangepi5b ]]; then
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8388-sound", ENV{SOUND_DESCRIPTION}="ES8388 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-
-    cp ${overlay_dir}/usr/lib/systemd/system/enable-usb2.service ${chroot_dir}/usr/lib/systemd/system/enable-usb2.service
-    chroot ${chroot_dir} /bin/bash -c "systemctl --no-reload enable enable-usb2"
-
-    chroot ${chroot_dir} /bin/bash -c "apt-get -y install wiringpi-opi"
-    echo "BOARD=${BOARD}" > ${chroot_dir}/etc/"${VENDOR}"-release
-elif [[ "${BOARD}" =~ orangepi5plus ]]; then
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi1-sound", ENV{SOUND_DESCRIPTION}="HDMI1 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmiin-sound", ENV{SOUND_DESCRIPTION}="HDMI-In Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8388-sound", ENV{SOUND_DESCRIPTION}="ES8388 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-
-    chroot ${chroot_dir} /bin/bash -c "apt-get -y install wiringpi-opi"
-    echo "BOARD=${BOARD}" > ${chroot_dir}/etc/"${VENDOR}"-release
-elif [[ "${BOARD}" =~ rock5a ]]; then
-	echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-	echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-	echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8316-sound", ENV{SOUND_DESCRIPTION}="ES8316 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-elif [[ "${BOARD}" =~ rock5b ]]; then
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi1-sound", ENV{SOUND_DESCRIPTION}="HDMI1 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmiin-sound", ENV{SOUND_DESCRIPTION}="HDMI-In Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8316-sound", ENV{SOUND_DESCRIPTION}="ES8316 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-elif [[ "${BOARD}" =~ nanopir6c|nanopir6s ]]; then
-    echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-elif [[ "${BOARD}" =~ indiedroid-nova ]]; then
-    pushd ${chroot_dir}/tmp
-    git clone https://github.com/stvhay/rkwifibt
-    cd rkwifibt && make CROSS_COMPILE=aarch64-linux-gnu- -C realtek/rtk_hciattach
-    mkdir -p ../../lib/firmware/rtl_bt
-    chmod +x realtek/rtk_hciattach/rtk_hciattach bt_load_rtk_firmware
-    cp -fr realtek/RTL8821CS/* ../../lib/firmware/rtl_bt/
-    cp -f realtek/rtk_hciattach/rtk_hciattach ../../usr/bin/
-    cp -f bt_load_rtk_firmware ../../usr/bin/
-    echo hci_uart >> ../../etc/modules
-    cd .. && rm -rf rkwifibt
-	popd
-
-    cp ${overlay_dir}/usr/lib/systemd/system/rtl8821cs-bluetooth.service ${chroot_dir}/usr/lib/systemd/system/rtl8821cs-bluetooth.service
-    chroot ${chroot_dir} /bin/bash -c "systemctl enable rtl8821cs-bluetooth"
-fi
-
-# Update initramfs
-chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
-
 # Umount temporary API filesystems
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-22.04.2-preinstalled-server-arm64-"${BOARD}".rootfs.tar.xz . && cd ..
-../scripts/build-image.sh ubuntu-22.04.2-preinstalled-server-arm64-"${BOARD}".rootfs.tar.xz
+cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf ../ubuntu-22.04.2-preinstalled-server-arm64.rootfs.tar.xz . && cd ..
 
 # Mount the temporary API filesystems
 mkdir -p ${chroot_dir}/{proc,sys,run,dev,dev/pts}
@@ -501,13 +393,6 @@ cp ${overlay_dir}/etc/initramfs-tools/conf-hooks.d/plymouth ${chroot_dir}/etc/in
 # Fix Intel AX210 not working after linux-firmware update
 [ -e ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.pnvm ] && mv ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.{pnvm,bak}
 
-# Set HDMI as default audio output
-if [[ ${BOARD} =~ orangepi5|orangepi5b|nanopir6c|nanopir6s ]]; then
-    echo "set-default-sink alsa_output.platform-hdmi0-sound.stereo-fallback" >> ${chroot_dir}/etc/pulse/default.pa
-elif [[ ${BOARD} =~ indiedroid-nova ]]; then
-    echo "set-default-sink 1" >> ${chroot_dir}/etc/pulse/default.pa
-fi
-
 # Update initramfs
 chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
 
@@ -516,5 +401,4 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-0 -T0" tar -cpJf ../ubuntu-22.04.2-preinstalled-desktop-arm64-"${BOARD}".rootfs.tar.xz . && cd ..
-../scripts/build-image.sh ubuntu-22.04.2-preinstalled-desktop-arm64-"${BOARD}".rootfs.tar.xz
+cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf ../ubuntu-22.04.2-preinstalled-desktop-arm64.rootfs.tar.xz . && cd ..

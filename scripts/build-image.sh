@@ -43,7 +43,7 @@ if [ -z "$1" ]; then
 fi
 
 rootfs="$(readlink -f "$1")"
-if [[ "$(basename "${rootfs}")" != *".rootfs.tar.xz" || ! -e "${rootfs}" ]]; then
+if [[ "$(basename "${rootfs}")" != *".rootfs.tar" || ! -e "${rootfs}" ]]; then
     echo "Error: $(basename "${rootfs}") must be a rootfs tarfile"
     exit 1
 fi
@@ -89,7 +89,7 @@ fi
 
 # Create an empty disk image
 img="../images/$(basename "${rootfs}" .rootfs.tar.xz).img"
-size="$(xz -l "${rootfs}" | tail -n +2 | sed 's/,//g' | awk '{print int($5 + 1)}')"
+size="$(( $(wc -c < "${rootfs}" ) / 1024 / 1024 ))"
 truncate -s "$(( size + 2048 + 512 ))M" "${img}"
 
 # Create loop device for disk image
@@ -165,8 +165,7 @@ mount "${disk}${partition_char}1" ${mount_point}/system-boot
 mount "${disk}${partition_char}2" ${mount_point}/writable
 
 # Copy the rootfs to root partition
-echo -e "Decompressing $(basename "${rootfs}")\n"
-tar -xpJf "${rootfs}" -C ${mount_point}/writable
+tar -xpf "${rootfs}" -C ${mount_point}/writable
 
 # Set boot args for the splash screen
 [ -z "${img##*desktop*}" ] && bootargs="quiet splash plymouth.ignore-serial-consoles" || bootargs=""
