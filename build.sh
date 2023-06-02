@@ -120,5 +120,6 @@ if [[ ${LAUNCHPAD} != "Y" ]]; then
 fi
 
 eval "${DOCKER}" ./scripts/build-rootfs.sh
+eval "${DOCKER}" ./scripts/configure-image.sh
 
 exit 0
