@@ -38,7 +38,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 if [ -z "$1" ]; then
-    echo "Usage: $0 filename.rootfs.tar.xz"
+    echo "Usage: $0 filename.rootfs.tar"
     exit 1
 fi
 
@@ -88,7 +88,7 @@ elif [[ "${BOARD}" == indiedroid-nova ]]; then
 fi
 
 # Create an empty disk image
-img="../images/$(basename "${rootfs}" .rootfs.tar.xz).img"
+img="../images/$(basename "${rootfs}" .rootfs.tar).img"
 size="$(( $(wc -c < "${rootfs}" ) / 1024 / 1024 ))"
 truncate -s "$(( size + 2048 + 512 ))M" "${img}"
 
