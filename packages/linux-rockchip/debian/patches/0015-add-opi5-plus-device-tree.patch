@@ -1,16 +1,16 @@
-From 604b9a024b351791a76eb04b86b83fb65967fe76 Mon Sep 17 00:00:00 2001
+From efa4c83e82dd2aa1ced913d7788a35bb4fea612c Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Sat, 20 May 2023 13:17:22 -0400
-Subject: [PATCH 2/4] arm64: dts: add opi5 plus device tree
+Subject: [PATCH] arm64: dts: add opi5 plus device tree
 
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
  .../rk3588-orangepi-5-plus-camera1.dtsi       | 170 ++++
  .../rockchip/rk3588-orangepi-5-plus-lcd.dtsi  |  45 +
- .../dts/rockchip/rk3588-orangepi-5-plus.dts   | 333 ++++++++
+ .../dts/rockchip/rk3588-orangepi-5-plus.dts   | 327 ++++++++
  .../dts/rockchip/rk3588-orangepi-5-plus.dtsi  | 770 ++++++++++++++++++
  .../boot/dts/rockchip/rk3588-orangepi.dtsi    | 647 +++++++++++++++
- 6 files changed, 1966 insertions(+)
+ 6 files changed, 1960 insertions(+)
  create mode 100755 arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus-camera1.dtsi
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus-lcd.dtsi
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus.dts
@@ -18,7 +18,7 @@ Subject: [PATCH 2/4] arm64: dts: add opi5 plus device tree
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3588-orangepi.dtsi
 
 diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
-index f4e65108aba6..2edaf670503a 100644
+index bd4244b8dbaf..24c6b5a6e39d 100644
 --- a/arch/arm64/boot/dts/rockchip/Makefile
 +++ b/arch/arm64/boot/dts/rockchip/Makefile
 @@ -182,6 +182,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-nvr-demo3-v10.dtb
@@ -258,10 +258,10 @@ index 000000000000..a9e29f33c13e
 +};
 diff --git a/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus.dts b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus.dts
 new file mode 100644
-index 000000000000..520744bf2bf2
+index 000000000000..868cf12e677e
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus.dts
-@@ -0,0 +1,333 @@
+@@ -0,0 +1,327 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
@@ -280,12 +280,6 @@ index 000000000000..520744bf2bf2
 +	compatible = "rockchip,rk3588-orangepi-5-plus", "rockchip,rk3588";
 +
 +	/delete-node/ chosen;
-+
-+	aliases {
-+		mmc0 = &sdmmc;
-+		mmc1 = &sdhci;
-+		mmc2 = &sdio;
-+	};
 +
 +	leds: gpio-leds {
 +		compatible = "gpio-leds";
