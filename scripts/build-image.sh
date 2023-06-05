@@ -207,6 +207,9 @@ for overlay_file in ${overlays}; do
     elif load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/overlays/${overlay_file}.dtbo; then
         echo "Applying device tree overlay: /dtbs/overlays/${overlay_file}.dtbo"
         fdt apply ${fdtoverlay_addr_r} || setenv overlay_error "true"
+    elif load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/overlays/rk3588-${overlay_file}.dtbo; then
+        echo "Applying device tree overlay: /dtbs/overlays/rk3588-${overlay_file}.dtbo"
+        fdt apply ${fdtoverlay_addr_r} || setenv overlay_error "true"
     fi
 done
 if test "${overlay_error}" = "true"; then
