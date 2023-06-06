@@ -92,7 +92,7 @@ for type in server desktop; do
     fi
 
     # Board specific changes
-    if [[ "${BOARD}" =~ orangepi5plus ]]; then
+    if [ "${BOARD}" == orangepi5plus ]; then
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi1-sound", ENV{SOUND_DESCRIPTION}="HDMI1 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmiin-sound", ENV{SOUND_DESCRIPTION}="HDMI-In Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
@@ -101,7 +101,7 @@ for type in server desktop; do
 
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev"
         echo "BOARD=${BOARD}" > ${chroot_dir}/etc/"${VENDOR}"-release
-    elif [[ ${BOARD} =~ orangepi5|orangepi5b ]]; then
+    elif [ "${BOARD}" == orangepi5 ] || [ "${BOARD}" == orangepi5 ]; then
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8388-sound", ENV{SOUND_DESCRIPTION}="ES8388 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
@@ -111,19 +111,19 @@ for type in server desktop; do
 
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev"
         echo "BOARD=${BOARD}" > ${chroot_dir}/etc/"${VENDOR}"-release
-    elif [[ "${BOARD}" =~ rock5a ]]; then
+    elif [ "${BOARD}" == rock5a ]; then
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8316-sound", ENV{SOUND_DESCRIPTION}="ES8316 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    elif [[ "${BOARD}" =~ rock5b ]]; then
+    elif [ "${BOARD}" == rock5b ]; then
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi1-sound", ENV{SOUND_DESCRIPTION}="HDMI1 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmiin-sound", ENV{SOUND_DESCRIPTION}="HDMI-In Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8316-sound", ENV{SOUND_DESCRIPTION}="ES8316 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    elif [[ "${BOARD}" =~ nanopir6c|nanopir6s ]]; then
+    elif [ "${BOARD}" == nanopir6c ] || [ "${BOARD}" == nanopir6s ]; then
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    elif [[ "${BOARD}" =~ indiedroid-nova ]]; then
+    elif [ "${BOARD}" == indiedroid-nova ]; then
         pushd ${chroot_dir}/tmp
         git clone https://github.com/stvhay/rkwifibt
         cd rkwifibt && make CROSS_COMPILE=aarch64-linux-gnu- -C realtek/rtk_hciattach
@@ -141,9 +141,9 @@ for type in server desktop; do
     fi
 
     if [[ ${type} == "desktop" ]]; then
-        if [[ ${BOARD} =~ orangepi5|orangepi5b|nanopir6c|nanopir6s && ${BOARD} != orangepi5plus ]]; then
+        if [ "${BOARD}" == orangepi5 ] || [ "${BOARD}" == orangepi5b ] || [ "${BOARD}" == nanopir6c ] || [ "${BOARD}" == nanopir6s ]; then
             echo "set-default-sink alsa_output.platform-hdmi0-sound.stereo-fallback" >> ${chroot_dir}/etc/pulse/default.pa
-        elif [[ ${BOARD} =~ indiedroid-nova ]]; then
+        elif [ "${BOARD}" == indiedroid-nova ]; then
             echo "set-default-sink 1" >> ${chroot_dir}/etc/pulse/default.pa
         fi
     fi
