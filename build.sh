@@ -112,7 +112,7 @@ if [[ ${UBOOT_ONLY} == "Y" ]]; then
 fi
 
 if [[ ${LAUNCHPAD} != "Y" ]]; then
-    for file in build/linux-{headers,image}-5.10.160-rockchip-rk3588_*.deb; do
+    for file in build/linux-{headers,image}-5.10.160-rockchip_*.deb; do
         if [ ! -e "$file" ]; then
             eval "${DOCKER}" ./scripts/build-kernel.sh
         fi
