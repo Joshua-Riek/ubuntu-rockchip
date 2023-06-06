@@ -88,13 +88,13 @@ if [[ ${CLEAN} == "Y" ]]; then
     rm -rf build
 fi
 
-if [[ ${BOARD} =~ orangepi5|orangepi5b|orangepi5plus ]]; then
+if [ "${BOARD}" == orangepi5 ] || [ "${BOARD}" == orangepi5b ] || [ "${BOARD}" == orangepi5plus ]; then
     export VENDOR=orangepi
-elif [[ "${BOARD}" =~ rock5b|rock5a ]]; then
+elif [ "${BOARD}" == rock5b ] || [ "${BOARD}" == rock5a ]; then
     export VENDOR=radxa
-elif [[ "${BOARD}" =~ nanopir6c|nanopir6s ]]; then
+elif [ "${BOARD}" == nanopir6c ] || [ "${BOARD}" == nanopir6s ]; then
     export VENDOR=nanopi
-elif [[ "${BOARD}" =~ indiedroid-nova ]]; then
+elif [ "${BOARD}" == indiedroid-nova ]; then
     export VENDOR=9tripod
 else
     echo "Error: \"${BOARD}\" is an unsupported board"
