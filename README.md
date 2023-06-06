@@ -20,7 +20,7 @@ The supported devices are undergoing continuous development. As a result, you ma
 
 * Orange Pi 5
 * Orange Pi 5B
-* Orange Pi 5 Plus (WIP hardware required)
+* Orange Pi 5 Plus
 * NanoPi R6S
 * NanoPi R6C
 * NanoPC-T6 (WIP hardware required)
