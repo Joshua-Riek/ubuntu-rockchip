@@ -239,46 +239,11 @@ mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-# Copy packages to the rootfs
-cp -r ../packages/rkaiq ${chroot_dir}/tmp
-
-# Install packages
-cat << EOF | chroot ${chroot_dir} /bin/bash
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
-
-mkdir -p /tmp/apt-local
-mv /tmp/*/*.deb /tmp/apt-local
-
-# Backup sources.list and setup a local apt repo
-cd /tmp/apt-local && apt-ftparchive packages . > Packages && cd /
-echo -e "Package: *\nPin: origin ""\nPin-Priority: 1001" > /etc/apt/preferences.d/apt-local
-echo "deb [trusted=yes] file:/tmp/apt-local/ ./" > /tmp/apt-local.list
-cp /etc/apt/sources.list /etc/apt/sources.list.bak
-cat /tmp/apt-local.list /etc/apt/sources.list > /tmp/sources.list
-mv /tmp/sources.list /etc/apt/sources.list
-rm -rf /tmp/apt-local.list
-apt-get -y update
-
-debs=()
-for i in /tmp/apt-local/*.deb; do
-    debs+=("\$(basename "\${i}" | cut -d "_" -f1)")
-done
-
-# Install and hold packages
-apt-get -y install "\${debs[@]}" && apt-mark hold "\${debs[@]}"
-
-# Copy binary for rkaiq
-cp -f /tmp/rkaiq/rkaiq_3A_server /usr/bin
-
-# Remove the local apt repo and restore sources.list
-mv /etc/apt/sources.list.bak /etc/apt/sources.list
-rm -f /etc/apt/preferences.d/apt-local
-rm -rf /tmp/*
-
-# Clean package cache
-apt-get -y update && apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
-EOF
+# Install rkaiq
+cp -r ../packages/rkaiq/camera-engine-rkaiq_rk3588_arm64.deb ${chroot_dir}/tmp
+chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera-engine-rkaiq_rk3588_arm64.deb"
+cp -f ../packages/rkaiq/rkaiq_3A_server ${chroot_dir}/usr/bin
+rm -f ${chroot_dir}/tmp/camera-engine-rkaiq_rk3588_arm64.deb
 
 # Download and update packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
