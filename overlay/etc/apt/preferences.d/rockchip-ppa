@@ -1,7 +1,3 @@
 Package: *
 Pin: release o=LP-PPA-jjriek-rockchip
 Pin-Priority: 1001
-
-Package: linux-libc-dev
-Pin: release o=LP-PPA-jjriek-rockchip
-Pin-Priority: 1
