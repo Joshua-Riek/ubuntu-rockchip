@@ -101,7 +101,7 @@ for type in server desktop; do
 
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev"
         echo "BOARD=${BOARD}" > ${chroot_dir}/etc/"${VENDOR}"-release
-    elif [ "${BOARD}" == orangepi5 ] || [ "${BOARD}" == orangepi5 ]; then
+    elif [ "${BOARD}" == orangepi5 ] || [ "${BOARD}" == orangepi5b ]; then
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8388-sound", ENV{SOUND_DESCRIPTION}="ES8388 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
