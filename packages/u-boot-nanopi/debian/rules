@@ -17,7 +17,7 @@ DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.09.bin
 BL31_BLOB := rk3588_bl31_v1.36.elf
 BL32_BLOB := rk3588_bl32_v1.12.bin
 
-nanopi_r6s nanopi_r6c: 
+nanopi_r6s nanopi_r6c nanopc_t6: 
 	@mkdir -p debian/build/$@
 
 	make O=debian/build/$@ \
@@ -47,7 +47,7 @@ nanopi_r6s nanopi_r6c:
 	  debian/rkbin/$(DDR_BLOB):debian/build/$@/spl/u-boot-spl.bin \
 	  debian/build/$@/idbloader.img
 
-build: nanopi_r6s nanopi_r6c
+build: nanopi_r6s nanopi_r6c nanopc_t6
 
 binary-nanopi_r6s:
 	rm -rf debian/tmp/nanopi_r6s
@@ -81,7 +81,23 @@ binary-nanopi_r6c:
 	dpkg-gencontrol -pu-boot-nanopir6c-rk3588 -P"debian/tmp/nanopi_r6c"
 	dpkg --build "debian/tmp/nanopi_r6c" ..
 
-binary-arch: binary-nanopi_r6s binary-nanopi_r6c
+binary-nanopc_t6:
+	rm -rf debian/tmp/nanopc_t6
+	mkdir -m 755 -p debian/tmp/nanopc_t6/usr/lib/u-boot-nanopi-rk3588
+	cp debian/build/nanopc_t6/u-boot.itb debian/tmp/nanopc_t6/usr/lib/u-boot-nanopi-rk3588/u-boot.itb
+	cp debian/build/nanopc_t6/idbloader.img debian/tmp/nanopc_t6/usr/lib/u-boot-nanopi-rk3588/idbloader.img
+
+	mkdir -m 755 -p "debian/tmp/nanopc_t6/DEBIAN"
+	mkdir -p "debian/tmp/nanopc_t6/usr/share/doc/u-boot-nanopi-rk3588"
+	cp debian/copyright "debian/tmp/nanopc_t6/usr/share/doc/u-boot-nanopi-rk3588/"
+	cp debian/changelog "debian/tmp/nanopc_t6/usr/share/doc/u-boot-nanopi-rk3588/changelog.Debian"
+	gzip -9 "debian/tmp/nanopc_t6/usr/share/doc/u-boot-nanopi-rk3588/changelog.Debian"
+	sh -c "cd 'debian/tmp/nanopc_t6'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
+	chown -R root:root "debian/tmp/nanopc_t6" && chmod -R go-w "debian/tmp/nanopc_t6" && chmod -R a+rX "debian/tmp/nanopc_t6"
+	dpkg-gencontrol -pu-boot-nanopct6-rk3588 -P"debian/tmp/nanopc_t6"
+	dpkg --build "debian/tmp/nanopc_t6" ..
+
+binary-arch: binary-nanopi_r6s binary-nanopi_r6c binary-nanopc_t6
 
 binary: binary-arch
 

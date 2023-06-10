@@ -5,7 +5,7 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi5|orangepi5b|orangepi5plus|rock5b|rock5a|nanopir6c|nanopir6s|indiedroid-nova]
+Usage: $0 --board=[orangepi5|orangepi5b|orangepi5plus|rock5b|rock5a|nanopct6|nanopir6c|nanopir6s|indiedroid-nova]
 
 Required arguments:
   -b, --board=BOARD     target board 
@@ -92,7 +92,7 @@ if [ "${BOARD}" == orangepi5 ] || [ "${BOARD}" == orangepi5b ] || [ "${BOARD}" =
     export VENDOR=orangepi
 elif [ "${BOARD}" == rock5b ] || [ "${BOARD}" == rock5a ]; then
     export VENDOR=radxa
-elif [ "${BOARD}" == nanopir6c ] || [ "${BOARD}" == nanopir6s ]; then
+elif [ "${BOARD}" == nanopir6c ] || [ "${BOARD}" == nanopir6s ] || [ "${BOARD}" == nanopct6 ]; then
     export VENDOR=nanopi
 elif [ "${BOARD}" == indiedroid-nova ]; then
     export VENDOR=9tripod

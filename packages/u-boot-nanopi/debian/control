@@ -23,3 +23,11 @@ Provides: u-boot-nanopi-rk3588
 Replaces: u-boot-nanopi-rk3588
 Conflicts: u-boot-nanopi-rk3588
 Description: U-Boot for the NanoPi R6C
+
+Package: u-boot-nanopct6-rk3588
+Architecture: arm64
+Priority: optional
+Provides: u-boot-nanopi-rk3588
+Replaces: u-boot-nanopi-rk3588
+Conflicts: u-boot-nanopi-rk3588
+Description: U-Boot for the NanoPC T6
