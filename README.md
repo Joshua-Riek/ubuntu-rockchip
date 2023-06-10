@@ -23,7 +23,7 @@ The supported devices are undergoing continuous development. As a result, you ma
 * Orange Pi 5 Plus
 * NanoPi R6S
 * NanoPi R6C
-* NanoPC-T6 (WIP)
+* NanoPC T6
 * Rock 5B
 * Rock 5A
 * Indiedroid Nova
