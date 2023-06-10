@@ -123,6 +123,10 @@ for type in server desktop; do
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8316-sound", ENV{SOUND_DESCRIPTION}="ES8316 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
     elif [ "${BOARD}" == nanopir6c ] || [ "${BOARD}" == nanopir6s ]; then
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+    elif [ "${BOARD}" == nanopct6 ]; then
+        echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+        echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi1-sound", ENV{SOUND_DESCRIPTION}="HDMI1 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+        echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-rt5616-sound", ENV{SOUND_DESCRIPTION}="RT5616 Audio"' >> ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
     elif [ "${BOARD}" == indiedroid-nova ]; then
         pushd ${chroot_dir}/tmp
         git clone https://github.com/stvhay/rkwifibt

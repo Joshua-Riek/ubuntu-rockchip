@@ -82,6 +82,9 @@ elif [[ "${BOARD}" == nanopir6c ]]; then
 elif [[ "${BOARD}" == nanopir6s ]]; then
     DEVICE_TREE=rk3588s-nanopi-r6s.dtb
     OVERLAY_PREFIX=
+elif [[ "${BOARD}" == nanopct6 ]]; then
+    DEVICE_TREE=rk3588-nanopc-t6.dtb
+    OVERLAY_PREFIX=
 elif [[ "${BOARD}" == indiedroid-nova ]]; then
     DEVICE_TREE=rk3588s-9tripod-linux.dtb
     OVERLAY_PREFIX=
@@ -250,6 +253,12 @@ if [ -z "${img##*server*}" ]; then
         sed -i 's/eth0:/enP4p65s0:/g' ${mount_point}/system-boot/network-config
     elif [ "${BOARD}" == orangepi5plus ]; then
         sed -i 's/eth0:/enP4p65s0:\n    dhcp4: true\n    optional: true\n  enP3p49s0:/g' ${mount_point}/system-boot/network-config
+    elif [ "${BOARD}" == nanopir6c ]; then
+        sed -i 's/eth0:/eth0:\n    dhcp4: true\n    optional: true\n  enP3p49s0:/g' ${mount_point}/system-boot/network-config
+    elif [ "${BOARD}" == nanopir6s ]; then
+        sed -i 's/eth0:/eth0:\n    dhcp4: true\n    optional: true\n  enP3p49s0:\n    dhcp4: true\n    optional: true\n  enP4p65s0:/g' ${mount_point}/system-boot/network-config
+    elif [ "${BOARD}" == nanopct6 ]; then
+        sed -i 's/eth0:/enP2p33s0:\n    dhcp4: true\n    optional: true\n  enP4p65s0:/g' ${mount_point}/system-boot/network-config
     fi
 fi
 
