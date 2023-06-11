@@ -1,0 +1,14 @@
+#!/bin/sh
+
+killall rtk_hciattach
+
+echo 0 > /sys/class/rfkill/rfkill0/state
+sleep 2
+echo 1 > /sys/class/rfkill/rfkill0/state
+sleep 2
+
+modprobe hci_uart
+rtk_hciattach -n -s 115200 $BT_TTY_DEV rtk_h5 &
+sleep 5
+hciconfig hci0 up
+
