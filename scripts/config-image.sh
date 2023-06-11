@@ -140,18 +140,8 @@ for type in server desktop; do
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-rt5616-sound", ENV{SOUND_DESCRIPTION}="RT5616 Audio"'
     } > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
     elif [ "${BOARD}" == indiedroid-nova ]; then
-        pushd ${chroot_dir}/tmp
-        git clone https://github.com/stvhay/rkwifibt
-        cd rkwifibt && make CROSS_COMPILE=aarch64-linux-gnu- -C realtek/rtk_hciattach
-        mkdir -p ../../lib/firmware/rtl_bt
-        chmod +x realtek/rtk_hciattach/rtk_hciattach bt_load_rtk_firmware
-        cp -fr realtek/RTL8821CS/* ../../lib/firmware/rtl_bt/
-        cp -f realtek/rtk_hciattach/rtk_hciattach ../../usr/bin/
-        cp -f bt_load_rtk_firmware ../../usr/bin/
-        echo hci_uart >> ../../etc/modules
-        cd .. && rm -rf rkwifibt
-        popd
-
+        cp ${overlay_dir}/usr/bin/rtk_hciattach ${chroot_dir}/usr/bin/rtk_hciattach
+        cp ${overlay_dir}/usr/bin/bt_load_rtk_firmware ${chroot_dir}/usr/bin/bt_load_rtk_firmware
         cp ${overlay_dir}/usr/lib/systemd/system/rtl8821cs-bluetooth.service ${chroot_dir}/usr/lib/systemd/system/rtl8821cs-bluetooth.service
         chroot ${chroot_dir} /bin/bash -c "systemctl enable rtl8821cs-bluetooth"
     fi
