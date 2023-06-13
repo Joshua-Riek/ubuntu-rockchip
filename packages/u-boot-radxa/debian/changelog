@@ -1,3 +1,14 @@
+u-boot-radxa-rk3588 (2017.09+20230607.gitbf47e817-1) jammy; urgency=medium
+
+  * rockchip: rk3588: Set emmc iomux for better extention
+  * configs: add defconfig for rock5a with spi flash
+  * rockchip: dts: add dts for rock-5a with spi flash
+  * rockchip: dts: rk3588s rock 5a: add pcie2x1l2
+  * configs: rock 5a: enable phy for pcie2
+  * give SD higher boot priority than NVME
+
+ -- Joshua Riek <jjriek@verizon.net>  Tue, 13 Jun 2023 09:03:27 -0400
+
 u-boot-radxa-rk3588 (2017.09+20230413.gita2a9f1df-1) jammy; urgency=medium
 
   * Initial packaging.
