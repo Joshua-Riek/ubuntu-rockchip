@@ -1,3 +1,9 @@
+u-boot-nanopi-rk3588 (2017.09+20230413.gita2a9f1df-2) jammy; urgency=medium
+
+  * Add support for the NanoPC T6
+
+ -- Joshua Riek <jjriek@verizon.net>  Tue, 13 Jun 2023 23:11:26 -0400
+
 u-boot-nanopi-rk3588 (2017.09+20230413.gita2a9f1df-1) jammy; urgency=medium
 
   * Inital packaging. 
