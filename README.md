@@ -43,3 +43,14 @@ Insert your SD card into the slot on the board and power on the device. The firs
 For the server image you will be able to login through HDMI or a serial console connection. The predefined user is `ubuntu` and the password is `ubuntu`.
 
 For the desktop image you must connect through HDMI and follow the setup-wizard.
+
+## Support the Project
+
+There are a few things you can do to support the project:
+
+* Star the repository and follow me on GitHub
+* Share and upvote on sites like Twitter, Reddit, and YouTube
+* Report any bugs, glitches, or errors that you find (some bugs I may not be able to fix)
+* Sponsor me on GitHub; any contribution will be greatly appreciated
+
+These things motivate me to continue development and provide validation that my work is appreciated. Thanks in advance!
