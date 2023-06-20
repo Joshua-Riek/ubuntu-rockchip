@@ -33,6 +33,7 @@ orangepi_5 orangepi_5_sata orangepi_5b orangepi_5_plus:
 
 	make O=debian/build/$@ \
 	  CROSS_COMPILE=$(CROSS_COMPILE) \
+	  SOURCE_DATE_EPOCH=$(shell date +%s) \
 	  ARCH=arm \
 	  $(NJOBS) \
 	  BL31=../../../debian/rkbin/$(BL31_BLOB) \
