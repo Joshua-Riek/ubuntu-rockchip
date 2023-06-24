@@ -3,3 +3,4 @@
 0003-add-defconfig-and-dtb-of-nanopir6c.patch
 0004-add-defconfig-and-dtb-of-nanopir6s.patch
 0005-add-defconfig-and-dtb-of-nanopc6.patch
+0006-add-nvme-support-nanopir6.patch
