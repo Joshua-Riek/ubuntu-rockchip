@@ -1,0 +1,235 @@
+From 4bc92c7675b319858b69350a75f6afe02febfa45 Mon Sep 17 00:00:00 2001
+From: Joshua Riek <jjriek@verizon.net>
+Date: Sat, 24 Jun 2023 13:01:38 -0400
+Subject: [PATCH] add nvme support nanopir6
+
+---
+ arch/arm/dts/rk3588s-nanopi-r6c.dts | 53 ++++++++++++++++++++++++++++-
+ arch/arm/dts/rk3588s-nanopi-r6s.dts | 53 ++++++++++++++++++++++++++++-
+ configs/nanopi_r6c_defconfig        | 13 +++++++
+ configs/nanopi_r6s_defconfig        | 13 +++++++
+ 4 files changed, 130 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/dts/rk3588s-nanopi-r6c.dts b/arch/arm/dts/rk3588s-nanopi-r6c.dts
+index ea3e3c0959..3c55e0d89a 100644
+--- a/arch/arm/dts/rk3588s-nanopi-r6c.dts
++++ b/arch/arm/dts/rk3588s-nanopi-r6c.dts
+@@ -64,6 +64,34 @@
+ 		vin-supply = <&vcc5v0_sys>;
+ 	};
+ 
++	vcc3v3_pcie2x1l2: vcc3v3-pcie2x1l2 {
++		u-boot,dm-pre-reloc;
++		compatible = "regulator-fixed";
++		regulator-name = "vcc3v3_pcie2x1l2";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		enable-active-high;
++		//regulator-boot-on;
++		//regulator-always-on;
++		//gpios = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
++		startup-delay-us = <50000>;
++		vin-supply = <&vcc5v0_sys>;
++	};
++
++	vcc3v3_pcie2x1l1: vcc3v3-pcie2x1l2 {
++		u-boot,dm-pre-reloc;
++		compatible = "regulator-fixed";
++		regulator-name = "vcc3v3_pcie2x1l2";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		enable-active-high;
++		//regulator-boot-on;
++		//regulator-always-on;
++		//gpios = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
++		startup-delay-us = <50000>;
++		vin-supply = <&vcc5v0_sys>;
++	};
++
+ 	led_sys: led-sys {
+ 		u-boot,dm-pre-reloc;
+ 		compatible = "regulator-fixed";
+@@ -76,11 +104,34 @@
+ 	};
+ };
+ 
+-&usb2phy0_grf {
++&pcie2x1l1 {
++	reset-gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
++	rockchip,init-delay-ms = <100>;
++	vpcie3v3-supply = <&vcc3v3_pcie2x1l1>;
++	status = "okay";
++};
++
++&pcie2x1l2 {
++	u-boot,dm-pre-reloc;
++	reset-gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc3v3_pcie2x1l2>;
++	status = "okay";
++};
++
++&combphy0_ps {
++	u-boot,dm-pre-reloc;
+ 	status = "okay";
++};
++
++&combphy2_psu {
+ 	u-boot,dm-pre-reloc;
++	status = "okay";
+ };
+ 
++&usb2phy0_grf {
++	status = "okay";
++	u-boot,dm-pre-reloc;
++};
+ 
+ &u2phy0 {
+ 	status = "okay";
+diff --git a/arch/arm/dts/rk3588s-nanopi-r6s.dts b/arch/arm/dts/rk3588s-nanopi-r6s.dts
+index 4899e23fa3..9e2201f890 100644
+--- a/arch/arm/dts/rk3588s-nanopi-r6s.dts
++++ b/arch/arm/dts/rk3588s-nanopi-r6s.dts
+@@ -64,6 +64,34 @@
+ 		vin-supply = <&vcc5v0_sys>;
+ 	};
+ 
++	vcc3v3_pcie2x1l2: vcc3v3-pcie2x1l2 {
++		u-boot,dm-pre-reloc;
++		compatible = "regulator-fixed";
++		regulator-name = "vcc3v3_pcie2x1l2";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		enable-active-high;
++		//regulator-boot-on;
++		//regulator-always-on;
++		//gpios = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
++		startup-delay-us = <50000>;
++		vin-supply = <&vcc5v0_sys>;
++	};
++
++	vcc3v3_pcie2x1l1: vcc3v3-pcie2x1l2 {
++		u-boot,dm-pre-reloc;
++		compatible = "regulator-fixed";
++		regulator-name = "vcc3v3_pcie2x1l2";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		enable-active-high;
++		//regulator-boot-on;
++		//regulator-always-on;
++		//gpios = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
++		startup-delay-us = <50000>;
++		vin-supply = <&vcc5v0_sys>;
++	};
++
+ 	led_sys: led-sys {
+ 		u-boot,dm-pre-reloc;
+ 		compatible = "regulator-fixed";
+@@ -76,11 +104,34 @@
+ 	};
+ };
+ 
+-&usb2phy0_grf {
++&pcie2x1l1 {
++	reset-gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
++	rockchip,init-delay-ms = <100>;
++	vpcie3v3-supply = <&vcc3v3_pcie2x1l1>;
++	status = "okay";
++};
++
++&pcie2x1l2 {
++	u-boot,dm-pre-reloc;
++	reset-gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc3v3_pcie2x1l2>;
++	status = "okay";
++};
++
++&combphy0_ps {
++	u-boot,dm-pre-reloc;
+ 	status = "okay";
++};
++
++&combphy2_psu {
+ 	u-boot,dm-pre-reloc;
++	status = "okay";
+ };
+ 
++&usb2phy0_grf {
++	status = "okay";
++	u-boot,dm-pre-reloc;
++};
+ 
+ &u2phy0 {
+ 	status = "okay";
+diff --git a/configs/nanopi_r6c_defconfig b/configs/nanopi_r6c_defconfig
+index dc4b5accf8..3800975dff 100644
+--- a/configs/nanopi_r6c_defconfig
++++ b/configs/nanopi_r6c_defconfig
+@@ -150,6 +150,9 @@ CONFIG_PHY_ROCKCHIP_SAMSUNG_HDPTX=y
+ CONFIG_PHY_ROCKCHIP_SNPS_PCIE3=y
+ CONFIG_PINCTRL=y
+ CONFIG_SPL_PINCTRL=y
++CONFIG_DM_FUEL_GAUGE=y
++CONFIG_POWER_FG_CW201X=y
++CONFIG_POWER_FG_CW221X=y
+ CONFIG_DM_PMIC=y
+ CONFIG_PMIC_SPI_RK8XX=y
+ CONFIG_REGULATOR_PWM=y
+@@ -157,6 +160,8 @@ CONFIG_DM_REGULATOR_FIXED=y
+ CONFIG_DM_REGULATOR_GPIO=y
+ CONFIG_REGULATOR_RK860X=y
+ CONFIG_REGULATOR_RK806=y
++CONFIG_CHARGER_SC8551=y
++CONFIG_CHARGER_SGM41542=y
+ CONFIG_PWM_ROCKCHIP=y
+ CONFIG_RAM=y
+ CONFIG_SPL_RAM=y
+@@ -215,3 +220,11 @@ CONFIG_RK_AVB_LIBAVB_USER=y
+ CONFIG_OPTEE_CLIENT=y
+ CONFIG_OPTEE_V2=y
+ CONFIG_OPTEE_ALWAYS_USE_SECURITY_PARTITION=y
++CONFIG_PHY_ROCKCHIP_NANENG_COMBOPHY=y
++CONFIG_AHCI=y
++CONFIG_CMD_SCSI=y
++CONFIG_DM_SCSI=y
++CONFIG_DWC_AHCI=y
++CONFIG_LIBATA=y
++CONFIG_SCSI_AHCI=y
++CONFIG_SCSI=y
+diff --git a/configs/nanopi_r6s_defconfig b/configs/nanopi_r6s_defconfig
+index 19bae55629..2a43482526 100644
+--- a/configs/nanopi_r6s_defconfig
++++ b/configs/nanopi_r6s_defconfig
+@@ -150,6 +150,9 @@ CONFIG_PHY_ROCKCHIP_SAMSUNG_HDPTX=y
+ CONFIG_PHY_ROCKCHIP_SNPS_PCIE3=y
+ CONFIG_PINCTRL=y
+ CONFIG_SPL_PINCTRL=y
++CONFIG_DM_FUEL_GAUGE=y
++CONFIG_POWER_FG_CW201X=y
++CONFIG_POWER_FG_CW221X=y
+ CONFIG_DM_PMIC=y
+ CONFIG_PMIC_SPI_RK8XX=y
+ CONFIG_REGULATOR_PWM=y
+@@ -157,6 +160,8 @@ CONFIG_DM_REGULATOR_FIXED=y
+ CONFIG_DM_REGULATOR_GPIO=y
+ CONFIG_REGULATOR_RK860X=y
+ CONFIG_REGULATOR_RK806=y
++CONFIG_CHARGER_SC8551=y
++CONFIG_CHARGER_SGM41542=y
+ CONFIG_PWM_ROCKCHIP=y
+ CONFIG_RAM=y
+ CONFIG_SPL_RAM=y
+@@ -215,3 +220,11 @@ CONFIG_RK_AVB_LIBAVB_USER=y
+ CONFIG_OPTEE_CLIENT=y
+ CONFIG_OPTEE_V2=y
+ CONFIG_OPTEE_ALWAYS_USE_SECURITY_PARTITION=y
++CONFIG_PHY_ROCKCHIP_NANENG_COMBOPHY=y
++CONFIG_AHCI=y
++CONFIG_CMD_SCSI=y
++CONFIG_DM_SCSI=y
++CONFIG_DWC_AHCI=y
++CONFIG_LIBATA=y
++CONFIG_SCSI_AHCI=y
++CONFIG_SCSI=y
+-- 
+2.25.1
+
