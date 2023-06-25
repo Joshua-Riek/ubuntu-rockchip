@@ -1,7 +1,5 @@
 0001-fix-srctree-path.patch
 0002-fix_source_so_boot_scr_works.patch
-0003-add-defconfig-and-dtb-of-nanopir6c.patch
-0004-add-defconfig-and-dtb-of-nanopir6s.patch
-0005-add-defconfig-and-dtb-of-nanopct6.patch
-0006-add-nvme-support-nanopir6.patch
-0007-give-SD-higher-boot-priority-than-NVME.patch
+0003-add-defconfig-and-dtb-of-nanopir6-and-nanopct6.patch
+0004-add-nvme-support-nanopir6-and-nanopct6.patch
+0005-give-SD-higher-boot-priority-than-NVME.patch
