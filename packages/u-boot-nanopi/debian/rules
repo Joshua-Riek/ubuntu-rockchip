@@ -47,6 +47,18 @@ nanopi_r6s nanopi_r6c nanopc_t6:
 	  debian/rkbin/$(DDR_BLOB):debian/build/$@/spl/u-boot-spl.bin \
 	  debian/build/$@/idbloader.img
 
+	@dd if=/dev/zero of=debian/build/$@/rkspi_loader.img bs=1M count=0 seek=16
+	@parted -s debian/build/$@/rkspi_loader.img mklabel gpt
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart idbloader 64 7167
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart vnvm 7168 7679
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart reserved_space 7680 8063
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart reserved1 8064 8127
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart uboot_env 8128 8191
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart reserved2 8192 16383
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart uboot 16384 32734
+	@dd if=debian/build/$@/idbloader.img of=debian/build/$@/rkspi_loader.img seek=64 conv=notrunc
+	@dd if=debian/build/$@/u-boot.itb of=debian/build/$@/rkspi_loader.img seek=16384 conv=notrunc
+
 build: nanopi_r6s nanopi_r6c nanopc_t6
 
 binary-nanopi_r6s:
@@ -86,6 +98,7 @@ binary-nanopc_t6:
 	mkdir -m 755 -p debian/tmp/nanopc_t6/usr/lib/u-boot-nanopi-rk3588
 	cp debian/build/nanopc_t6/u-boot.itb debian/tmp/nanopc_t6/usr/lib/u-boot-nanopi-rk3588/u-boot.itb
 	cp debian/build/nanopc_t6/idbloader.img debian/tmp/nanopc_t6/usr/lib/u-boot-nanopi-rk3588/idbloader.img
+	cp debian/build/nanopc_t6/rkspi_loader.img debian/tmp/nanopc_t6/usr/lib/u-boot-nanopi-rk3588/rkspi_loader.img
 
 	mkdir -m 755 -p "debian/tmp/nanopc_t6/DEBIAN"
 	mkdir -p "debian/tmp/nanopc_t6/usr/share/doc/u-boot-nanopi-rk3588"
