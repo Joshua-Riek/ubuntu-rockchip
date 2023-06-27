@@ -1,3 +1,9 @@
+u-boot-nanopi-rk3588 (2017.09+20230413.gita2a9f1df-4) jammy; urgency=medium
+
+  * Add missing vpcie3v3-supply node for NanoPC T6 NVMe boot
+
+ -- Joshua Riek <jjriek@verizon.net>  Tue, 27 Jun 2023 19:08:34 -0400
+
 u-boot-nanopi-rk3588 (2017.09+20230413.gita2a9f1df-3) jammy; urgency=medium
 
   * Add NVMe boot support for the NanoPi R6C and NanoPC T6
