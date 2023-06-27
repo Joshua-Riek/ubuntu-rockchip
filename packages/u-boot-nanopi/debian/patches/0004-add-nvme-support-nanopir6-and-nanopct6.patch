@@ -4,16 +4,16 @@ Date: Sat, 24 Jun 2023 13:01:38 -0400
 Subject: [PATCH] add nvme support nanopir6 and nanopct6
 
 ---
- arch/arm/dts/rk3588-nanopc-t6.dts   | 36 +++++++++++++++++++-
+ arch/arm/dts/rk3588-nanopc-t6.dts   | 37 +++++++++++++++++++-
  arch/arm/dts/rk3588s-nanopi-r6c.dts | 53 ++++++++++++++++++++++++++++-
  arch/arm/dts/rk3588s-nanopi-r6s.dts |  1 -
  configs/nanopc_t6_defconfig         |  3 +-
  configs/nanopi_r6c_defconfig        |  3 +-
  configs/nanopi_r6s_defconfig        |  3 +-
- 6 files changed, 93 insertions(+), 6 deletions(-)
+ 6 files changed, 94 insertions(+), 6 deletions(-)
 
 diff --git a/arch/arm/dts/rk3588-nanopc-t6.dts b/arch/arm/dts/rk3588-nanopc-t6.dts
-index 0ee8f84316..a4d19df42d 100644
+index 0ee8f84316..ee7c7f005c 100644
 --- a/arch/arm/dts/rk3588-nanopc-t6.dts
 +++ b/arch/arm/dts/rk3588-nanopc-t6.dts
 @@ -64,6 +64,20 @@
@@ -37,13 +37,14 @@ index 0ee8f84316..a4d19df42d 100644
  	led_sys: led-sys {
  		u-boot,dm-pre-reloc;
  		compatible = "regulator-fixed";
-@@ -76,11 +90,31 @@
+@@ -76,11 +90,32 @@
  	};
  };
  
 -&usb2phy0_grf {
 +&pcie3x4 {
 +	u-boot,dm-pre-reloc;
++	vpcie3v3-supply = <&vcc3v3_pcie30>;
 +	reset-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
  	status = "okay";
 +};
