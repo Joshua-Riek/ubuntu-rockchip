@@ -1,3 +1,11 @@
+u-boot-nanopi-rk3588 (2017.09+20230413.gita2a9f1df-3) jammy; urgency=medium
+
+  * Add NVMe boot support for the NanoPi R6C and NanoPC T6
+  * Give the sdcard higher boot priority than NVMe
+  * Squashed patch files
+
+ -- Joshua Riek <jjriek@verizon.net>  Mon, 26 Jun 2023 22:31:31 -0400
+
 u-boot-nanopi-rk3588 (2017.09+20230413.gita2a9f1df-2) jammy; urgency=medium
 
   * Add support for the NanoPC T6
