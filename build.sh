@@ -3,6 +3,11 @@
 set -eE 
 trap 'echo Error: in $0 on line $LINENO' ERR
 
+cd "$(dirname -- "$(readlink -f -- "$0")")"
+
+mkdir -p build/logs
+exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
+
 usage() {
 cat << HEREDOC
 Usage: $0 --board=[orangepi5|orangepi5b|orangepi5plus|rock5b|rock5a|nanopct6|nanopir6c|nanopir6s|indiedroid-nova]
