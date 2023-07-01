@@ -132,6 +132,8 @@ for type in server desktop; do
     elif [ "${BOARD}" == nanopir6c ] || [ "${BOARD}" == nanopir6s ]; then
     {
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"'
+        cp ${overlay_dir}/etc/init.d/friendlyelec-leds.sh ${chroot_dir}/etc/init.d/friendlyelec-leds.sh
+        chroot ${chroot_dir} /bin/bash -c "update-rc.d friendlyelec-leds.sh defaults"
     } > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
     elif [ "${BOARD}" == nanopct6 ]; then
     {
