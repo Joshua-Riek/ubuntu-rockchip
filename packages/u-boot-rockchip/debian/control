@@ -1,0 +1,79 @@
+Source: u-boot-rockchip
+Section: admin
+Priority: optional
+Standards-Version: 4.6.0
+Maintainer: Joshua Riek <jjriek@verizon.net>
+Build-Depends: debhelper-compat (= 12), parted, gcc, make, bc, bison, python2, flex, device-tree-compiler, udev
+Vcs-Git: https://github.com/orangepi-xunlong/u-boot-orangepi.git
+
+Package: u-boot-orangepi5
+Architecture: arm64
+Priority: optional
+Provides: u-boot-rockchip
+Replaces: u-boot-rockchip
+Conflicts: u-boot-rockchip
+Description: U-Boot for the Orange Pi 5
+
+Package: u-boot-orangepi5b
+Architecture: arm64
+Priority: optional
+Provides: u-boot-rockchip
+Replaces: u-boot-rockchip
+Conflicts: u-boot-rockchip
+Description: U-Boot for the Orange Pi 5B
+
+Package: u-boot-orangepi5plus
+Architecture: arm64
+Priority: optional
+Provides: u-boot-rockchip
+Replaces: u-boot-rockchip
+Conflicts: u-boot-rockchip
+Description: U-Boot for the Orange Pi 5 Plus
+
+Package: u-boot-nanopir6c
+Architecture: arm64
+Priority: optional
+Provides: u-boot-rockchip
+Replaces: u-boot-rockchip
+Conflicts: u-boot-rockchip
+Description: U-Boot for the NanoPi R6C
+
+Package: u-boot-nanopir6s
+Architecture: arm64
+Priority: optional
+Provides: u-boot-rockchip
+Replaces: u-boot-rockchip
+Conflicts: u-boot-rockchip
+Description: U-Boot for the NanoPi R6S
+
+Package: u-boot-nanopct6
+Architecture: arm64
+Priority: optional
+Provides: u-boot-rockchip
+Replaces: u-boot-rockchip
+Conflicts: u-boot-rockchip
+Description: U-Boot for the NanoPC T6
+
+Package: u-boot-rock5b
+Architecture: arm64
+Priority: optional
+Provides: u-boot-rockchip
+Replaces: u-boot-rockchip
+Conflicts: u-boot-rockchip
+Description: U-Boot for the ROCK 5B
+
+Package: u-boot-rock5a
+Architecture: arm64
+Priority: optional
+Provides: u-boot-rockchip
+Replaces: u-boot-rockchip
+Conflicts: u-boot-rockchip
+Description: U-Boot for the ROCK 5A
+
+Package: u-boot-9tripod
+Architecture: arm64
+Priority: optional
+Provides: u-boot-rockchip
+Replaces: u-boot-rockchip
+Conflicts: u-boot-rockchip
+Description: U-Boot for the Indiedroid Nova
