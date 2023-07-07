@@ -26,6 +26,7 @@ The supported devices are undergoing continuous development. As a result, you ma
 * [FriendlyELEC NanoPi R6S](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6S)
 * [FriendlyELEC NanoPi R6C](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6C)
 * [FriendlyELEC NanoPC T6](https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6)
+* [Mixtile Blade 3](https://www.mixtile.com/blade-3/) (WIP)
 * [Indiedroid Nova](https://indiedroid.us)
 
 ## Installation
