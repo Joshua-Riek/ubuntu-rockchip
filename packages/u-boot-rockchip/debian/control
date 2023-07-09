@@ -70,7 +70,7 @@ Replaces: u-boot-rockchip
 Conflicts: u-boot-rockchip
 Description: U-Boot for the ROCK 5A
 
-Package: u-boot-9tripod
+Package: u-boot-indiedroid-nova
 Architecture: arm64
 Priority: optional
 Provides: u-boot-rockchip
