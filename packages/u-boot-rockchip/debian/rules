@@ -17,8 +17,8 @@ DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 BL31_BLOB := rk3588_bl31_v1.38.elf
 BL32_BLOB := rk3588_bl32_v1.13.bin
 
-BOARDS := orangepi_5 orangepi_5_sata orangepi_5b orangepi_5_plus nanopi_r6s nanopi_r6c nanopc_t6 rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s
-BOARDS2 := $(addprefix foo_,$(filter-out orangepi_5_sata rock-5a-spi-rk3588s,$(BOARDS)))  
+BOARDS := orangepi_5 orangepi_5_sata orangepi_5b orangepi_5_plus indiedroid_nova nanopi_r6s nanopi_r6c nanopc_t6 rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s 
+BOARDS2 := $(addprefix pkg_,$(filter-out orangepi_5_sata rock-5a-spi-rk3588s,$(BOARDS)))  
 
 $(BOARDS): 
 	@mkdir -p debian/build/$@
@@ -65,31 +65,23 @@ $(BOARDS):
 build: $(BOARDS)
 
 $(BOARDS2):
-	rm -rf debian/tmp/$(subst foo_,,$@)
-	mkdir -m 755 -p debian/tmp/$(subst foo_,,$@)/usr/lib/u-boot
-	cp debian/build/$(subst foo_,,$@)/u-boot.itb debian/tmp/$(subst foo_,,$@)/usr/lib/u-boot/u-boot.itb
-	cp debian/build/$(subst foo_,,$@)/idbloader.img debian/tmp/$(subst foo_,,$@)/usr/lib/u-boot/idbloader.img
-	cp debian/build/$(subst foo_,,$@)/rkspi_loader.img debian/tmp/$(subst foo_,,$@)/usr/lib/u-boot/rkspi_loader.img
+	@rm -rf debian/tmp && mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot
+	@cp debian/build/$(subst pkg_,,$@)/u-boot.itb debian/tmp/u-boot/usr/lib/u-boot/u-boot.itb
+	@cp debian/build/$(subst pkg_,,$@)/idbloader.img debian/tmp/u-boot/usr/lib/u-boot/idbloader.img
+	@cp debian/build/$(subst pkg_,,$@)/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader.img
+	@if [ "orangepi_5" = "$(subst pkg_,,$@)" ]; then cp debian/build/orangepi_5_sata/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader_sata.img; \
+	elif [ "rock-5a-rk3588s" = "$(subst pkg_,,$@)" ]; then cp debian/build/rock-5a-spi-rk3588s/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader.img; fi
 
-	@if [ "orangepi_5" = "$(subst foo_,,$@)" ]; then\
-		cp debian/build/orangepi_5_sata/rkspi_loader.img debian/tmp/$(subst foo_,,$@)/usr/lib/u-boot/rkspi_loader_sata.img;\
-	elif [ "rock-5a-rk3588s" = "$(subst foo_,,$@)" ]; then\
-		cp debian/build/rock-5a-spi-rk3588s/rkspi_loader.img debian/tmp/$(subst foo_,,$@)/usr/lib/u-boot/rkspi_loader.img;\
-	fi
-
-	mkdir -m 755 -p "debian/tmp/$(subst foo_,,$@)/DEBIAN"
-	mkdir -p "debian/tmp/$(subst foo_,,$@)/usr/share/doc/u-boot"
-	cp debian/copyright "debian/tmp/$(subst foo_,,$@)/usr/share/doc/u-boot"
-	cp debian/changelog "debian/tmp/$(subst foo_,,$@)/usr/share/doc/u-boot/changelog.Debian"
-	gzip -9 "debian/tmp/$(subst foo_,,$@)/usr/share/doc/u-boot/changelog.Debian"
-	sh -c "cd 'debian/tmp/$(subst foo_,,$@)'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
-	chown -R root:root "debian/tmp/$(subst foo_,,$@)" && chmod -R go-w "debian/tmp/$(subst foo_,,$@)" && chmod -R a+rX "debian/tmp/$(subst foo_,,$@)"
-	@if [ "indiedroid_nova" = "$(subst foo_,,$@)" ]; then\
-		dpkg-gencontrol -pu-boot-indiedroid-nova -P"debian/tmp/$(subst foo_,,$@)";\
-	else\
-		dpkg-gencontrol -pu-boot-$(subst -,,$(subst -rk3588,,$(subst -rk3588s,,$(subst _,,$(subst foo_,,$@))))) -P"debian/tmp/$(subst foo_,,$@)";\
-	fi
-	dpkg --build "debian/tmp/$(subst foo_,,$@)" ..
+	@mkdir -m 755 -p "debian/tmp/u-boot/DEBIAN"
+	@mkdir -p "debian/tmp/u-boot/usr/share/doc/u-boot"
+	@cp debian/copyright "debian/tmp/u-boot/usr/share/doc/u-boot"
+	@cp debian/changelog "debian/tmp/u-boot/usr/share/doc/u-boot/changelog.Debian"
+	@gzip -9 "debian/tmp/u-boot/usr/share/doc/u-boot/changelog.Debian"
+	@sh -c "cd 'debian/tmp/u-boot'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
+	@chown -R root:root "debian/tmp/u-boot" && chmod -R go-w "debian/tmp/u-boot" && chmod -R a+rX "debian/tmp/u-boot"
+	@if [ "indiedroid_nova" = "$(subst pkg_,,$@)" ]; then dpkg-gencontrol -pu-boot-indiedroid-nova -P"debian/tmp/u-boot"; \
+	else dpkg-gencontrol -pu-boot-$(subst -,,$(subst -rk3588,,$(subst -rk3588s,,$(subst _,,$(subst pkg_,,$@))))) -P"debian/tmp/u-boot"; fi
+	@dpkg --build "debian/tmp/u-boot" ..
 
 binary-arch: $(BOARDS2)
 
