@@ -85,6 +85,9 @@ elif [[ "${BOARD}" == nanopir6s ]]; then
 elif [[ "${BOARD}" == nanopct6 ]]; then
     DEVICE_TREE=rk3588-nanopc-t6.dtb
     OVERLAY_PREFIX=
+elif [[ "${BOARD}" == mixtile-blade3 ]]; then
+    DEVICE_TREE=rk3588-blade3-v101-linux.dts
+    OVERLAY_PREFIX=
 elif [[ "${BOARD}" == indiedroid-nova ]]; then
     DEVICE_TREE=rk3588s-9tripod-linux.dtb
     OVERLAY_PREFIX=

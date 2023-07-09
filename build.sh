@@ -10,7 +10,7 @@ exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi5|orangepi5b|orangepi5plus|rock5b|rock5a|nanopct6|nanopir6c|nanopir6s|indiedroid-nova]
+Usage: $0 --board=[orangepi5|orangepi5b|orangepi5plus|rock5b|rock5a|nanopct6|nanopir6c|nanopir6s|indiedroid-nova|mixtile-blade3]
 
 Required arguments:
   -b, --board=BOARD     target board 
@@ -101,6 +101,8 @@ elif [ "${BOARD}" == nanopir6c ] || [ "${BOARD}" == nanopir6s ] || [ "${BOARD}" 
     export VENDOR=nanopi
 elif [ "${BOARD}" == indiedroid-nova ]; then
     export VENDOR=9tripod
+elif [ "${BOARD}" == mixtile-blade3 ]; then
+    export VENDOR=mixtile
 else
     echo "Error: \"${BOARD}\" is an unsupported board"
     exit 1
