@@ -1,0 +1,15 @@
+Source: u-boot-mixtile-rk3588
+Section: admin
+Priority: optional
+Standards-Version: 4.6.0
+Maintainer: Joshua Riek <jjriek@verizon.net>
+Build-Depends: debhelper-compat (= 12), parted, gcc, make, bc, bison, python2, flex, device-tree-compiler, udev
+Vcs-Git: https://github.com/Joshua-Riek/u-boot-rockchip.git
+
+Package: u-boot-mixtile-blade3-rk3588
+Architecture: arm64
+Priority: optional
+Provides: u-boot-mixtile-rk3588
+Replaces: u-boot-mixtile-rk3588
+Conflicts: u-boot-mixtile-rk3588
+Description: U-Boot for the Mixtile Blade 3
