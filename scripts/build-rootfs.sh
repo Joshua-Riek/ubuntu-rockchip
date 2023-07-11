@@ -225,6 +225,12 @@ echo "NO_CREATE_DOT_BAK_FILES=true" >> ${chroot_dir}/etc/environment
 # Fix Intel AX210 not working after linux-firmware update
 [ -e ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.pnvm ] && mv ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.{pnvm,bak}
 
+# Install rockchip camera engine
+cp -r ../packages/rkaiq/camera-engine-rkaiq_3.0.2_arm64.deb ${chroot_dir}/tmp
+cp -r ../packages/rkaiq/rkisp-engine_2.2.0-2_arm64.deb ${chroot_dir}/tmp
+chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera-engine-rkaiq_3.0.2_arm64.deb /tmp/rkisp-engine_2.2.0-2_arm64.deb"
+rm -f ${chroot_dir}/tmp/camera-engine-rkaiq_rk3588_arm64.deb ${chroot_dir}/tmp/rkisp-engine_2.2.0-2_arm64.deb
+
 # Umount temporary API filesystems
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
@@ -238,12 +244,6 @@ mount -t proc /proc ${chroot_dir}/proc
 mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
-
-# Install rkaiq
-cp -r ../packages/rkaiq/camera-engine-rkaiq_rk3588_arm64.deb ${chroot_dir}/tmp
-chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera-engine-rkaiq_rk3588_arm64.deb"
-cp -f ../packages/rkaiq/rkaiq_3A_server ${chroot_dir}/usr/bin
-rm -f ${chroot_dir}/tmp/camera-engine-rkaiq_rk3588_arm64.deb
 
 # Download and update packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
