@@ -23,3 +23,11 @@ Provides: u-boot-radxa-rk3588
 Replaces: u-boot-radxa-rk3588
 Conflicts: u-boot-radxa-rk3588
 Description: U-Boot for the Rock 5A
+
+Package: u-boot-radxa-cm5-io-rk3588
+Architecture: arm64
+Priority: optional
+Provides: u-boot-radxa-rk3588
+Replaces: u-boot-radxa-rk3588
+Conflicts: u-boot-radxa-rk3588
+Description: U-Boot for the Radxa CM5 IO
