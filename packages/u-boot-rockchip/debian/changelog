@@ -1,4 +1,4 @@
-u-boot-rockchip (2017.09-1) jammy; urgency=medium
+u-boot-rk35xx (2017.09-1) jammy; urgency=medium
 
   * Initial packaging.
 

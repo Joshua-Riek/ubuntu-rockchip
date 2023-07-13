@@ -1,4 +1,4 @@
-Source: u-boot-rockchip
+Source: u-boot-rk35xx
 Section: admin
 Priority: optional
 Standards-Version: 4.6.0
@@ -6,74 +6,74 @@ Maintainer: Joshua Riek <jjriek@verizon.net>
 Build-Depends: debhelper-compat (= 12), parted, gcc, make, bc, bison, python2, flex, device-tree-compiler, udev
 Vcs-Git: https://github.com/orangepi-xunlong/u-boot-orangepi.git
 
-Package: u-boot-orangepi5
+Package: u-boot-orangepi-5
 Architecture: arm64
 Priority: optional
-Provides: u-boot-rockchip
-Replaces: u-boot-rockchip
-Conflicts: u-boot-rockchip
+Provides: u-boot-rk35xx
+Replaces: u-boot-rk35xx
+Conflicts: u-boot-rk35xx
 Description: U-Boot for the Orange Pi 5
 
-Package: u-boot-orangepi5b
+Package: u-boot-orangepi-5b
 Architecture: arm64
 Priority: optional
-Provides: u-boot-rockchip
-Replaces: u-boot-rockchip
-Conflicts: u-boot-rockchip
+Provides: u-boot-rk35xx
+Replaces: u-boot-rk35xx
+Conflicts: u-boot-rk35xx
 Description: U-Boot for the Orange Pi 5B
 
-Package: u-boot-orangepi5plus
+Package: u-boot-orangepi-5-plus
 Architecture: arm64
 Priority: optional
-Provides: u-boot-rockchip
-Replaces: u-boot-rockchip
-Conflicts: u-boot-rockchip
+Provides: u-boot-rk35xx
+Replaces: u-boot-rk35xx
+Conflicts: u-boot-rk35xx
 Description: U-Boot for the Orange Pi 5 Plus
 
-Package: u-boot-nanopir6c
+Package: u-boot-nanopi-r6c
 Architecture: arm64
 Priority: optional
-Provides: u-boot-rockchip
-Replaces: u-boot-rockchip
-Conflicts: u-boot-rockchip
+Provides: u-boot-rk35xx
+Replaces: u-boot-rk35xx
+Conflicts: u-boot-rk35xx
 Description: U-Boot for the NanoPi R6C
 
-Package: u-boot-nanopir6s
+Package: u-boot-nanopi-r6s
 Architecture: arm64
 Priority: optional
-Provides: u-boot-rockchip
-Replaces: u-boot-rockchip
-Conflicts: u-boot-rockchip
+Provides: u-boot-rk35xx
+Replaces: u-boot-rk35xx
+Conflicts: u-boot-rk35xx
 Description: U-Boot for the NanoPi R6S
 
-Package: u-boot-nanopct6
+Package: u-boot-nanopc-t6
 Architecture: arm64
 Priority: optional
-Provides: u-boot-rockchip
-Replaces: u-boot-rockchip
-Conflicts: u-boot-rockchip
+Provides: u-boot-rk35xx
+Replaces: u-boot-rk35xx
+Conflicts: u-boot-rk35xx
 Description: U-Boot for the NanoPC T6
 
-Package: u-boot-rock5b
+Package: u-boot-rock-5b
 Architecture: arm64
 Priority: optional
-Provides: u-boot-rockchip
-Replaces: u-boot-rockchip
-Conflicts: u-boot-rockchip
+Provides: u-boot-rk35xx
+Replaces: u-boot-rk35xx
+Conflicts: u-boot-rk35xx
 Description: U-Boot for the ROCK 5B
 
-Package: u-boot-rock5a
+Package: u-boot-rock-5a
 Architecture: arm64
 Priority: optional
-Provides: u-boot-rockchip
-Replaces: u-boot-rockchip
-Conflicts: u-boot-rockchip
+Provides: u-boot-rk35xx
+Replaces: u-boot-rk35xx
+Conflicts: u-boot-rk35xx
 Description: U-Boot for the ROCK 5A
 
 Package: u-boot-indiedroid-nova
 Architecture: arm64
 Priority: optional
-Provides: u-boot-rockchip
-Replaces: u-boot-rockchip
-Conflicts: u-boot-rockchip
+Provides: u-boot-rk35xx
+Replaces: u-boot-rk35xx
+Conflicts: u-boot-rk35xx
 Description: U-Boot for the Indiedroid Nova
