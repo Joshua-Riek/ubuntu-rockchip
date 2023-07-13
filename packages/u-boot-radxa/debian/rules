@@ -16,7 +16,7 @@ endif
 DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.09.bin
 BL31_BLOB := rk3588_bl31_v1.34.elf
 
-rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s: 
+rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s radxa-cm5-io-rk3588s: 
 	@mkdir -p debian/build/$@
 
 	make O=debian/build/$@ \
@@ -58,7 +58,7 @@ rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s:
 	@dd if=debian/build/$@/idbloader.img of=debian/build/$@/rkspi_loader.img seek=64 conv=notrunc
 	@dd if=debian/build/$@/u-boot.itb of=debian/build/$@/rkspi_loader.img seek=16384 conv=notrunc
 
-build: rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s
+build: rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s radxa-cm5-io-rk3588s
 
 binary-rock-5b-rk3588:
 	rm -rf debian/tmp/rock-5b-rk3588
@@ -94,7 +94,24 @@ binary-rock-5a-rk3588s:
 	dpkg-gencontrol -pu-boot-rock5a-rk3588 -P"debian/tmp/rock-5a-rk3588s"
 	dpkg --build "debian/tmp/rock-5a-rk3588s" ..
 
-binary-arch: binary-rock-5b-rk3588 binary-rock-5a-rk3588s
+binary-radxa-cm5-io-rk3588s:
+	rm -rf debian/tmp/radxa-cm5-io-rk3588s
+	mkdir -m 755 -p debian/tmp/radxa-cm5-io-rk3588s/usr/lib/u-boot-radxa-rk3588
+	cp debian/build/radxa-cm5-io-rk3588s/u-boot.itb debian/tmp/radxa-cm5-io-rk3588s/usr/lib/u-boot-radxa-rk3588/u-boot.itb
+	cp debian/build/radxa-cm5-io-rk3588s/idbloader.img debian/tmp/radxa-cm5-io-rk3588s/usr/lib/u-boot-radxa-rk3588/idbloader.img
+	cp debian/build/radxa-cm5-io-rk3588s/rkspi_loader.img debian/tmp/radxa-cm5-io-rk3588s/usr/lib/u-boot-radxa-rk3588/rkspi_loader.img
+
+	mkdir -m 755 -p "debian/tmp/radxa-cm5-io-rk3588s/DEBIAN"
+	mkdir -p "debian/tmp/radxa-cm5-io-rk3588s/usr/share/doc/u-boot-radxa-rk3588"
+	cp debian/copyright "debian/tmp/radxa-cm5-io-rk3588s/usr/share/doc/u-boot-radxa-rk3588/"
+	cp debian/changelog "debian/tmp/radxa-cm5-io-rk3588s/usr/share/doc/u-boot-radxa-rk3588/changelog.Debian"
+	gzip -9 "debian/tmp/radxa-cm5-io-rk3588s/usr/share/doc/u-boot-radxa-rk3588/changelog.Debian"
+	sh -c "cd 'debian/tmp/radxa-cm5-io-rk3588s'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
+	chown -R root:root "debian/tmp/radxa-cm5-io-rk3588s" && chmod -R go-w "debian/tmp/radxa-cm5-io-rk3588s" && chmod -R a+rX "debian/tmp/radxa-cm5-io-rk3588s"
+	dpkg-gencontrol -pu-boot-radxa-cm5-io-rk3588 -P"debian/tmp/radxa-cm5-io-rk3588s"
+	dpkg --build "debian/tmp/radxa-cm5-io-rk3588s" ..
+	
+binary-arch: binary-rock-5b-rk3588 binary-rock-5a-rk3588s binary-radxa-cm5-io-rk3588s
 
 binary: binary-arch
 
