@@ -80,7 +80,7 @@ $(BOARDS2):
 	@sh -c "cd 'debian/tmp/u-boot'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
 	@chown -R root:root "debian/tmp/u-boot" && chmod -R go-w "debian/tmp/u-boot" && chmod -R a+rX "debian/tmp/u-boot"
 	@if [ "indiedroid_nova" = "$(subst pkg_,,$@)" ]; then dpkg-gencontrol -pu-boot-indiedroid-nova -P"debian/tmp/u-boot"; \
-	else dpkg-gencontrol -pu-boot-$(subst -,,$(subst -rk3588,,$(subst -rk3588s,,$(subst _,,$(subst pkg_,,$@))))) -P"debian/tmp/u-boot"; fi
+	else dpkg-gencontrol -pu-boot-$(subst -rk3588,,$(subst -rk3588s,,$(subst _,-,$(subst pkg_,,$@)))) -P"debian/tmp/u-boot"; fi
 	@dpkg --build "debian/tmp/u-boot" ..
 
 binary-arch: $(BOARDS2)
