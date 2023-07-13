@@ -10,7 +10,7 @@ exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi5|orangepi5b|orangepi5plus|rock5b|rock5a|nanopct6|nanopir6c|nanopir6s|indiedroid-nova|mixtile-blade3]
+Usage: $0 --board=[orangepi5|orangepi5b|orangepi5plus|rock5b|rock5a|radxa-cm5-io|nanopct6|nanopir6c|nanopir6s|indiedroid-nova|mixtile-blade3]
 
 Required arguments:
   -b, --board=BOARD     target board 
@@ -95,7 +95,7 @@ fi
 
 if [ "${BOARD}" == orangepi5 ] || [ "${BOARD}" == orangepi5b ] || [ "${BOARD}" == orangepi5plus ]; then
     export VENDOR=orangepi
-elif [ "${BOARD}" == rock5b ] || [ "${BOARD}" == rock5a ]; then
+elif [ "${BOARD}" == rock5b ] || [ "${BOARD}" == rock5a ] || [ "${BOARD}" == radxa-cm5-io ]; then
     export VENDOR=radxa
 elif [ "${BOARD}" == nanopir6c ] || [ "${BOARD}" == nanopir6s ] || [ "${BOARD}" == nanopct6 ]; then
     export VENDOR=nanopi
