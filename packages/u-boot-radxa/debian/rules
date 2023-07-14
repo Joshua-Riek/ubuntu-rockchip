@@ -16,7 +16,9 @@ endif
 DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 BL31_BLOB := rk3588_bl31_v1.38.elf
 
-rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s radxa-cm5-io-rk3588s: 
+BOARDS := rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s radxa-cm5-io-rk3588s
+
+${BOARDS}: 
 	@mkdir -p debian/build/$@
 
 	make O=debian/build/$@ \
@@ -26,8 +28,9 @@ rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s radxa-cm5-io-rk3588s:
 	  $@_defconfig
 
 	@touch .scmversion
-	@sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-radxa-rk3588"/g' debian/build/$@/.config
+	@sed -i 's/CONFIG_BOOTDELAY=.*/CONFIG_BOOTDELAY=1/g' debian/build/$@/.config
 	@sed -i 's/CONFIG_DISABLE_CONSOLE=y/CONFIG_DISABLE_CONSOLE=n/g' debian/build/$@/.config
+	@sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-radxa-rk3588"/g' debian/build/$@/.config
 
 	@mkdir -p debian/build/$@/arch/arm/mach-rockchip
 	@cp arch/arm/mach-rockchip/decode_bl31.py debian/build/$@/arch/arm/mach-rockchip/decode_bl31.py
@@ -58,62 +61,31 @@ rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s radxa-cm5-io-rk3588s:
 	@dd if=debian/build/$@/idbloader.img of=debian/build/$@/rkspi_loader.img seek=64 conv=notrunc
 	@dd if=debian/build/$@/u-boot.itb of=debian/build/$@/rkspi_loader.img seek=16384 conv=notrunc
 
-build: rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s radxa-cm5-io-rk3588s
+build: ${BOARDS}
 
-binary-rock-5b-rk3588:
-	rm -rf debian/tmp/rock-5b-rk3588
-	mkdir -m 755 -p debian/tmp/rock-5b-rk3588/usr/lib/u-boot-radxa-rk3588
-	cp debian/build/rock-5b-rk3588/u-boot.itb debian/tmp/rock-5b-rk3588/usr/lib/u-boot-radxa-rk3588/u-boot.itb
-	cp debian/build/rock-5b-rk3588/idbloader.img debian/tmp/rock-5b-rk3588/usr/lib/u-boot-radxa-rk3588/idbloader.img
-	cp debian/build/rock-5b-rk3588/rkspi_loader.img debian/tmp/rock-5b-rk3588/usr/lib/u-boot-radxa-rk3588/rkspi_loader.img
-
-	mkdir -m 755 -p "debian/tmp/rock-5b-rk3588/DEBIAN"
-	mkdir -p "debian/tmp/rock-5b-rk3588/usr/share/doc/u-boot-radxa-rk3588"
-	cp debian/copyright "debian/tmp/rock-5b-rk3588/usr/share/doc/u-boot-radxa-rk3588/"
-	cp debian/changelog "debian/tmp/rock-5b-rk3588/usr/share/doc/u-boot-radxa-rk3588/changelog.Debian"
-	gzip -9 "debian/tmp/rock-5b-rk3588/usr/share/doc/u-boot-radxa-rk3588/changelog.Debian"
-	sh -c "cd 'debian/tmp/rock-5b-rk3588'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
-	chown -R root:root "debian/tmp/rock-5b-rk3588" && chmod -R go-w "debian/tmp/rock-5b-rk3588" && chmod -R a+rX "debian/tmp/rock-5b-rk3588"
-	dpkg-gencontrol -pu-boot-rock5b-rk3588 -P"debian/tmp/rock-5b-rk3588"
-	dpkg --build "debian/tmp/rock-5b-rk3588" ..
-
-binary-rock-5a-rk3588s:
-	rm -rf debian/tmp/rock-5a-rk3588s
-	mkdir -m 755 -p debian/tmp/rock-5a-rk3588s/usr/lib/u-boot-radxa-rk3588
-	cp debian/build/rock-5a-rk3588s/u-boot.itb debian/tmp/rock-5a-rk3588s/usr/lib/u-boot-radxa-rk3588/u-boot.itb
-	cp debian/build/rock-5a-rk3588s/idbloader.img debian/tmp/rock-5a-rk3588s/usr/lib/u-boot-radxa-rk3588/idbloader.img
-	cp debian/build/rock-5a-spi-rk3588s/rkspi_loader.img debian/tmp/rock-5a-rk3588s/usr/lib/u-boot-radxa-rk3588/rkspi_loader.img
-
-	mkdir -m 755 -p "debian/tmp/rock-5a-rk3588s/DEBIAN"
-	mkdir -p "debian/tmp/rock-5a-rk3588s/usr/share/doc/u-boot-radxa-rk3588"
-	cp debian/copyright "debian/tmp/rock-5a-rk3588s/usr/share/doc/u-boot-radxa-rk3588/"
-	cp debian/changelog "debian/tmp/rock-5a-rk3588s/usr/share/doc/u-boot-radxa-rk3588/changelog.Debian"
-	gzip -9 "debian/tmp/rock-5a-rk3588s/usr/share/doc/u-boot-radxa-rk3588/changelog.Debian"
-	sh -c "cd 'debian/tmp/rock-5a-rk3588s'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
-	chown -R root:root "debian/tmp/rock-5a-rk3588s" && chmod -R go-w "debian/tmp/rock-5a-rk3588s" && chmod -R a+rX "debian/tmp/rock-5a-rk3588s"
-	dpkg-gencontrol -pu-boot-rock5a-rk3588 -P"debian/tmp/rock-5a-rk3588s"
-	dpkg --build "debian/tmp/rock-5a-rk3588s" ..
-
-binary-radxa-cm5-io-rk3588s:
-	rm -rf debian/tmp/radxa-cm5-io-rk3588s
-	mkdir -m 755 -p debian/tmp/radxa-cm5-io-rk3588s/usr/lib/u-boot-radxa-rk3588
-	cp debian/build/radxa-cm5-io-rk3588s/u-boot.itb debian/tmp/radxa-cm5-io-rk3588s/usr/lib/u-boot-radxa-rk3588/u-boot.itb
-	cp debian/build/radxa-cm5-io-rk3588s/idbloader.img debian/tmp/radxa-cm5-io-rk3588s/usr/lib/u-boot-radxa-rk3588/idbloader.img
-	cp debian/build/radxa-cm5-io-rk3588s/rkspi_loader.img debian/tmp/radxa-cm5-io-rk3588s/usr/lib/u-boot-radxa-rk3588/rkspi_loader.img
-
-	mkdir -m 755 -p "debian/tmp/radxa-cm5-io-rk3588s/DEBIAN"
-	mkdir -p "debian/tmp/radxa-cm5-io-rk3588s/usr/share/doc/u-boot-radxa-rk3588"
-	cp debian/copyright "debian/tmp/radxa-cm5-io-rk3588s/usr/share/doc/u-boot-radxa-rk3588/"
-	cp debian/changelog "debian/tmp/radxa-cm5-io-rk3588s/usr/share/doc/u-boot-radxa-rk3588/changelog.Debian"
-	gzip -9 "debian/tmp/radxa-cm5-io-rk3588s/usr/share/doc/u-boot-radxa-rk3588/changelog.Debian"
-	sh -c "cd 'debian/tmp/radxa-cm5-io-rk3588s'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
-	chown -R root:root "debian/tmp/radxa-cm5-io-rk3588s" && chmod -R go-w "debian/tmp/radxa-cm5-io-rk3588s" && chmod -R a+rX "debian/tmp/radxa-cm5-io-rk3588s"
-	dpkg-gencontrol -pu-boot-radxa-cm5-io-rk3588 -P"debian/tmp/radxa-cm5-io-rk3588s"
-	dpkg --build "debian/tmp/radxa-cm5-io-rk3588s" ..
-	
-binary-arch: binary-rock-5b-rk3588 binary-rock-5a-rk3588s binary-radxa-cm5-io-rk3588s
+binary-arch: $(addprefix package-,$(filter-out rock-5a-spi-rk3588s,$(BOARDS)))  
 
 binary: binary-arch
+
+package-%:
+	@rm -rf debian/tmp && mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot
+	@cp debian/build/$(subst package-,,$@)/u-boot.itb debian/tmp/u-boot/usr/lib/u-boot/u-boot.itb
+	@cp debian/build/$(subst package-,,$@)/idbloader.img debian/tmp/u-boot/usr/lib/u-boot/idbloader.img
+	@cp debian/build/$(subst package-,,$@)/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader.img
+	@if [ "rock-5a-rk3588s" = "$(subst package-,,$@)" ]; then \
+		cp debian/build/rock-5a-spi-rk3588s/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader.img; \
+	fi
+
+	@mkdir -m 755 -p "debian/tmp/u-boot/DEBIAN"
+	@mkdir -p "debian/tmp/u-boot/usr/share/doc/u-boot"
+	@cp debian/copyright "debian/tmp/u-boot/usr/share/doc/u-boot"
+	@cp debian/changelog "debian/tmp/u-boot/usr/share/doc/u-boot/changelog.Debian"
+	@gzip -9 "debian/tmp/u-boot/usr/share/doc/u-boot/changelog.Debian"
+	@sh -c "cd debian/tmp/u-boot/usr/lib && ln -s /usr/lib/u-boot u-boot-radxa-rk3588"
+	@sh -c "cd 'debian/tmp/u-boot'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
+	@chown -R root:root "debian/tmp/u-boot" && chmod -R go-w "debian/tmp/u-boot" && chmod -R a+rX "debian/tmp/u-boot"
+	@dpkg-gencontrol -pu-boot-$(subst -rk3588,,$(subst -rk3588s,,$(subst _,-,$(subst package-,,$@)))) -P"debian/tmp/u-boot"
+	@dpkg --build "debian/tmp/u-boot" ..
 
 clean:
 	@rm -rf debian/*tmp debian/tmp debian/build debian/files

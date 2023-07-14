@@ -1,3 +1,23 @@
+u-boot-radxa-rk3588 (2017.09+20230711.gitddc91cd0) jammy; urgency=medium
+
+  * update ddr blob to rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+  * update bl31 blob to rk3588_bl31_v1.38.elf
+  * renamed rock-5a and rock-5b package
+  * added package for radxa-cm5-io
+
+  * upstream changes
+    - Merge pull request #27 from Ken-Vamrs/next-dev
+    - rockchip: add ROCK 4 boards
+    - rockchip: rk3399: define fdtfile variable
+    - power: regulator: fan53555: add rk860 calibration
+    - common: fix buidl error
+    - configs: add rock-3a-rk3568_defconfig
+    - arm64: dts: add ROCK 3A board
+    - arm: dts: add radxa cm5 io
+    - configs: add radxa-cm5-io-rk3588s_defconfig
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 14 Jul 2023 18:13:31 -0400
+
 u-boot-radxa-rk3588 (2017.09+20230607.gitbf47e817-1) jammy; urgency=medium
 
   * rockchip: rk3588: Set emmc iomux for better extention
