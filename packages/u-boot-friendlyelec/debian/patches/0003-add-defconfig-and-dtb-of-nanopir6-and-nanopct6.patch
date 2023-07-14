@@ -1,7 +1,7 @@
 From 39c6cec296901a781f6622bdd9893e7aa384f245 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Sun, 25 Jun 2023 14:45:56 -0400
-Subject: [PATCH] foo
+Subject: [PATCH] add defconfig and dtb of nanopir6 and nanopct6
 
 ---
  arch/arm/dts/rk3588-nanopc-t6.dts   | 126 ++++++++++++++++
