@@ -1,8 +1,0 @@
-1000-Add-Blade-3-defines.patch
-1001-Fixed-restart-issues-with-pd-adapter.patch
-1002-fix-power_delivery-driver-affects-adb-to-enter-loade.patch
-1003-cmd-source-fix-the-error-that-the-command-source-fai.patch
-1004-rockchip-disable-gen_bl32_node.patch
-1005-rockchip-dts-rk3588-enable-otp.patch
-1006-rockchip-allow-passing-of-BL31-location-via-variable.patch
-1099-disable-optee-in-defconfig.patch
