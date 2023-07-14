@@ -129,13 +129,13 @@ for type in server desktop; do
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"'
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8316-sound", ENV{SOUND_DESCRIPTION}="ES8316 Audio"'
     } > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    elif [ "${BOARD}" == nanopir6c ] || [ "${BOARD}" == nanopir6s ]; then
+    elif [ "${BOARD}" == nanopi-r6c ] || [ "${BOARD}" == nanopi-r6s ]; then
     {
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"'
         cp ${overlay_dir}/etc/init.d/friendlyelec-leds.sh ${chroot_dir}/etc/init.d/friendlyelec-leds.sh
         chroot ${chroot_dir} /bin/bash -c "update-rc.d friendlyelec-leds.sh defaults"
     } > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
-    elif [ "${BOARD}" == nanopct6 ]; then
+    elif [ "${BOARD}" == nanopc-t6 ]; then
     {
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"'
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi1-sound", ENV{SOUND_DESCRIPTION}="HDMI1 Audio"'
@@ -151,7 +151,7 @@ for type in server desktop; do
     fi
 
     if [[ ${type} == "desktop" ]]; then
-        if [ "${BOARD}" == orangepi5 ] || [ "${BOARD}" == orangepi5b ] || [ "${BOARD}" == nanopir6c ] || [ "${BOARD}" == nanopir6s ]; then
+        if [ "${BOARD}" == orangepi5 ] || [ "${BOARD}" == orangepi5b ] || [ "${BOARD}" == nanopi-r6c ] || [ "${BOARD}" == nanopi-r6s ]; then
             echo "set-default-sink alsa_output.platform-hdmi0-sound.stereo-fallback" >> ${chroot_dir}/etc/pulse/default.pa
         elif [ "${BOARD}" == indiedroid-nova ]; then
             echo "set-default-sink 1" >> ${chroot_dir}/etc/pulse/default.pa
