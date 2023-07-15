@@ -2,4 +2,4 @@ u-boot-mixtile-rk3588 (2017.09+20230709.git4d4e453e-1) jammy; urgency=medium
 
   * Initial packaging.
 
- -- Joshua Riek <jjriek@verizon.net>  Tue, 16 May 2023 09:04:54 -0400
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 14 Jul 2023 18:13:31 -0400
