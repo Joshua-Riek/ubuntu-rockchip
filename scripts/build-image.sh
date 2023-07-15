@@ -249,8 +249,8 @@ cp ${mount_point}/writable/boot/vmlinuz-5.10.160-rockchip ${mount_point}/system-
 mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot
 
 # Write bootloader to disk image
-dd if=${mount_point}/writable/usr/lib/u-boot-"${VENDOR}"-rk3588/idbloader.img of="${loop}" seek=64 conv=notrunc
-dd if=${mount_point}/writable/usr/lib/u-boot-"${VENDOR}"-rk3588/u-boot.itb of="${loop}" seek=16384 conv=notrunc
+dd if=${mount_point}/writable/usr/lib/u-boot/idbloader.img of="${loop}" seek=64 conv=notrunc
+dd if=${mount_point}/writable/usr/lib/u-boot/u-boot.itb of="${loop}" seek=16384 conv=notrunc
 
 # Cloud init config for server image
 if [ -z "${img##*server*}" ]; then
