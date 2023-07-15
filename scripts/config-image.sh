@@ -84,15 +84,15 @@ for type in server desktop; do
 
     # Install the bootloader
     if [[ ${LAUNCHPAD}  == "Y" ]]; then
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-${BOARD}-rk3588"
+        chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-${BOARD}"
     else
         cp u-boot-"${BOARD}"-rk3588_*.deb ${chroot_dir}/tmp
-        chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/u-boot-${BOARD}-rk3588_*.deb && rm -rf /tmp/*"
-        chroot ${chroot_dir} /bin/bash -c "apt-mark hold u-boot-${BOARD}-rk3588"
+        chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/u-boot-${BOARD}_*.deb && rm -rf /tmp/*"
+        chroot ${chroot_dir} /bin/bash -c "apt-mark hold u-boot-${BOARD}"
     fi
 
     # Board specific changes
-    if [ "${BOARD}" == orangepi5plus ]; then
+    if [ "${BOARD}" == orangepi-5-plus ]; then
     {
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"'
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi1-sound", ENV{SOUND_DESCRIPTION}="HDMI1 Audio"'
@@ -103,7 +103,7 @@ for type in server desktop; do
 
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev"
         echo "BOARD=${BOARD}" > ${chroot_dir}/etc/"${VENDOR}"-release
-    elif [ "${BOARD}" == orangepi5 ] || [ "${BOARD}" == orangepi5b ]; then
+    elif [ "${BOARD}" == orangepi-5 ] || [ "${BOARD}" == orangepi-5b ]; then
     {
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"'
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"'
@@ -151,7 +151,7 @@ for type in server desktop; do
     fi
 
     if [[ ${type} == "desktop" ]]; then
-        if [ "${BOARD}" == orangepi5 ] || [ "${BOARD}" == orangepi5b ] || [ "${BOARD}" == nanopi-r6c ] || [ "${BOARD}" == nanopi-r6s ]; then
+        if [ "${BOARD}" == orangepi-5 ] || [ "${BOARD}" == orangepi-5b ] || [ "${BOARD}" == nanopi-r6c ] || [ "${BOARD}" == nanopi-r6s ]; then
             echo "set-default-sink alsa_output.platform-hdmi0-sound.stereo-fallback" >> ${chroot_dir}/etc/pulse/default.pa
         elif [ "${BOARD}" == indiedroid-nova ]; then
             echo "set-default-sink 1" >> ${chroot_dir}/etc/pulse/default.pa

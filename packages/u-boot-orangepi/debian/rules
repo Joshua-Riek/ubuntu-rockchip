@@ -13,10 +13,12 @@ else
 NJOBS := -j $(shell nproc)
 endif
 
-DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.08.bin
-BL31_BLOB := rk3588_bl31_v1.27.elf
+DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+BL31_BLOB := rk3588_bl31_v1.38.elf
 
-orangepi_5 orangepi_5_sata orangepi_5b orangepi_5_plus: 
+BOARDS := orangepi_5 orangepi_5_sata orangepi_5b orangepi_5_plus
+
+${BOARDS}: 
 	@mkdir -p debian/build/$@
 
 	make O=debian/build/$@ \
@@ -26,6 +28,8 @@ orangepi_5 orangepi_5_sata orangepi_5b orangepi_5_plus:
 	  $@_defconfig
 
 	@touch .scmversion
+	@sed -i 's/CONFIG_BOOTDELAY=.*/CONFIG_BOOTDELAY=1/g' debian/build/$@/.config
+	@sed -i 's/CONFIG_DISABLE_CONSOLE=y/CONFIG_DISABLE_CONSOLE=n/g' debian/build/$@/.config
 	@sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-orangepi-rk3588"/g' debian/build/$@/.config
 
 	@mkdir -p debian/build/$@/arch/arm/mach-rockchip
@@ -55,63 +59,31 @@ orangepi_5 orangepi_5_sata orangepi_5b orangepi_5_plus:
 	@dd if=debian/build/$@/idbloader.img of=debian/build/$@/rkspi_loader.img seek=64 conv=notrunc
 	@dd if=debian/build/$@/u-boot.itb of=debian/build/$@/rkspi_loader.img seek=16384 conv=notrunc
 
-build: orangepi_5 orangepi_5_sata orangepi_5b orangepi_5_plus
+build: ${BOARDS}
 
-binary-orangepi_5:
-	rm -rf debian/tmp/orangepi_5
-	mkdir -m 755 -p debian/tmp/orangepi_5/usr/lib/u-boot-orangepi-rk3588
-	cp debian/build/orangepi_5/u-boot.itb debian/tmp/orangepi_5/usr/lib/u-boot-orangepi-rk3588/u-boot.itb
-	cp debian/build/orangepi_5/idbloader.img debian/tmp/orangepi_5/usr/lib/u-boot-orangepi-rk3588/idbloader.img
-	cp debian/build/orangepi_5/rkspi_loader.img debian/tmp/orangepi_5/usr/lib/u-boot-orangepi-rk3588/rkspi_loader.img
-	cp debian/build/orangepi_5_sata/rkspi_loader.img debian/tmp/orangepi_5/usr/lib/u-boot-orangepi-rk3588/rkspi_loader_sata.img
-
-	mkdir -m 755 -p "debian/tmp/orangepi_5/DEBIAN"
-	mkdir -p "debian/tmp/orangepi_5/usr/share/doc/u-boot-orangepi-rk3588"
-	cp debian/copyright "debian/tmp/orangepi_5/usr/share/doc/u-boot-orangepi-rk3588/"
-	cp debian/changelog "debian/tmp/orangepi_5/usr/share/doc/u-boot-orangepi-rk3588/changelog.Debian"
-	gzip -9 "debian/tmp/orangepi_5/usr/share/doc/u-boot-orangepi-rk3588/changelog.Debian"
-	sh -c "cd 'debian/tmp/orangepi_5'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
-	chown -R root:root "debian/tmp/orangepi_5" && chmod -R go-w "debian/tmp/orangepi_5" && chmod -R a+rX "debian/tmp/orangepi_5"
-	dpkg-gencontrol -pu-boot-orangepi5-rk3588 -P"debian/tmp/orangepi_5"
-	dpkg --build "debian/tmp/orangepi_5" ..
-
-binary-orangepi_5b:
-	rm -rf debian/tmp/orangepi_5b
-	mkdir -m 755 -p debian/tmp/orangepi_5b/usr/lib/u-boot-orangepi-rk3588
-	cp debian/build/orangepi_5b/u-boot.itb debian/tmp/orangepi_5b/usr/lib/u-boot-orangepi-rk3588/u-boot.itb
-	cp debian/build/orangepi_5b/idbloader.img debian/tmp/orangepi_5b/usr/lib/u-boot-orangepi-rk3588/idbloader.img
-	cp debian/build/orangepi_5b/rkspi_loader.img debian/tmp/orangepi_5b/usr/lib/u-boot-orangepi-rk3588/rkspi_loader.img
-
-	mkdir -m 755 -p "debian/tmp/orangepi_5b/DEBIAN"
-	mkdir -p "debian/tmp/orangepi_5b/usr/share/doc/u-boot-orangepi-rk3588"
-	cp debian/copyright "debian/tmp/orangepi_5b/usr/share/doc/u-boot-orangepi-rk3588/"
-	cp debian/changelog "debian/tmp/orangepi_5b/usr/share/doc/u-boot-orangepi-rk3588/changelog.Debian"
-	gzip -9 "debian/tmp/orangepi_5b/usr/share/doc/u-boot-orangepi-rk3588/changelog.Debian"
-	sh -c "cd 'debian/tmp/orangepi_5b'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
-	chown -R root:root "debian/tmp/orangepi_5b" && chmod -R go-w "debian/tmp/orangepi_5b" && chmod -R a+rX "debian/tmp/orangepi_5b"
-	dpkg-gencontrol -pu-boot-orangepi5b-rk3588 -P"debian/tmp/orangepi_5b"
-	dpkg --build "debian/tmp/orangepi_5b" ..
-
-binary-orangepi_5_plus:
-	rm -rf debian/tmp/orangepi_5_plus
-	mkdir -m 755 -p debian/tmp/orangepi_5_plus/usr/lib/u-boot-orangepi-rk3588
-	cp debian/build/orangepi_5_plus/u-boot.itb debian/tmp/orangepi_5_plus/usr/lib/u-boot-orangepi-rk3588/u-boot.itb
-	cp debian/build/orangepi_5_plus/idbloader.img debian/tmp/orangepi_5_plus/usr/lib/u-boot-orangepi-rk3588/idbloader.img
-	cp debian/build/orangepi_5_plus/rkspi_loader.img debian/tmp/orangepi_5_plus/usr/lib/u-boot-orangepi-rk3588/rkspi_loader.img
-
-	mkdir -m 755 -p "debian/tmp/orangepi_5_plus/DEBIAN"
-	mkdir -p "debian/tmp/orangepi_5_plus/usr/share/doc/u-boot-orangepi-rk3588"
-	cp debian/copyright "debian/tmp/orangepi_5_plus/usr/share/doc/u-boot-orangepi-rk3588/"
-	cp debian/changelog "debian/tmp/orangepi_5_plus/usr/share/doc/u-boot-orangepi-rk3588/changelog.Debian"
-	gzip -9 "debian/tmp/orangepi_5_plus/usr/share/doc/u-boot-orangepi-rk3588/changelog.Debian"
-	sh -c "cd 'debian/tmp/orangepi_5_plus'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
-	chown -R root:root "debian/tmp/orangepi_5_plus" && chmod -R go-w "debian/tmp/orangepi_5_plus" && chmod -R a+rX "debian/tmp/orangepi_5_plus"
-	dpkg-gencontrol -pu-boot-orangepi5plus-rk3588 -P"debian/tmp/orangepi_5_plus"
-	dpkg --build "debian/tmp/orangepi_5_plus" ..
-
-binary-arch: binary-orangepi_5 binary-orangepi_5b binary-orangepi_5_plus
+binary-arch: $(addprefix package-,$(filter-out orangepi_5_sata,$(BOARDS)))  
 
 binary: binary-arch
+
+package-%:
+	@rm -rf debian/tmp && mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot
+	@cp debian/build/$(subst package-,,$@)/u-boot.itb debian/tmp/u-boot/usr/lib/u-boot/u-boot.itb
+	@cp debian/build/$(subst package-,,$@)/idbloader.img debian/tmp/u-boot/usr/lib/u-boot/idbloader.img
+	@cp debian/build/$(subst package-,,$@)/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader.img
+	@if [ "orangepi_5" = "$(subst package-,,$@)" ]; then \
+		cp debian/build/orangepi_5_sata/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader_sata.img; \
+	fi
+
+	@mkdir -m 755 -p "debian/tmp/u-boot/DEBIAN"
+	@mkdir -p "debian/tmp/u-boot/usr/share/doc/u-boot"
+	@cp debian/copyright "debian/tmp/u-boot/usr/share/doc/u-boot"
+	@cp debian/changelog "debian/tmp/u-boot/usr/share/doc/u-boot/changelog.Debian"
+	@gzip -9 "debian/tmp/u-boot/usr/share/doc/u-boot/changelog.Debian"
+	@sh -c "cd debian/tmp/u-boot/usr/lib && ln -s /usr/lib/u-boot u-boot-orangepi-rk3588"
+	@sh -c "cd 'debian/tmp/u-boot'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
+	@chown -R root:root "debian/tmp/u-boot" && chmod -R go-w "debian/tmp/u-boot" && chmod -R a+rX "debian/tmp/u-boot"
+	@dpkg-gencontrol -pu-boot-$(subst _,-,$(subst package-,,$@)) -P"debian/tmp/u-boot"
+	@dpkg --build "debian/tmp/u-boot" ..
 
 clean:
 	@rm -rf debian/*tmp debian/tmp debian/build debian/files
