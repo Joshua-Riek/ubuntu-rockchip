@@ -18,7 +18,7 @@ BL31_BLOB := rk3588_bl31_v1.37.elf
 
 BOARDS := indiedroid
 
-BOARDS: 
+${BOARDS}: 
 	@mkdir -p debian/build/$@
 
 	make O=debian/build/$@ \
