@@ -61,13 +61,13 @@ if [[ -z ${VENDOR} ]]; then
     exit 1
 fi
 
-if [[ "${BOARD}" == orangepi5 ]]; then
+if [[ "${BOARD}" == orangepi-5 ]]; then
     DEVICE_TREE=rk3588s-orangepi-5.dtb
     OVERLAY_PREFIX=orangepi-5
-elif [[ "${BOARD}" == orangepi5b ]]; then
+elif [[ "${BOARD}" == orangepi-5b ]]; then
     DEVICE_TREE=rk3588s-orangepi-5b.dtb
     OVERLAY_PREFIX=orangepi-5
-elif [[ "${BOARD}" == orangepi5plus ]]; then
+elif [[ "${BOARD}" == orangepi-5-plus ]]; then
     DEVICE_TREE=rk3588-orangepi-5-plus.dtb
     OVERLAY_PREFIX=orangepi-5-plus
 elif [[ "${BOARD}" == rock-5a ]]; then
@@ -257,7 +257,7 @@ if [ -z "${img##*server*}" ]; then
     cp ../overlay/boot/firmware/{meta-data,user-data,network-config} ${mount_point}/system-boot
     if [ "${BOARD}" == rock-5b ] || [ "${BOARD}" == indiedroid-nova ]; then
         sed -i 's/eth0:/enP4p65s0:/g' ${mount_point}/system-boot/network-config
-    elif [ "${BOARD}" == orangepi5plus ]; then
+    elif [ "${BOARD}" == orangepi-5-plus ]; then
         sed -i 's/eth0:/enP4p65s0:\n    dhcp4: true\n    optional: true\n  enP3p49s0:/g' ${mount_point}/system-boot/network-config
     elif [ "${BOARD}" == nanopi-r6c ]; then
         sed -i 's/eth0:/eth0:\n    dhcp4: true\n    optional: true\n  enP3p49s0:/g' ${mount_point}/system-boot/network-config

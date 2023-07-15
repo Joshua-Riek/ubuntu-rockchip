@@ -1,4 +1,4 @@
 GIT=https://github.com/orangepi-xunlong/u-boot-orangepi.git
-COMMIT=ac3b1ca94498e15e9f32180c279e69da48af2ebd
+COMMIT=1f70ac3a968d121d86350092a7eff0dbd56114b7
 BRANCH=v2017.09-rk3588
-VERSION=2017.09+20230525.gitac3b1ca9
+VERSION=2017.09+20230704.git1f70ac3a
