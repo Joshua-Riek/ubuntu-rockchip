@@ -28,7 +28,7 @@ if [[ ${LAUNCHPAD} != "Y" ]]; then
             exit 1
         fi
     done
-    for file in u-boot-"${BOARD}"-rk3588_*.deb; do
+    for file in u-boot-"${BOARD}"_*.deb; do
         if [ ! -e "$file" ]; then
             echo "Error: missing u-boot deb, please run build-u-boot.sh"
             exit 1
@@ -86,7 +86,7 @@ for type in server desktop; do
     if [[ ${LAUNCHPAD}  == "Y" ]]; then
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-${BOARD}"
     else
-        cp u-boot-"${BOARD}"-rk3588_*.deb ${chroot_dir}/tmp
+        cp u-boot-"${BOARD}"_*.deb ${chroot_dir}/tmp
         chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/u-boot-${BOARD}_*.deb && rm -rf /tmp/*"
         chroot ${chroot_dir} /bin/bash -c "apt-mark hold u-boot-${BOARD}"
     fi
