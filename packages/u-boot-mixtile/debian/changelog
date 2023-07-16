@@ -1,4 +1,4 @@
-u-boot-mixtile-rk3588 (2017.09+20230709.git4d4e453e-1) jammy; urgency=medium
+u-boot-mixtile-rk3588 (2017.09+20220517.git7182d4be-1) jammy; urgency=medium
 
   * Initial packaging.
 
