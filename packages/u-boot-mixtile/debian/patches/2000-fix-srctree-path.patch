@@ -4,25 +4,12 @@ Date: Sun, 23 Apr 2023 10:26:00 -0400
 Subject: [PATCH] arch: arm: mach-rockchip: fix srctree path
 
 ---
- arch/arm/mach-rockchip/fit_nodes.sh    | 2 +-
- arch/arm/mach-rockchip/make_fit_atf.sh | 2 +-
+ arch/arm/mach-rockchip/make_fit_atf.sh  | 2 +-
+ arch/arm/mach-rockchip/make_fit_boot.sh | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-rockchip/fit_nodes.sh b/arch/arm/mach-rockchip/fit_nodes.sh
-index be7d46d8f..c0afc1ade 100755
---- a/arch/arm/mach-rockchip/fit_nodes.sh
-+++ b/arch/arm/mach-rockchip/fit_nodes.sh
-@@ -6,7 +6,7 @@
- #
- 
- # Process args and auto set variables
--source ./${srctree}/arch/arm/mach-rockchip/fit_args.sh
-+source ${srctree}/arch/arm/mach-rockchip/fit_args.sh
- rm -f ${srctree}/*.digest ${srctree}/*.bin.gz ${srctree}/bl31_0x*.bin
- 
- # Periph register
 diff --git a/arch/arm/mach-rockchip/make_fit_atf.sh b/arch/arm/mach-rockchip/make_fit_atf.sh
-index 045273e3b..fa6a9780e 100755
+index 32ef33b8b0..2211562a6b 100755
 --- a/arch/arm/mach-rockchip/make_fit_atf.sh
 +++ b/arch/arm/mach-rockchip/make_fit_atf.sh
 @@ -5,7 +5,7 @@
@@ -34,6 +21,18 @@ index 045273e3b..fa6a9780e 100755
  
  gen_header
  gen_uboot_node
+diff --git a/arch/arm/mach-rockchip/make_fit_boot.sh b/arch/arm/mach-rockchip/make_fit_boot.sh
+index 312aa996e6..76591bf2de 100755
+--- a/arch/arm/mach-rockchip/make_fit_boot.sh
++++ b/arch/arm/mach-rockchip/make_fit_boot.sh
+@@ -6,7 +6,7 @@
+ #
+ 
+ # Process args and auto set variables
+-source ./${srctree}/arch/arm/mach-rockchip/fit_args.sh
++source ${srctree}/arch/arm/mach-rockchip/fit_args.sh
+ 
+ if [ ! -f ${srctree}/images/ramdisk ]; then
+ 	touch ${srctree}/images/ramdisk
 -- 
 2.25.1
-
