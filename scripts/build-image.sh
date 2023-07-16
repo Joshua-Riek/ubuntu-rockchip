@@ -265,6 +265,8 @@ if [ -z "${img##*server*}" ]; then
         sed -i 's/eth0:/eth0:\n    dhcp4: true\n    optional: true\n  enP3p49s0:\n    dhcp4: true\n    optional: true\n  enP4p65s0:/g' ${mount_point}/system-boot/network-config
     elif [ "${BOARD}" == nanopc-t6 ]; then
         sed -i 's/eth0:/enP2p33s0:\n    dhcp4: true\n    optional: true\n  enP4p65s0:/g' ${mount_point}/system-boot/network-config
+    elif [ "${BOARD}" == mixtile-blade3 ]; then
+        sed -i 's/eth0:/enP2p35s0:\n    dhcp4: true\n    optional: true\n  enP2p36s0:/g' ${mount_point}/system-boot/network-config
     fi
 fi
 
