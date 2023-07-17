@@ -2,6 +2,9 @@ u-boot-friendlyelec-rk3588 (2017.09+20230711.gitddc91cd0-1) jammy; urgency=mediu
 
   * renamed package to u-boot-friendlyelec-rk3588
   * renamed nanopi-r6s, nanopi-r6c, and nanopc-t6 package
+  * update ddr blob to rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+  * update bl31 blob to rk3588_bl31_v1.38.elf
+  * update bl32 blob to rk3588_bl32_v1.13.bin
 
   * upstream changes
     - Merge pull request #27 from Ken-Vamrs/next-dev
