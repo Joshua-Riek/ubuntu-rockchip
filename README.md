@@ -23,11 +23,11 @@ The supported devices are undergoing continuous development. As a result, you ma
 * [Orange Pi 5 Plus](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-plus.html)
 * [Radxa ROCK 5B](https://wiki.radxa.com/Rock5/hardware/5b)
 * [Radxa ROCK 5A](https://wiki.radxa.com/Rock5/hardware/5a)
-* [Radxa Compute Module 5](https://wiki.radxa.com/Rock5/CM) (WIP)
-* [FriendlyELEC NanoPi R6S](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6S)
-* [FriendlyELEC NanoPi R6C](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6C)
-* [FriendlyELEC NanoPC T6](https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6)
-* [Mixtile Blade 3](https://www.mixtile.com/blade-3/) (WIP)
+* [Radxa CM5 IO](https://wiki.radxa.com/Rock5/CM)
+* [NanoPi R6S](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6S)
+* [NanoPi R6C](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6C)
+* [NanoPC T6](https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6)
+* [Mixtile Blade 3](https://www.mixtile.com/blade-3)
 * [Indiedroid Nova](https://indiedroid.us)
 
 ## Installation
