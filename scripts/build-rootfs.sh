@@ -124,7 +124,8 @@ ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
 pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
-gcc libc6-dev bison libssl-dev flex flash-kernel fake-hwclock rfkill wireless-regdb
+gcc libc6-dev bison libssl-dev flex flash-kernel fake-hwclock rfkill wireless-regdb \
+mmc-utils
 
 # Remove cryptsetup and needrestart
 apt-get -y remove cryptsetup needrestart
