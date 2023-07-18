@@ -1,3 +1,9 @@
+u-boot-9tripod-rk3588 (2017.09+20230321.git2f6e967d-2) jammy; urgency=medium
+
+  * Improve debian packaging.
+
+ -- Joshua Riek <jjriek@verizon.net>  Tue, 18 Jul 2023 14:20:21 -0400
+
 u-boot-9tripod-rk3588 (2017.09+20230321.git2f6e967d-1) jammy; urgency=medium
 
   * Initial packaging.
