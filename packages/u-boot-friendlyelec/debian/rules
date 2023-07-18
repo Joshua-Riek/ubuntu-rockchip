@@ -13,9 +13,9 @@ else
 NJOBS := -j $(shell nproc)
 endif
 
-DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
-BL31_BLOB := rk3588_bl31_v1.38.elf
-BL32_BLOB := rk3588_bl32_v1.13.bin
+DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.09.bin
+BL31_BLOB := rk3588_bl31_v1.36.elf
+BL32_BLOB := rk3588_bl32_v1.12.bin
 
 BOARDS := nanopi_r6s nanopi_r6c nanopc_t6
 
