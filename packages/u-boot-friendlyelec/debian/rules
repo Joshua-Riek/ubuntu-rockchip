@@ -82,7 +82,6 @@ package-%:
 	@cp debian/copyright "debian/tmp/u-boot/usr/share/doc/u-boot-friendlyelec-rk3588"
 	@cp debian/changelog "debian/tmp/u-boot/usr/share/doc/u-boot-friendlyelec-rk3588/changelog.Debian"
 	@gzip -9 "debian/tmp/u-boot/usr/share/doc/u-boot-friendlyelec-rk3588/changelog.Debian"
-	@sh -c "cd debian/tmp/u-boot/usr/lib && ln -s /usr/lib/u-boot-friendlyelec-rk3588 u-boot-nanopi-rk3588"
 	@sh -c "cd 'debian/tmp/u-boot'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
 	@chown -R root:root "debian/tmp/u-boot" && chmod -R go-w "debian/tmp/u-boot" && chmod -R a+rX "debian/tmp/u-boot"
 	@dpkg-gencontrol -pu-boot-$(subst -rk3588,,$(subst -rk3588s,,$(subst _,-,$(subst package-,,$@)))) -P"debian/tmp/u-boot"
