@@ -1,3 +1,9 @@
+u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-2) jammy; urgency=medium
+
+  * revert "Disable set local-mac-address"
+
+ -- Joshua Riek <jjriek@verizon.net>  Sun, 23 Jul 2023 17:10:03 -0400
+
 u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-1) jammy; urgency=medium
 
   * renamed orangepi5, orangepi5b, and orangepi5plus packages
