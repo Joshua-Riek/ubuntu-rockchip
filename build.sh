@@ -5,9 +5,6 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 
 cd "$(dirname -- "$(readlink -f -- "$0")")"
 
-mkdir -p build/logs
-exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
-
 usage() {
 cat << HEREDOC
 Usage: $0 --board=[orangepi-5|orangepi-5b|orangepi-5-plus|rock-5b|rock-5a|radxa-cm5-io|nanopc-t6|nanopi-r6c|nanopi-r6s|indiedroid-nova|mixtile-blade3]
@@ -107,6 +104,9 @@ else
     echo "Error: \"${BOARD}\" is an unsupported board"
     exit 1
 fi
+
+mkdir -p build/logs
+exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
 
 if [[ ${KERNEL_ONLY} == "Y" ]]; then
     eval "${DOCKER}" ./scripts/build-kernel.sh
