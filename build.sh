@@ -48,8 +48,8 @@ for i in "$@"; do
             shift
             ;;
         -d|--docker)
-            DOCKER="docker run --privileged --network=host --rm -it -v \"$(pwd)\":/opt -e BOARD -e VENDOR -e LAUNCHPAD ubuntu-orange-pi5-build /bin/bash"
-            docker build -t ubuntu-orange-pi5-build docker
+            DOCKER="docker run --privileged --network=host --rm -it -v \"$(pwd)\":/opt -e BOARD -e VENDOR -e LAUNCHPAD ubuntu-rockchip-build /bin/bash"
+            docker build -t ubuntu-rockchip-build docker
             shift
             ;;
         -k|--kernel-only)
