@@ -78,7 +78,7 @@ elif [[ "${BOARD}" == rock-5b ]]; then
     OVERLAY_PREFIX=rock-5b
 elif [[ "${BOARD}" == radxa-cm5-io ]]; then
     DEVICE_TREE=rk3588s-radxa-cm5-io.dtb
-    OVERLAY_PREFIX=
+    OVERLAY_PREFIX=radxa-cm5-io
 elif [[ "${BOARD}" == nanopi-r6c ]]; then
     DEVICE_TREE=rk3588s-nanopi-r6c.dtb
     OVERLAY_PREFIX=
