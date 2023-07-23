@@ -102,7 +102,7 @@ for type in server desktop; do
     } > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
 
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev"
-        echo "BOARD=${BOARD}" > ${chroot_dir}/etc/"${VENDOR}"-release
+        echo "BOARD=orangepi5plus" > ${chroot_dir}/etc/orangepi-release
     elif [ "${BOARD}" == orangepi-5 ] || [ "${BOARD}" == orangepi-5b ]; then
     {
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"'
@@ -114,7 +114,7 @@ for type in server desktop; do
         chroot ${chroot_dir} /bin/bash -c "systemctl --no-reload enable enable-usb2"
 
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev"
-        echo "BOARD=${BOARD}" > ${chroot_dir}/etc/"${VENDOR}"-release
+        echo "BOARD=orangepi5" > ${chroot_dir}/etc/orangepi-release
     elif [ "${BOARD}" == rock-5a ]; then
     {
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"'
