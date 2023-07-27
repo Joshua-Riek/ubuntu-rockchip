@@ -2,6 +2,8 @@
 1001-Fixed-restart-issues-with-pd-adapter.patch
 1002-fix-power_delivery-driver-affects-adb-to-enter-loade.patch
 1003-cmd-source-fix-the-error-that-the-command-source-fai.patch
-1004-fix-srctree-path.patch
-1005-enable-otp-in-defconfig.patch
-1006-add-support-for-sata2.patch
+1004-add-sata2-and-pcie2x1l1-nodes.patch
+1090-disable-optee-in-defconfig.patch
+1091-mixtile-blade3-enable-OTP-in-defconfig.patch
+1092-enable-nvme-pci-and-scsi-in-the-defconfig.patch
+2000-arch-arm-mach-rockchip-fix-srctree-path.patch
