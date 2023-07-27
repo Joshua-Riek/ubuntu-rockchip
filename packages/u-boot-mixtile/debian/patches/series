@@ -4,4 +4,4 @@
 1003-cmd-source-fix-the-error-that-the-command-source-fai.patch
 1004-fix-srctree-path.patch
 1005-enable-otp-in-defconfig.patch
-1099-disable-optee-in-defconfig.patch
+1006-add-support-for-sata2.patch
