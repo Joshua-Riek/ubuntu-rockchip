@@ -1,7 +1,7 @@
-From 7f745147d3935626630607391fc15d8127fa6af4 Mon Sep 17 00:00:00 2001
+From 9af8f6f23842adfac0f1eb8a77c70c3770d2369e Mon Sep 17 00:00:00 2001
 From: Martin Liu <martin@focalcrest.com>
 Date: Wed, 15 Jun 2022 15:37:09 +0800
-Subject: [PATCH 1000/1002] Add Blade 3 defines
+Subject: [PATCH 1/9] Add Blade 3 defines
 
 ---
  arch/arm/dts/rk3588-blade3.dts |  50 ++++++++
@@ -298,5 +298,5 @@ index 0000000000..092677e7fc
 +CONFIG_OPTEE_V2=y
 +CONFIG_OPTEE_ALWAYS_USE_SECURITY_PARTITION=y
 -- 
-2.40.1
+2.25.1
 
