@@ -21,7 +21,7 @@ if [ ! -d u-boot-"${VENDOR}" ]; then
     source ../packages/u-boot-"${VENDOR}"/debian/upstream
     git clone --single-branch --progress -b "${BRANCH}" "${GIT}" u-boot-"${VENDOR}"
     git -C u-boot-"${VENDOR}" checkout "${COMMIT}"
-    cp -r ../packages/u-boot-"${VENDOR}"/debian u-boot-"${VENDOR}"
+    cp -r ../packages/u-boot-"${VENDOR}"-rk3588/debian u-boot-"${VENDOR}"
 fi
 cd u-boot-"${VENDOR}"
 
