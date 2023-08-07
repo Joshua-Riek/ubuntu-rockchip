@@ -1,0 +1,13 @@
+[Unit]
+Description=Alsa Audio Config
+Before=basic.target
+After=sysinit.target local-fs.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/lib/scripts/alsa-audio-config
+
+[Install]
+WantedBy=basic.target
