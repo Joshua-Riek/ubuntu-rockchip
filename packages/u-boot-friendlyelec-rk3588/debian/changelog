@@ -1,3 +1,10 @@
+u-boot-friendlyelec-rk3588 (2017.09+20230711.gitddc91cd0-2) jammy; urgency=medium
+
+  * Updated the ddr blob to rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+  * Updated the bl31 blob to rk3588_bl31_v1.38.elf
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 10 Aug 2023 01:43:03 -0400
+
 u-boot-friendlyelec-rk3588 (2017.09+20230711.gitddc91cd0-1) jammy; urgency=medium
 
   * renamed package to u-boot-friendlyelec-rk3588
