@@ -1,3 +1,10 @@
+u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-3) jammy; urgency=medium
+
+  * Updated the ddr blob to rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+  * Updated the bl31 blob to rk3588_bl31_v1.38.elf 
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 10 Aug 2023 01:42:16 -0400
+
 u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-2) jammy; urgency=medium
 
   * revert "Disable set local-mac-address"

@@ -1,3 +1,10 @@
+u-boot-9tripod-rk3588 (2017.09+20230321.git2f6e967d-3) jammy; urgency=medium
+
+  * Updated the ddr blob to rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+  * Updated the bl31 blob to rk3588_bl31_v1.38.elf
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 10 Aug 2023 01:32:28 -0400
+
 u-boot-9tripod-rk3588 (2017.09+20230321.git2f6e967d-2) jammy; urgency=medium
 
   * Improve debian packaging.
