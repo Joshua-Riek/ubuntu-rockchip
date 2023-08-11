@@ -1,3 +1,9 @@
+u-boot-radxa-rk3588 (2017.09+20230711.gitddc91cd0-3) jammy; urgency=medium
+
+  * Add ddr and bl31 blobs again
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 11 Aug 2023 17:53:16 -0400
+
 u-boot-radxa-rk3588 (2017.09+20230711.gitddc91cd0-2) jammy; urgency=medium
 
   * Revert ddr and bl31 blob update
