@@ -1,3 +1,9 @@
+u-boot-radxa-rk3588 (2017.09+20230711.gitddc91cd0-2) jammy; urgency=medium
+
+  * Revert ddr and bl31 blob update
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 11 Aug 2023 11:39:32 -0400
+
 u-boot-radxa-rk3588 (2017.09+20230711.gitddc91cd0-1) jammy; urgency=medium
 
   * Updated the ddr blob to rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
