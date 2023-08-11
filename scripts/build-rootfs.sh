@@ -11,7 +11,7 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
-if [[ -f ubuntu-22.04.2-preinstalled-server-arm64.rootfs.tar.xz && -f ubuntu-22.04.2-preinstalled-desktop-arm64.rootfs.tar.xz ]]; then
+if [[ -f ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz && -f ubuntu-22.04.3-preinstalled-desktop-arm64.rootfs.tar.xz ]]; then
     exit 0
 fi
 
@@ -231,7 +231,7 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf ../ubuntu-22.04.2-preinstalled-server-arm64.rootfs.tar.xz . && cd ..
+cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf ../ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz . && cd ..
 
 # Mount the temporary API filesystems
 mkdir -p ${chroot_dir}/{proc,sys,run,dev,dev/pts}
@@ -367,4 +367,4 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf ../ubuntu-22.04.2-preinstalled-desktop-arm64.rootfs.tar.xz . && cd ..
+cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf ../ubuntu-22.04.3-preinstalled-desktop-arm64.rootfs.tar.xz . && cd ..
