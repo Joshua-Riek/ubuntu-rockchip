@@ -22,18 +22,23 @@ if [[ -z ${VENDOR} ]]; then
 fi
 
 if [[ ${LAUNCHPAD} != "Y" ]]; then
-    for file in linux-{headers,image}-*.deb; do
-        if [ ! -e "$file" ]; then
-            echo "Error: missing kernel debs, please run build-kernel.sh"
-            exit 1
-        fi
-    done
-    for file in u-boot-"${BOARD}"_*.deb; do
-        if [ ! -e "$file" ]; then
-            echo "Error: missing u-boot deb, please run build-u-boot.sh"
-            exit 1
-        fi
-    done
+    uboot_package="$(basename "$(find u-boot-"${BOARD}"_*.deb | sort | tail -n1)")"
+    if [ ! -e "$uboot_package" ]; then
+        echo 'Error: could not find the u-boot .deb file'
+        exit 1
+    fi
+
+    linux_image_package="$(basename "$(find linux-image-*.deb | sort | tail -n1)")"
+    if [ ! -e "$linux_image_package" ]; then
+        echo 'Error: could not find the linux image .deb file'
+        exit 1
+    fi
+
+    linux_headers_package="$(basename "$(find linux-headers-*.deb | sort | tail -n1)")"
+    if [ ! -e "$linux_headers_package" ]; then
+        echo 'Error: could not find the linux headers .deb file'
+        exit 1
+    fi
 fi
 
 # These env vars can cause issues with chroot
@@ -69,25 +74,23 @@ for type in server desktop; do
     if [[ ${LAUNCHPAD}  == "Y" ]]; then
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.160-rockchip linux-headers-5.10.160-rockchip"
     else
-        cp linux-{headers,image}-*.deb ${chroot_dir}/tmp
-        chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image}-*.deb && rm -rf /tmp/*"
+        cp "${linux_image_package}" "${linux_headers_package}" ${chroot_dir}/tmp
+        chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/{${linux_image_package},${linux_headers_package}} && rm -rf /tmp/*"
     fi
 
     # Copy device trees and overlays
     mkdir -p ${chroot_dir}/boot/firmware/dtbs/
-    cp ${chroot_dir}/usr/lib/linux-image-*/rockchip/*.dtb ${chroot_dir}/boot/firmware/dtbs/
-    if ls ${chroot_dir}/usr/lib/linux-image-*/rockchip/overlay/ 1> /dev/null 2>&1; then
-        mkdir -p ${chroot_dir}/boot/firmware/dtbs/
-        cp ${chroot_dir}/usr/lib/linux-image-*/rockchip/overlay/*.dtbo ${chroot_dir}/boot/firmware/dtbs/overlays/
+    cp -r ${chroot_dir}/usr/lib/linux-image-*/rockchip/* ${chroot_dir}/boot/firmware/dtbs/
+    if [ -d "${chroot_dir}/boot/firmware/dtbs/overlay/" ]; then
+        mv ${chroot_dir}/boot/firmware/dtbs/overlay/ ${chroot_dir}/boot/firmware/dtbs/overlays/
     fi
 
     # Install the bootloader
     if [[ ${LAUNCHPAD}  == "Y" ]]; then
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-${BOARD}"
     else
-        cp u-boot-"${BOARD}"_*.deb ${chroot_dir}/tmp
-        chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/u-boot-${BOARD}_*.deb && rm -rf /tmp/*"
-        chroot ${chroot_dir} /bin/bash -c "apt-mark hold u-boot-${BOARD}"
+        cp "${uboot_package}" ${chroot_dir}/tmp
+        chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/${uboot_package} && rm -rf /tmp/*"
     fi
 
     # Board specific changes
