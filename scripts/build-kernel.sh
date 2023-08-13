@@ -20,10 +20,10 @@ if [[ 1 == 1 ]]; then
 
     rm -f ../*.buildinfo ../*.changes
 else
-    test -d linux ||  git clone --single-branch --progress -b rk3588-test https://github.com/Joshua-Riek/linux.git --depth=100
+    test -d linux ||  git clone --single-branch --progress -b v6.5-rc5-rk3588 https://github.com/Joshua-Riek/linux.git --depth=100
     cd linux
 
-    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- linux-rockchip-rk3588-collabora_defconfig
+    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- linux-rockchip-rk3588_defconfig
     ./scripts/config --disable CONFIG_DEBUG_INFO
     ./scripts/config --disable DEBUG_INFO
     ./scripts/config --disable CONFIG_IWLWIFI
