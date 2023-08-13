@@ -22,7 +22,7 @@ if [[ -z ${VENDOR} ]]; then
 fi
 
 if [[ ${LAUNCHPAD} != "Y" ]]; then
-    for file in linux-{headers,image}-5.10.160-rockchip_*.deb; do
+    for file in linux-{headers,image}-*.deb; do
         if [ ! -e "$file" ]; then
             echo "Error: missing kernel debs, please run build-kernel.sh"
             exit 1
@@ -69,18 +69,17 @@ for type in server desktop; do
     if [[ ${LAUNCHPAD}  == "Y" ]]; then
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.160-rockchip linux-headers-5.10.160-rockchip"
     else
-        cp linux-{headers,image}-5.10.160-rockchip_*.deb ${chroot_dir}/tmp
-        chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image}-5.10.160-rockchip_*.deb && rm -rf /tmp/*"
-        chroot ${chroot_dir} /bin/bash -c "apt-mark hold linux-image-5.10.160-rockchip linux-headers-5.10.160-rockchip"
+        cp linux-{headers,image}-*.deb ${chroot_dir}/tmp
+        chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/linux-{headers,image}-*.deb && rm -rf /tmp/*"
     fi
 
-    # Generate kernel module dependencies
-    chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.160-rockchip"
-
     # Copy device trees and overlays
-    mkdir -p ${chroot_dir}/boot/firmware/dtbs/overlays
-    cp ${chroot_dir}/usr/lib/linux-image-5.10.160-rockchip/rockchip/*.dtb ${chroot_dir}/boot/firmware/dtbs
-    cp ${chroot_dir}/usr/lib/linux-image-5.10.160-rockchip/rockchip/overlay/*.dtbo ${chroot_dir}/boot/firmware/dtbs/overlays
+    mkdir -p ${chroot_dir}/boot/firmware/dtbs/
+    cp ${chroot_dir}/usr/lib/linux-image-*/rockchip/*.dtb ${chroot_dir}/boot/firmware/dtbs/
+    if ls ${chroot_dir}/usr/lib/linux-image-*/rockchip/overlay/ 1> /dev/null 2>&1; then
+        mkdir -p ${chroot_dir}/boot/firmware/dtbs/
+        cp ${chroot_dir}/usr/lib/linux-image-*/rockchip/overlay/*.dtbo ${chroot_dir}/boot/firmware/dtbs/overlays/
+    fi
 
     # Install the bootloader
     if [[ ${LAUNCHPAD}  == "Y" ]]; then
