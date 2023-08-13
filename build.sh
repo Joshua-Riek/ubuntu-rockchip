@@ -17,6 +17,7 @@ Optional arguments:
   -c, --clean           clean the build directory
   -d, --docker          use docker to build
   -k, --kernel-only     only compile the kernel
+  -kc --kernel-cached   use existing kernel deb package
   -u, --uboot-only      only compile uboot
   -l, --launchpad       use kernel and uboot from launchpad repo
   -v, --verbose         increase the verbosity of the bash script
@@ -51,6 +52,10 @@ for i in "$@"; do
             ;;
         -k|--kernel-only)
             export KERNEL_ONLY=Y
+            shift
+            ;;
+        -kc|--kernel-cached)
+            export KERNEL_CACHED=Y
             shift
             ;;
         -u|--uboot-only)
@@ -118,12 +123,8 @@ if [[ ${UBOOT_ONLY} == "Y" ]]; then
     exit 0
 fi
 
-if [[ ${LAUNCHPAD} != "Y" ]]; then
-    for file in build/linux-{headers,image}-5.10.160-rockchip_*.deb; do
-        if [ ! -e "$file" ]; then
-            eval "${DOCKER}" ./scripts/build-kernel.sh
-        fi
-    done
+if [[ ${LAUNCHPAD} != "Y" && ${KERNEL_CACHED} != "Y" ]]; then
+    eval "${DOCKER}" ./scripts/build-kernel.sh
 fi
 
 if [[ ${LAUNCHPAD} != "Y" ]]; then
