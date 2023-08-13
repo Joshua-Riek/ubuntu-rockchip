@@ -26,10 +26,16 @@ else
     make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- linux-rockchip-rk3588-collabora_defconfig
     ./scripts/config --disable CONFIG_DEBUG_INFO
     ./scripts/config --disable DEBUG_INFO
+    ./scripts/config --disable CONFIG_IWLWIFI
+    ./scripts/config --disable CONFIG_IWLWIFI_LEDS
+    ./scripts/config --disable CONFIG_IWLDVM
+    ./scripts/config --disable CONFIG_IWLMVM
+    ./scripts/config --disable CONFIG_IWLWIFI_OPMODE_MODULAR
+    ./scripts/config --disable CONFIG_IWLWIFI_DEVICE_TRACING
 
     echo "0" > .version
     echo "" > .scmversion
-    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- bindeb-pkg -j16
+    make KBUILD_IMAGE='$(boot)/Image' ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- bindeb-pkg -j16
 
     rm -f ../linux-image-*dbg*.deb
     rm -f ../linux-libc-dev_*.deb
