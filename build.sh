@@ -17,7 +17,6 @@ Optional arguments:
   -c, --clean           clean the build directory
   -d, --docker          use docker to build
   -k, --kernel-only     only compile the kernel
-  -kc --kernel-cached   use existing kernel deb package
   -u, --uboot-only      only compile uboot
   -l, --launchpad       use kernel and uboot from launchpad repo
   -v, --verbose         increase the verbosity of the bash script
@@ -52,10 +51,6 @@ for i in "$@"; do
             ;;
         -k|--kernel-only)
             export KERNEL_ONLY=Y
-            shift
-            ;;
-        -kc|--kernel-cached)
-            export KERNEL_CACHED=Y
             shift
             ;;
         -u|--uboot-only)
@@ -123,12 +118,16 @@ if [[ ${UBOOT_ONLY} == "Y" ]]; then
     exit 0
 fi
 
-if [[ ${LAUNCHPAD} != "Y" && ${KERNEL_CACHED} != "Y" ]]; then
-    eval "${DOCKER}" ./scripts/build-kernel.sh
+if [[ ${LAUNCHPAD} != "Y" ]]; then
+    if [[ ! -e "$(find build/linux-image-*.deb | sort | tail -n1)" || ! -e "$(find build/linux-headers-*.deb | sort | tail -n1)" ]]; then
+        eval "${DOCKER}" ./scripts/build-kernel.sh
+    fi
 fi
 
 if [[ ${LAUNCHPAD} != "Y" ]]; then
-    eval "${DOCKER}" ./scripts/build-u-boot.sh
+    if [[ ! -e "$(find build/u-boot-"${BOARD}"_*.deb | sort | tail -n1)" ]]; then
+        eval "${DOCKER}" ./scripts/build-u-boot.sh
+    fi
 fi
 
 eval "${DOCKER}" ./scripts/build-rootfs.sh
