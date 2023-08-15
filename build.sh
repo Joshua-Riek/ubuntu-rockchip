@@ -10,16 +10,18 @@ cat << HEREDOC
 Usage: $0 --board=[orangepi-5|orangepi-5b|orangepi-5-plus|rock-5b|rock-5a|radxa-cm5-io|nanopc-t6|nanopi-r6c|nanopi-r6s|indiedroid-nova|mixtile-blade3]
 
 Required arguments:
-  -b, --board=BOARD     target board 
+  -b, --board=BOARD      target board 
 
 Optional arguments:
-  -h, --help            show this help message and exit
-  -c, --clean           clean the build directory
-  -d, --docker          use docker to build
-  -k, --kernel-only     only compile the kernel
-  -u, --uboot-only      only compile uboot
-  -l, --launchpad       use kernel and uboot from launchpad repo
-  -v, --verbose         increase the verbosity of the bash script
+  -h,  --help            show this help message and exit
+  -c,  --clean           clean the build directory
+  -d,  --docker          use docker to build
+  -k,  --kernel-only     only compile the kernel
+  -u,  --uboot-only      only compile uboot
+  -so, --server-only     only build server image
+  -do, --desktop-only    only build desktop image
+  -l,  --launchpad       use kernel and uboot from launchpad repo
+  -v,  --verbose         increase the verbosity of the bash script
 HEREDOC
 }
 
@@ -55,6 +57,14 @@ for i in "$@"; do
             ;;
         -u|--uboot-only)
             export UBOOT_ONLY=Y
+            shift
+            ;;
+        -do|--desktop-only)
+            export DESKTOP_ONLY=Y
+            shift
+            ;;
+        -so|--server-only)
+            export SERVER_ONLY=Y
             shift
             ;;
         -l|--launchpad)

@@ -11,8 +11,18 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
-if [[ -f ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz && -f ubuntu-22.04.3-preinstalled-desktop-arm64.rootfs.tar.xz ]]; then
-    exit 0
+if [[ ${DESKTOP_ONLY} == "Y" ]]; then
+    if [[ -f ubuntu-22.04.3-preinstalled-desktop-arm64.rootfs.tar.xz ]]; then
+        exit 0
+    fi
+elif [[ ${SERVER_ONLY} == "Y" ]]; then
+    if [[ -f ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz ]]; then
+        exit 0
+    fi
+else
+    if [[ -f ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz && -f ubuntu-22.04.3-preinstalled-desktop-arm64.rootfs.tar.xz ]]; then
+        exit 0
+    fi
 fi
 
 # These env vars can cause issues with chroot
@@ -231,7 +241,8 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf ../ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz . && cd ..
+[[ ${DESKTOP_ONLY} != "Y" ]] && cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf ../ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz . && cd ..
+[[ ${SERVER_ONLY} == "Y" ]] && exit 0
 
 # Mount the temporary API filesystems
 mkdir -p ${chroot_dir}/{proc,sys,run,dev,dev/pts}

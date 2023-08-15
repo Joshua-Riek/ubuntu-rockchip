@@ -41,6 +41,14 @@ if [[ ${LAUNCHPAD} != "Y" ]]; then
     fi
 fi
 
+if [[ ${SERVER_ONLY} == "Y" ]]; then
+    target="server"
+elif [[ ${DESKTOP_ONLY} == "Y" ]]; then
+    target="desktop"
+else
+    target="server desktop"
+fi
+
 # These env vars can cause issues with chroot
 unset TMP
 unset TEMP
@@ -53,7 +61,7 @@ export DEBIAN_FRONTEND=noninteractive
 chroot_dir=rootfs
 overlay_dir=../overlay
 
-for type in server desktop; do
+for type in $target; do
 
     # Clean chroot dir and make sure folder is not mounted
     umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
