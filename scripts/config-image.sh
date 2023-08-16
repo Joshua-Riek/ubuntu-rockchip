@@ -81,9 +81,11 @@ for type in $target; do
     # Install the kernel
     if [[ ${LAUNCHPAD}  == "Y" ]]; then
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.160-rockchip linux-headers-5.10.160-rockchip"
+        chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.160-rockchip"
     else
         cp "${linux_image_package}" "${linux_headers_package}" ${chroot_dir}/tmp
         chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/{${linux_image_package},${linux_headers_package}} && rm -rf /tmp/*"
+        chroot ${chroot_dir} /bin/bash -c "depmod -a $(echo "${linux_image_package}" | sed -rn 's/linux-image-(.*)_[[:digit:]].*/\1/p')"
     fi
 
     # Copy device trees and overlays
