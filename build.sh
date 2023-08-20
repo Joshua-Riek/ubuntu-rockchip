@@ -20,6 +20,7 @@ Optional arguments:
   -u,  --uboot-only      only compile uboot
   -so, --server-only     only build server image
   -do, --desktop-only    only build desktop image
+  -m,  --mainline        use mainline linux sources
   -l,  --launchpad       use kernel and uboot from launchpad repo
   -v,  --verbose         increase the verbosity of the bash script
 HEREDOC
@@ -65,6 +66,10 @@ for i in "$@"; do
             ;;
         -so|--server-only)
             export SERVER_ONLY=Y
+            shift
+            ;;
+        -m|--mainline)
+            export MAINLINE=Y
             shift
             ;;
         -l|--launchpad)
