@@ -190,8 +190,6 @@ for type in $target; do
     if [[ ${type} == "desktop" ]]; then
         if [ "${BOARD}" == orangepi-5 ] || [ "${BOARD}" == orangepi-5b ] || [ "${BOARD}" == nanopi-r6c ] || [ "${BOARD}" == nanopi-r6s ]; then
             echo "set-default-sink alsa_output.platform-hdmi0-sound.stereo-fallback" >> ${chroot_dir}/etc/pulse/default.pa
-        elif [ "${BOARD}" == indiedroid-nova ]; then
-            echo "set-default-sink 1" >> ${chroot_dir}/etc/pulse/default.pa
         fi
     fi
 
