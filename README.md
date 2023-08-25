@@ -32,6 +32,7 @@ The supported devices are undergoing continuous development. As a result, you ma
 * [NanoPC T6](https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6)
 * [Mixtile Blade 3](https://www.mixtile.com/blade-3)
 * [Indiedroid Nova](https://indiedroid.us)
+* [LubanCat-4](https://doc.embedfire.com/products/link/zh/latest/linux/ebf_lubancat.html)
 
 ## Installation
 

@@ -7,7 +7,7 @@ cd "$(dirname -- "$(readlink -f -- "$0")")"
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi-5|orangepi-5b|orangepi-5-plus|rock-5b|rock-5a|radxa-cm5-io|nanopc-t6|nanopi-r6c|nanopi-r6s|indiedroid-nova|mixtile-blade3]
+Usage: $0 --board=[orangepi-5|orangepi-5b|orangepi-5-plus|rock-5b|rock-5a|radxa-cm5-io|nanopc-t6|nanopi-r6c|nanopi-r6s|indiedroid-nova|mixtile-blade3|lubancat-4]
 
 Required arguments:
   -b, --board=BOARD      target board 
@@ -115,6 +115,8 @@ elif [ "${BOARD}" == indiedroid-nova ]; then
     export VENDOR=9tripod
 elif [ "${BOARD}" == mixtile-blade3 ]; then
     export VENDOR=mixtile
+elif [ "${BOARD}" == lubancat-4 ]; then
+    export VENDOR=lubancat
 else
     echo "Error: \"${BOARD}\" is an unsupported board"
     exit 1
