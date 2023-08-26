@@ -73,9 +73,7 @@ package-%:
 	@rm -rf debian/tmp && mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot-lubancat-rk3588
 	@cp debian/build/$(subst package-,,$@)/u-boot.itb debian/tmp/u-boot/usr/lib/u-boot-lubancat-rk3588/u-boot.itb
 	@cp debian/build/$(subst package-,,$@)/idbloader.img debian/tmp/u-boot/usr/lib/u-boot-lubancat-rk3588/idbloader.img
-	@if [ "lubancat_4" = "$(subst package-,,$@)" ]; then \
-		cp debian/build/$(subst package-,,$@)/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot-lubancat-rk3588/rkspi_loader.img; \
-	fi
+	@cp debian/build/$(subst package-,,$@)/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot-lubancat-rk3588/rkspi_loader.img
 
 	@mkdir -m 755 -p "debian/tmp/u-boot/DEBIAN"
 	@mkdir -p "debian/tmp/u-boot/usr/share/doc/u-boot-lubancat-rk3588"
