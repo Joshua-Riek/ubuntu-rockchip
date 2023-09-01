@@ -24,6 +24,7 @@ else
     cd linux
 
     make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- linux-rockchip-rk3588_defconfig
+    echo "0" > .version && echo "" > .scmversion
     make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KBUILD_IMAGE='$(boot)/Image' -j "$(nproc)" bindeb-pkg
 
     rm -f ../linux-image-*dbg*.deb ../linux-libc-dev_*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.gz
