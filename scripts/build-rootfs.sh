@@ -121,8 +121,10 @@ apt-get -y update && apt-get -y install software-properties-common
 add-apt-repository -y ppa:jjriek/rockchip
 
 # Add mesa and rockchip multimedia ppa
-add-apt-repository -y ppa:liujianfeng1994/panfork-mesa
-add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia
+if [[ ${MAINLINE} != "Y" ]]; then
+    add-apt-repository -y ppa:liujianfeng1994/panfork-mesa
+    add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia
+fi
 
 # Download and update installed packages
 apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
