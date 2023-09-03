@@ -97,6 +97,10 @@ if [[ -z ${BOARD} ]]; then
     exit 1
 fi
 
+if [[ ${MAINLINE} != "Y" ]]; then
+    export MAINLINE=N
+fi
+
 if [[ ${CLEAN} == "Y" ]]; then
     if [ -d build/rootfs ]; then
         umount -lf build/rootfs/dev/pts 2> /dev/null || true
