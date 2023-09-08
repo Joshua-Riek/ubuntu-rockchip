@@ -23,9 +23,9 @@ else
     test -d linux ||  git clone --single-branch --progress -b v6.5-rk3588 https://github.com/Joshua-Riek/linux.git --depth=100
     cd linux
 
-    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- linux-rockchip-rk3588_defconfig
+    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- rockchip_linux_defconfig
     echo "0" > .version && touch .scmversion
-    make KERNELRELEASE=6.5.0-rockchip KDEB_PKGVERSION=6.5.0-0 KBUILD_IMAGE='$(boot)/Image' CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 -j "$(nproc)" bindeb-pkg
+    make KBUILD_IMAGE='$(boot)/Image' CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 -j "$(nproc)" bindeb-pkg
 
     rm -f ../linux-image-*dbg*.deb ../linux-libc-dev_*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.gz
 fi
