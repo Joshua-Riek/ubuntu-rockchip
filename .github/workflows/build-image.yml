@@ -1,4 +1,4 @@
-name: Build Ubuntu 22.04
+name: Build Ubuntu 22.04 Image
 
 on:
   workflow_dispatch:
@@ -34,7 +34,7 @@ jobs:
       BOARD: ${{ matrix.board }}
 
     steps:
-      - name: Get more space
+      - name: Get More Disk Space
         uses: easimon/maximize-build-space@master
         with:
           root-reserve-mb: 30720
@@ -65,14 +65,8 @@ jobs:
         run: |
           sudo ./build.sh -b ${{ matrix.board }}
 
-      - name: Upload Server Image
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.board }}
-          path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.board }}.*
-
-      - name: Upload Desktop Image
-        uses: actions/upload-artifact@v3
-        with:
-          name: ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.board }}
-          path: ./images/ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.board }}.*
+          name: ubuntu-22.04.3-preinstalled-arm64-${{ matrix.board }}
+          path: ./images/ubuntu-22.04.3-preinstalled-*-arm64-${{ matrix.board }}.*
