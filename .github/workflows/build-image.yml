@@ -6,7 +6,7 @@ on:
       name:
         required: true
         type: choice
-        description: Board 
+        description: platform 
         options: 
         -
         - orangepi-5
@@ -24,17 +24,15 @@ on:
 
 jobs:
   build:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        board: ["${{ github.event.inputs.name }}"]
-
-    runs-on: ubuntu-latest
-
-    env:
-      BOARD: ${{ matrix.board }}
+        platform: ["${{ github.event.inputs.name }}"]
+    env: 
+      PLATFORM: ${{ matrix.platform }}
 
     steps:
-      - name: Get More Disk Space
+      - name: Get more disk space
         uses: easimon/maximize-build-space@master
         with:
           root-reserve-mb: 2048
@@ -42,17 +40,17 @@ jobs:
           remove-dotnet: 'true'
           remove-android: 'true'
 
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
           repository: Joshua-Riek/ubuntu-rockchip
 
       - name: Checkout LFS
-        run: |
-          git lfs fetch
-          git lfs checkout
+        shell: bash
+        run: git lfs fetch && git lfs checkout
 
-      - name: Install Dependencies
+      - name: Install dependencies
+        shell: bash
         run: |
           sudo apt-get update && sudo apt-get upgrade -y
           sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
@@ -61,12 +59,13 @@ jobs:
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc
 
-      - name: Run Build Script
-        run: |
-          sudo ./build.sh -b ${{ matrix.board }}
+      - name: Build
+        shell: bash
+        run: sudo ./build.sh -b ${{ matrix.platform }}
 
-      - name: Upload Artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-22.04.3-preinstalled-arm64-${{ matrix.board }}
-          path: ./images/ubuntu-22.04.3-preinstalled-*-arm64-${{ matrix.board }}.*
+          name: ubuntu-22.04.3-preinstalled-arm64-${{ matrix.platform }}
+          path: ./images/ubuntu-22.04.3-preinstalled-*-arm64-${{ matrix.platform }}.*
+          if-no-files-found: error
