@@ -62,11 +62,9 @@ jobs:
         with:
           name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.board }}
           path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.board }}.img.xz
-          path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.board }}.img.xz.sha256
 
       - name: Upload Desktop Image
         uses: actions/upload-artifact@v3
         with:
           name: ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.board }}
           path: ./images/ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.board }}.img.xz
-          path: ./images/ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.board }}.img.xz.sha256
