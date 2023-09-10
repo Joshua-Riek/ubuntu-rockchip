@@ -78,31 +78,6 @@ for type in $target; do
     mount -o bind /dev ${chroot_dir}/dev
     mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-    # Install the kernel
-    if [[ ${LAUNCHPAD}  == "Y" ]]; then
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.160-rockchip linux-headers-5.10.160-rockchip"
-        chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.160-rockchip"
-    else
-        cp "${linux_image_package}" "${linux_headers_package}" ${chroot_dir}/tmp
-        chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/{${linux_image_package},${linux_headers_package}} && rm -rf /tmp/*"
-        chroot ${chroot_dir} /bin/bash -c "depmod -a $(echo "${linux_image_package}" | sed -rn 's/linux-image-(.*)_[[:digit:]].*/\1/p')"
-    fi
-
-    # Copy device trees and overlays
-    mkdir -p ${chroot_dir}/boot/firmware/dtbs/
-    cp -r ${chroot_dir}/usr/lib/linux-image-*/rockchip/* ${chroot_dir}/boot/firmware/dtbs/
-    if [ -d "${chroot_dir}/boot/firmware/dtbs/overlay/" ]; then
-        mv ${chroot_dir}/boot/firmware/dtbs/overlay/ ${chroot_dir}/boot/firmware/dtbs/overlays/
-    fi
-
-    # Install the bootloader
-    if [[ ${LAUNCHPAD}  == "Y" ]]; then
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-${BOARD}"
-    else
-        cp "${uboot_package}" ${chroot_dir}/tmp
-        chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/${uboot_package} && rm -rf /tmp/*"
-    fi
-
     # Board specific changes
     if [ "${BOARD}" == orangepi-5-plus ]; then
     {
@@ -205,8 +180,35 @@ for type in $target; do
         fi
     fi
 
-    # Update initramfs
-    chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
+    # Install the bootloader
+    if [[ ${LAUNCHPAD}  == "Y" ]]; then
+        chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-${BOARD}"
+    else
+        cp "${uboot_package}" ${chroot_dir}/tmp/
+        chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/${uboot_package} && rm -rf /tmp/*"
+    fi
+
+    # Install the kernel
+    if [[ ${LAUNCHPAD}  == "Y" ]]; then
+        chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.160-rockchip linux-headers-5.10.160-rockchip"
+        chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.160-rockchip"
+    else
+        cp "${linux_image_package}" "${linux_headers_package}" ${chroot_dir}/tmp/
+        chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/{${linux_image_package},${linux_headers_package}} && rm -rf /tmp/*"
+        chroot ${chroot_dir} /bin/bash -c "depmod -a $(echo "${linux_image_package}" | sed -rn 's/linux-image-(.*)_[[:digit:]].*/\1/p')"
+    fi
+
+    # Copy kernel and initrd for the boot partition
+    mkdir -p ${chroot_dir}/boot/firmware/
+    cp ${chroot_dir}/boot/initrd.img-* ${chroot_dir}/boot/firmware/initrd.img
+    cp ${chroot_dir}/boot/vmlinuz-* ${chroot_dir}/boot/firmware/vmlinuz
+
+    # Copy device trees and overlays for the boot partition
+    mkdir -p ${chroot_dir}/boot/firmware/dtbs/
+    cp -r ${chroot_dir}/usr/lib/linux-image-*/rockchip/* ${chroot_dir}/boot/firmware/dtbs/
+    if [ -d "${chroot_dir}/boot/firmware/dtbs/overlay/" ]; then
+        mv ${chroot_dir}/boot/firmware/dtbs/overlay/ ${chroot_dir}/boot/firmware/dtbs/overlays/
+    fi
 
     # Umount temporary API filesystems
     umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
