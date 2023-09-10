@@ -25,7 +25,7 @@ else
 
     make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- rockchip_linux_defconfig
     echo "0" > .version && touch .scmversion
-    make KBUILD_IMAGE='$(boot)/Image' CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 -j "$(nproc)" bindeb-pkg
+    make KBUILD_IMAGE='$(boot)/Image' KERNELRELEASE=6.5.0-rockchip CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 -j "$(nproc)" bindeb-pkg
 
     rm -f ../linux-image-*dbg*.deb ../linux-libc-dev_*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.gz
 fi
