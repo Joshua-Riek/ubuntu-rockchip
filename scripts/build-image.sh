@@ -250,12 +250,8 @@ overlay_prefix=${OVERLAY_PREFIX}
 overlays=
 EOF
 
-# Copy kernel and initrd to boot partition
-cp ${mount_point}/writable/boot/initrd.img-* ${mount_point}/system-boot/initrd.img
-cp ${mount_point}/writable/boot/vmlinuz-* ${mount_point}/system-boot/vmlinuz
-
-# Copy device trees to boot partition
-mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot
+# Copy the device trees, kernel, and initrd to the boot partition
+mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot/
 
 # Write bootloader to disk image
 dd if=${mount_point}/writable/usr/lib/u-boot-"${VENDOR}"-rk3588/idbloader.img of="${loop}" seek=64 conv=notrunc
