@@ -1,0 +1,63 @@
+name: Build Mainline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+          - orangepi-5
+          - orangepi-5b
+          - orangepi-5-plus
+          - rock-5b
+          - rock-5a
+          - radxa-cm5-io
+          - nanopc-t6
+          - nanopi-r6c
+          - nanopi-r6s
+          - indiedroid-nova
+          - mixtile-blade3
+
+    steps:
+      - name: Get more disk space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 2048
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+          remove-android: 'true'
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          repository: Joshua-Riek/ubuntu-rockchip
+
+      - name: Checkout LFS
+        shell: bash
+        run: git lfs fetch && git lfs checkout
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt-get update && sudo apt-get upgrade -y
+          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
+          qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
+          debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
+          udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
+          python-is-python3 fdisk bc
+
+      - name: Build
+        shell: bash
+        run: |
+            sudo rm -rf ./images/
+            sudo ./build.sh --board ${{ matrix.platform }} --mainline --server-only
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ubuntu-22.04.3-preinstalled-arm64-${{ matrix.platform }}
+          path: ./images/ubuntu-22.04.3-preinstalled-*-arm64-${{ matrix.platform }}.*
+          if-no-files-found: error
