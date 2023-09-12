@@ -3,12 +3,16 @@ name: Build Ubuntu 22.04 Image
 on:
   workflow_dispatch:
     inputs:
+      launchpad:
+        description: use kernel and uboot from launchpad repo
+        required: true
+        default: false
+        type: boolean
       name:
         required: true
         type: choice
         description: platform 
         options: 
-        -
         - orangepi-5
         - orangepi-5b
         - orangepi-5-plus
@@ -61,7 +65,12 @@ jobs:
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh -b ${{ matrix.platform }}
+        run: |
+            args=""
+            if [ "${{ inputs.launchpad }}" == true ]; then
+                args="--launchpad"
+            fi
+            sudo ./build.sh -b ${{ matrix.platform }} $args
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
