@@ -1,4 +1,4 @@
-name: Build Ubuntu 22.04 Image
+name: Build
 
 on:
   workflow_dispatch:
@@ -8,32 +8,25 @@ on:
         required: true
         default: false
         type: boolean
-      name:
-        required: true
-        type: choice
-        description: platform 
-        options: 
-        - orangepi-5
-        - orangepi-5b
-        - orangepi-5-plus
-        - rock-5b
-        - rock-5a
-        - radxa-cm5-io
-        - nanopc-t6
-        - nanopi-r6c
-        - nanopi-r6s
-        - indiedroid-nova
-        - mixtile-blade3
-        - lubancat-4
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform: ["${{ github.event.inputs.name }}"]
-    env: 
-      PLATFORM: ${{ matrix.platform }}
+        platform:
+          - orangepi-5
+          - orangepi-5b
+          - orangepi-5-plus
+          - rock-5b
+          - rock-5a
+          - radxa-cm5-io
+          - nanopc-t6
+          - nanopi-r6c
+          - nanopi-r6s
+          - indiedroid-nova
+          - mixtile-blade3
+          - lubancat-4
 
     steps:
       - name: Get more disk space
@@ -70,6 +63,7 @@ jobs:
             if [ "${{ inputs.launchpad }}" == true ]; then
                 args="--launchpad"
             fi
+            sudo rm -rf ./images/
             sudo ./build.sh -b ${{ matrix.platform }} $args
 
       - name: Upload artifacts
