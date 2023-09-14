@@ -53,31 +53,31 @@ for i in "$@"; do
             shift
             ;;
         -k|--kernel-only)
-            export KERNEL_ONLY=true
+            export KERNEL_ONLY=Y
             shift
             ;;
         -u|--uboot-only)
-            export UBOOT_ONLY=true
+            export UBOOT_ONLY=Y
             shift
             ;;
         -do|--desktop-only)
-            export DESKTOP_ONLY=true
+            export DESKTOP_ONLY=Y
             shift
             ;;
         -so|--server-only)
-            export SERVER_ONLY=true
+            export SERVER_ONLY=Y
             shift
             ;;
         -m|--mainline)
-            export MAINLINE=true
+            export MAINLINE=Y
             shift
             ;;
         -l|--launchpad)
-            export LAUNCHPAD=true
+            export LAUNCHPAD=Y
             shift
             ;;
         -c|--clean)
-            export CLEAN=true
+            export CLEAN=Y
             ;;
         -v|--verbose)
             set -x
@@ -97,11 +97,11 @@ if [[ -z ${BOARD} ]]; then
     exit 1
 fi
 
-if [[ ${MAINLINE} != "true" ]]; then
+if [[ ${MAINLINE} != "Y" ]]; then
     export MAINLINE=N
 fi
 
-if [[ ${CLEAN} == "true" ]]; then
+if [[ ${CLEAN} == "Y" ]]; then
     if [ -d build/rootfs ]; then
         umount -lf build/rootfs/dev/pts 2> /dev/null || true
         umount -lf build/rootfs/* 2> /dev/null || true
@@ -129,23 +129,23 @@ fi
 mkdir -p build/logs
 exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
 
-if [[ ${KERNEL_ONLY} == "true" ]]; then
+if [[ ${KERNEL_ONLY} == "Y" ]]; then
     eval "${DOCKER}" ./scripts/build-kernel.sh
     exit 0
 fi
 
-if [[ ${UBOOT_ONLY} == "true" ]]; then
+if [[ ${UBOOT_ONLY} == "Y" ]]; then
     eval "${DOCKER}" ./scripts/build-u-boot.sh
     exit 0
 fi
 
-if [[ ${LAUNCHPAD} != "true" ]]; then
+if [[ ${LAUNCHPAD} != "Y" ]]; then
     if [[ ! -e "$(find build/linux-image-*.deb | sort | tail -n1)" || ! -e "$(find build/linux-headers-*.deb | sort | tail -n1)" ]]; then
         eval "${DOCKER}" ./scripts/build-kernel.sh
     fi
 fi
 
-if [[ ${LAUNCHPAD} != "true" ]]; then
+if [[ ${LAUNCHPAD} != "Y" ]]; then
     if [[ ! -e "$(find build/u-boot-"${BOARD}"_*.deb | sort | tail -n1)" ]]; then
         eval "${DOCKER}" ./scripts/build-u-boot.sh
     fi
