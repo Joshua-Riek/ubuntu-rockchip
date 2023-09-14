@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       launchpad:
-        description: use kernel and uboot from launchpad repo
+        description: use launchpad
         required: true
         default: false
         type: boolean
@@ -56,14 +56,23 @@ jobs:
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc debhelper
 
-      - name: Build
+      - name: Build kernel
+        shell: bash
+        if: inputs.launchpad == 'false'
+        run: sudo ./build.sh -b ${{ matrix.platform }} --kernel-only
+
+      - name: Build u-boot
+        shell: bash
+        if: inputs.launchpad == 'false'
+        run: sudo ./build.sh -b ${{ matrix.platform }} --uboot-only
+        
+      - name: Build image
         shell: bash
         run: |
             args=""
             if [ "${{ inputs.launchpad }}" == true ]; then
                 args="--launchpad"
             fi
-            sudo rm -rf ./images/
             sudo ./build.sh -b ${{ matrix.platform }} $args
 
       - name: Upload server artifact
