@@ -68,7 +68,12 @@ jobs:
 
       - name: Build image
         shell: bash
-        run: sudo LAUNCHPAD="${{ inputs.launchpad }}" ./build.sh -b ${{ matrix.platform }}
+        run: |
+            args=""
+            if [ "${{ inputs.launchpad }}" == true ]; then
+                args="--launchpad"
+            fi
+            sudo ./build.sh -b ${{ matrix.platform }} $args
 
       - name: Upload server image
         uses: actions/upload-artifact@v3
