@@ -20,8 +20,6 @@ jobs:
           - nanopi-r6s
           - indiedroid-nova
           - mixtile-blade3
-        kernel:
-          - mainline
 
     steps:
       - name: Get more disk space
