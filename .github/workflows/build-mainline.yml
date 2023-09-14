@@ -20,6 +20,8 @@ jobs:
           - nanopi-r6s
           - indiedroid-nova
           - mixtile-blade3
+        kernel:
+          - mainline
 
     steps:
       - name: Get more disk space
@@ -51,13 +53,17 @@ jobs:
 
       - name: Build kernel
         shell: bash
-        run: sudo ./build.sh --board ${{ matrix.platform }} --mainline --kernel-only
+        run: sudo ./build.sh -b ${{ matrix.platform }} --kernel-only
+
+      - name: Build u-boot
+        shell: bash
+        run: sudo ./build.sh -b ${{ matrix.platform }} --uboot-only
 
       - name: Build image
         shell: bash
         run: sudo ./build.sh --board ${{ matrix.platform }} --mainline --server-only
 
-      - name: Upload server artifact
+      - name: Upload server image
         uses: actions/upload-artifact@v3
         with:
           name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}

@@ -70,17 +70,16 @@ jobs:
         shell: bash
         run: LAUNCHPAD="${{ inputs.launchpad }}" sudo ./build.sh -b ${{ matrix.platform }}
 
-      - name: Upload server artifact
+      - name: Upload server image
         uses: actions/upload-artifact@v3
         with:
           name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}
           path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.*
           if-no-files-found: error
     
-      - name: Upload desktop artifact
+      - name: Upload desktop image
         uses: actions/upload-artifact@v3
         with:
           name: ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}
           path: ./images/ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}.*
           if-no-files-found: error
-    
