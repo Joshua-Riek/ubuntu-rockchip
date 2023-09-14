@@ -49,11 +49,13 @@ jobs:
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc debhelper
 
-      - name: Build
+      - name: Build kernel
         shell: bash
-        run: |
-            sudo rm -rf ./images/
-            sudo ./build.sh --board ${{ matrix.platform }} --mainline --server-only
+        run: sudo ./build.sh --board ${{ matrix.platform }} --mainline --kernel-only
+
+      - name: Build image
+        shell: bash
+        run: sudo ./build.sh --board ${{ matrix.platform }} --mainline --server-only
 
       - name: Upload server artifact
         uses: actions/upload-artifact@v3
