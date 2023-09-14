@@ -137,9 +137,10 @@ for type in $target; do
     elif [ "${BOARD}" == nanopi-r6c ] || [ "${BOARD}" == nanopi-r6s ]; then
     {
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"'
+    } > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
+
         cp ${overlay_dir}/etc/init.d/friendlyelec-leds.sh ${chroot_dir}/etc/init.d/friendlyelec-leds.sh
         chroot ${chroot_dir} /bin/bash -c "update-rc.d friendlyelec-leds.sh defaults"
-    } > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
     elif [ "${BOARD}" == nanopc-t6 ]; then
     {
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"'
