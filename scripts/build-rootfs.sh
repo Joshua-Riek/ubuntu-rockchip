@@ -11,11 +11,11 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
-if [[ ${DESKTOP_ONLY} == "Y" ]]; then
+if [[ ${DESKTOP_ONLY} == "true" ]]; then
     if [[ -f ubuntu-22.04.3-preinstalled-desktop-arm64.rootfs.tar.xz ]]; then
         exit 0
     fi
-elif [[ ${SERVER_ONLY} == "Y" ]]; then
+elif [[ ${SERVER_ONLY} == "true" ]]; then
     if [[ -f ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz ]]; then
         exit 0
     fi
@@ -121,7 +121,7 @@ apt-get -y update && apt-get -y install software-properties-common
 add-apt-repository -y ppa:jjriek/rockchip
 
 # Add mesa and rockchip multimedia ppa
-if [[ ${MAINLINE} != "Y" ]]; then
+if [[ ${MAINLINE} != "true" ]]; then
     add-apt-repository -y ppa:liujianfeng1994/panfork-mesa
     add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia
 fi
@@ -243,8 +243,8 @@ umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-[[ ${DESKTOP_ONLY} != "Y" ]] && cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf ../ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz . && cd ..
-[[ ${SERVER_ONLY} == "Y" ]] && exit 0
+[[ ${DESKTOP_ONLY} != "true" ]] && cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf ../ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz . && cd ..
+[[ ${SERVER_ONLY} == "true" ]] && exit 0
 
 # Mount the temporary API filesystems
 mkdir -p ${chroot_dir}/{proc,sys,run,dev,dev/pts}

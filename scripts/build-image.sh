@@ -91,13 +91,13 @@ elif [[ "${BOARD}" == nanopc-t6 ]]; then
 elif [[ "${BOARD}" == mixtile-blade3 ]]; then
     DEVICE_TREE=rk3588-blade3-v101-linux.dtb
     OVERLAY_PREFIX=mixtile-blade3
-    if [[ "${MAINLINE}" == "Y" ]]; then
+    if [[ "${MAINLINE}" == "true" ]]; then
         DEVICE_TREE=rk3588-mixtile-blade3.dtb
     fi
 elif [[ "${BOARD}" == indiedroid-nova ]]; then
     DEVICE_TREE=rk3588s-9tripod-linux.dtb
     OVERLAY_PREFIX=
-    if [[ "${MAINLINE}" == "Y" ]]; then
+    if [[ "${MAINLINE}" == "true" ]]; then
         DEVICE_TREE=rk3588s-indiedroid-nova.dtb
     fi
 elif [[ "${BOARD}" == lubancat-4 ]]; then
