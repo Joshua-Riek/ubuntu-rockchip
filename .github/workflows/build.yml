@@ -65,15 +65,10 @@ jobs:
         shell: bash
         if: inputs.launchpad == 'false'
         run: sudo ./build.sh -b ${{ matrix.platform }} --uboot-only
-        
+
       - name: Build image
         shell: bash
-        run: |
-            args=""
-            if [ "${{ inputs.launchpad }}" == true ]; then
-                args="--launchpad"
-            fi
-            sudo ./build.sh -b ${{ matrix.platform }} $args
+        run: LAUNCHPAD="${{ inputs.launchpad }}" sudo ./build.sh -b ${{ matrix.platform }}
 
       - name: Upload server artifact
         uses: actions/upload-artifact@v3
