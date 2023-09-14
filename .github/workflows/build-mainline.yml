@@ -55,9 +55,16 @@ jobs:
             sudo rm -rf ./images/
             sudo ./build.sh --board ${{ matrix.platform }} --mainline --server-only
 
-      - name: Upload artifacts
+      - name: Upload server artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-22.04.3-preinstalled-arm64-${{ matrix.platform }}
-          path: ./images/ubuntu-22.04.3-preinstalled-*-arm64-${{ matrix.platform }}.*
+          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}
+          path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.*
+          if-no-files-found: error
+
+      - name: Upload desktop artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}
+          path: ./images/ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}.*
           if-no-files-found: error
