@@ -182,12 +182,12 @@ for type in $target; do
     fi
 
     # Disable ap6275p bluetooth service on mainline
-    if [[ ${MAINLINE} == "true" ]]; then
+    if [[ ${MAINLINE} == "Y" ]]; then
         chroot ${chroot_dir} /bin/bash -c "systemctl enable ap6275p-bluetooth"
     fi
 
     # Install the bootloader
-    if [[ ${LAUNCHPAD} == "true" ]]; then
+    if [[ ${LAUNCHPAD}  == "Y" ]]; then
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-${BOARD}"
     else
         cp "${uboot_package}" ${chroot_dir}/tmp/
@@ -195,7 +195,7 @@ for type in $target; do
     fi
 
     # Install the kernel
-    if [[ ${LAUNCHPAD} == "true" ]]; then
+    if [[ ${LAUNCHPAD}  == "Y" ]]; then
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-image-5.10.160-rockchip linux-headers-5.10.160-rockchip"
         chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.160-rockchip"
     else
