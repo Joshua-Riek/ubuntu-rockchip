@@ -88,3 +88,7 @@ jobs:
           name: ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}
           path: ./images/ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}.*
           if-no-files-found: error
+
+      - name: Clean cache
+        shell: bash
+        run: sync && sudo rm -rf ./images/ ./build/ && sync
