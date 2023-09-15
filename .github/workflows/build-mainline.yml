@@ -64,6 +64,10 @@ jobs:
       - name: Upload server image
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}
+          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-mainline
           path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.*
           if-no-files-found: error
+    
+      - name: Clean cache
+        shell: bash
+        run: sync && sudo rm -rf ./images/ ./build/ && sync
