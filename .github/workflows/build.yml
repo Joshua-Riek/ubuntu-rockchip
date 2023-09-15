@@ -58,12 +58,12 @@ jobs:
 
       - name: Build kernel
         shell: bash
-        if: ${{ inputs.launchpad }} == 'false'
+        if: inputs.launchpad == 'false'
         run: sudo ./build.sh -b ${{ matrix.platform }} --kernel-only
 
       - name: Build u-boot
         shell: bash
-        if: ${{ inputs.launchpad }} == 'false'
+        if: inputs.launchpad == 'false'
         run: sudo ./build.sh -b ${{ matrix.platform }} --uboot-only
 
       - name: Build image
