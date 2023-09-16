@@ -181,11 +181,9 @@ for type in $target; do
         fi
     fi
 
+    # Disable ap6275p bluetooth service on mainline
     if [[ ${MAINLINE} == "Y" ]]; then
-        chroot ${chroot_dir} /bin/bash -c "systemctl disable ap6275p-bluetooth"
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-firmware"
-    else
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y install armbian-firmware"
+        chroot ${chroot_dir} /bin/bash -c "systemctl enable ap6275p-bluetooth"
     fi
 
     # Install the bootloader

@@ -131,12 +131,13 @@ apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
 
 # Download and install generic packages
 apt-get -y install dmidecode mtd-tools i2c-tools u-boot-tools cloud-init \
-bash-completion man-db manpages nano gnupg initramfs-tools mmc-utils rfkill \
+bash-completion man-db manpages nano gnupg initramfs-tools armbian-firmware \
 ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
 pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
-gcc libc6-dev bison libssl-dev flex flash-kernel fake-hwclock wireless-regdb
+gcc libc6-dev bison libssl-dev flex flash-kernel fake-hwclock rfkill wireless-regdb \
+mmc-utils
 
 # Remove cryptsetup and needrestart
 apt-get -y remove cryptsetup needrestart
@@ -233,6 +234,9 @@ true > ${chroot_dir}/etc/machine-id
 
 # Do not create bak files for flash-kernel
 echo "NO_CREATE_DOT_BAK_FILES=true" >> ${chroot_dir}/etc/environment
+
+# Fix Intel AX210 not working after linux-firmware update
+[ -e ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.pnvm ] && mv ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.{pnvm,bak}
 
 # Umount temporary API filesystems
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
@@ -365,6 +369,9 @@ chroot ${chroot_dir} /bin/bash -c "dconf update"
 # Have plymouth use the framebuffer
 mkdir -p ${chroot_dir}/etc/initramfs-tools/conf-hooks.d
 cp ${overlay_dir}/etc/initramfs-tools/conf-hooks.d/plymouth ${chroot_dir}/etc/initramfs-tools/conf-hooks.d/plymouth
+
+# Fix Intel AX210 not working after linux-firmware update
+[ -e ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.pnvm ] && mv ${chroot_dir}/usr/lib/firmware/iwlwifi-ty-a0-gf-a0.{pnvm,bak}
 
 # Update initramfs
 chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
