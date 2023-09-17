@@ -204,12 +204,6 @@ chroot ${chroot_dir} /bin/bash -c "systemctl enable cpu-governor-performance"
 cp ${overlay_dir}/usr/lib/systemd/system/gpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/gpu-governor-performance.service
 chroot ${chroot_dir} /bin/bash -c "systemctl enable gpu-governor-performance"
 
-# Enable bluetooth for AP6275P
-cp ${overlay_dir}/usr/lib/systemd/system/ap6275p-bluetooth.service ${chroot_dir}/usr/lib/systemd/system/ap6275p-bluetooth.service
-cp ${overlay_dir}/usr/lib/scripts/ap6275p-bluetooth.sh ${chroot_dir}/usr/lib/scripts/ap6275p-bluetooth.sh
-cp ${overlay_dir}/usr/bin/brcm_patchram_plus ${chroot_dir}/usr/bin/brcm_patchram_plus
-chroot ${chroot_dir} /bin/bash -c "systemctl enable ap6275p-bluetooth"
-
 # Add realtek bluetooth firmware to initrd 
 cp ${overlay_dir}/usr/share/initramfs-tools/hooks/rtl-bt ${chroot_dir}/usr/share/initramfs-tools/hooks/rtl-bt
 
