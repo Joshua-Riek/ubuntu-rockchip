@@ -64,7 +64,7 @@ jobs:
       - name: Upload server image
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-mainline
+          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-6.5.0
           path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.*
           if-no-files-found: error
     
