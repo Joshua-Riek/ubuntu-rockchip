@@ -204,6 +204,9 @@ for type in $target; do
         chroot ${chroot_dir} /bin/bash -c "depmod -a $(echo "${linux_image_package}" | sed -rn 's/linux-image-(.*)_[[:digit:]].*/\1/p')"
     fi
 
+    # Clean package cache
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean"
+
     # Copy kernel and initrd for the boot partition
     mkdir -p ${chroot_dir}/boot/firmware/
     cp ${chroot_dir}/boot/initrd.img-* ${chroot_dir}/boot/firmware/initrd.img
