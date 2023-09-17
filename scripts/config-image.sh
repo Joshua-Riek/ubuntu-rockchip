@@ -183,7 +183,7 @@ for type in $target; do
 
     # Disable ap6275p bluetooth service on mainline
     if [[ ${MAINLINE} == "Y" ]]; then
-        chroot ${chroot_dir} /bin/bash -c "systemctl enable ap6275p-bluetooth"
+        chroot ${chroot_dir} /bin/bash -c "systemctl disable ap6275p-bluetooth"
     fi
 
     # Install the bootloader
