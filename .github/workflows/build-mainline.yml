@@ -51,11 +51,11 @@ jobs:
 
       - name: Build kernel
         shell: bash
-        run: sudo ./build.sh -b ${{ matrix.platform }} --kernel-only
+        run: sudo ./build.sh -b ${{ matrix.platform }} --mainline --kernel-only
 
       - name: Build u-boot
         shell: bash
-        run: sudo ./build.sh -b ${{ matrix.platform }} --uboot-only
+        run: sudo ./build.sh -b ${{ matrix.platform }} --mainline --uboot-only
 
       - name: Build image
         shell: bash
