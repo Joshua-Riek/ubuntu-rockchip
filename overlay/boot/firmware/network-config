@@ -21,6 +21,7 @@ ethernets:
   eth0:
     dhcp4: true
     optional: true
+    link-local: []
 #wifis:
 #  wlan0:
 #    dhcp4: true
