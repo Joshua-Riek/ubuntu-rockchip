@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         platform:
@@ -36,11 +37,12 @@ jobs:
           swap-size-mb: 1024
           remove-dotnet: 'true'
           remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
 
       - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          repository: Joshua-Riek/ubuntu-rockchip
+        uses: actions/checkout@v4
 
       - name: Checkout LFS
         shell: bash

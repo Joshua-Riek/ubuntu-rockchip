@@ -1,4 +1,5 @@
 name: Build Mainline
+run-name: Build Mainline with Linux 6.5.0
 
 on:
   workflow_dispatch:
@@ -6,6 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         platform:
@@ -29,11 +31,12 @@ jobs:
           swap-size-mb: 1024
           remove-dotnet: 'true'
           remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
 
       - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          repository: Joshua-Riek/ubuntu-rockchip
+        uses: actions/checkout@v4
 
       - name: Checkout LFS
         shell: bash
@@ -64,7 +67,7 @@ jobs:
       - name: Upload server image
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-6.5.0
+          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-mainline
           path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.*
           if-no-files-found: error
     
