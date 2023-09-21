@@ -1,3 +1,14 @@
+u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-1) jammy; urgency=medium
+
+  * configs: add radxa-cm5-rpi-cm4-io-rk3588s_defconfig
+  * arm: dts: add rk3588s radxa cm5 rpi cm4 io support
+  * HACK: rockchip: rkimg: enter download mode when pressing recovery button
+  * configs: rock-pi-e-rk3328_defconfig
+  * arm: dts: add rock pi e
+  * rockchip: rk3328: define fdtfile and fdtoverlay_addr_r variable
+
+ -- Joshua Riek <jjriek@verizon.net>  Wed, 20 Sep 2023 20:36:50 -0400
+
 u-boot-mixtile-rk3588 (2017.09+20230711.gitddc91cd0-2) jammy; urgency=medium
 
   * Add support for booting from mSATA SSD
