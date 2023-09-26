@@ -88,6 +88,9 @@ for type in $target; do
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-es8388-sound", ENV{SOUND_DESCRIPTION}="ES8388 Audio"'
     } > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
 
+        cp ${overlay_dir}/usr/lib/systemd/system/rtl8852be-reset.service ${chroot_dir}/usr/lib/systemd/system/rtl8852be-reset.service
+        chroot ${chroot_dir} /bin/bash -c "systemctl enable rtl8852be-reset"
+
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev"
         echo "BOARD=orangepi5plus" > ${chroot_dir}/etc/orangepi-release
     elif [ "${BOARD}" == orangepi-5 ] || [ "${BOARD}" == orangepi-5b ]; then
