@@ -221,6 +221,10 @@ cp ${overlay_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/over
 # Use gzip compression for the initrd
 cp ${overlay_dir}/etc/initramfs-tools/conf.d/compression.conf ${chroot_dir}/etc/initramfs-tools/conf.d/compression.conf
 
+# Disable terminal ads
+sed -i 's/ENABLED=1/ENABLED=0/g' ${chroot_dir}/etc/default/motd-news
+chroot ${chroot_dir} /bin/bash -c "pro config set apt_news=false"
+
 # Remove release upgrade motd
 rm -f ${chroot_dir}/var/lib/ubuntu-release-upgrader/release-upgrade-available
 cp ${overlay_dir}/etc/update-manager/release-upgrades ${chroot_dir}/etc/update-manager/release-upgrades
