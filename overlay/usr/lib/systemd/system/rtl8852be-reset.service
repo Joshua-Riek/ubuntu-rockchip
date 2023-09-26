@@ -1,0 +1,11 @@
+[Unit]
+Description=Reset RTL8852BE 
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/sh -c "modprobe -r 8852be && modprobe -i 8852be"
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
