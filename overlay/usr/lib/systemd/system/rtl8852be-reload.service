@@ -1,5 +1,5 @@
 [Unit]
-Description=Reset RTL8852BE 
+Description=Reload RTL8852BE 
 After=network.target
 
 [Service]
