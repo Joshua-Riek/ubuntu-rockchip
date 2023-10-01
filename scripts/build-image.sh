@@ -105,8 +105,13 @@ elif [[ "${BOARD}" == lubancat-4 ]]; then
     OVERLAY_PREFIX=lubancat-4
 fi
 
+KVER=""
+if [[ "${MAINLINE}" == "Y" ]]; then
+    KVER="-mainline-6.6.0-rc3"
+fi
+
 # Create an empty disk image
-img="../images/$(basename "${rootfs}" .rootfs.tar).img"
+img="../images/$(basename "${rootfs}" .rootfs.tar)${KVER}.img"
 size="$(( $(wc -c < "${rootfs}" ) / 1024 / 1024 ))"
 truncate -s "$(( size + 2048 + 512 ))M" "${img}"
 
