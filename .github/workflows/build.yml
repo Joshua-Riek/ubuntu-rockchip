@@ -1,5 +1,6 @@
+
 name: Build
-run-name: Build with Rockchip Linux 5.10.160
+run-name: Build with Rockchip Linux 5.10.160 rkr6
 
 on:
   workflow_dispatch:
@@ -18,17 +19,6 @@ jobs:
       matrix:
         platform:
           - orangepi-5
-          - orangepi-5b
-          - orangepi-5-plus
-          - rock-5b
-          - rock-5a
-          - radxa-cm5-io
-          - nanopc-t6
-          - nanopi-r6c
-          - nanopi-r6s
-          - indiedroid-nova
-          - mixtile-blade3
-          - lubancat-4
 
     steps:
       - name: Get more disk space
@@ -58,7 +48,6 @@ jobs:
           debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc debhelper
-
       - name: Build kernel
         shell: bash
         if: inputs.launchpad == 'false'
@@ -77,7 +66,6 @@ jobs:
                 args="--launchpad"
             fi
             sudo ./build.sh -b ${{ matrix.platform }} $args
-
       - name: Upload server image
         uses: actions/upload-artifact@v3
         with:
