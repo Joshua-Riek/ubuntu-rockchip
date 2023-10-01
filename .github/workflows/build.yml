@@ -18,17 +18,6 @@ jobs:
       matrix:
         platform:
           - orangepi-5
-          - orangepi-5b
-          - orangepi-5-plus
-          - rock-5b
-          - rock-5a
-          - radxa-cm5-io
-          - nanopc-t6
-          - nanopi-r6c
-          - nanopi-r6s
-          - indiedroid-nova
-          - mixtile-blade3
-          - lubancat-4
 
     steps:
       - name: Get more disk space
