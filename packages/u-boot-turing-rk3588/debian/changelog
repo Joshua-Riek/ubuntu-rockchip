@@ -1,0 +1,5 @@
+u-boot-turing-rk3588 (2017.09+20230920.git609a77ef-1) UNRELEASED; urgency=medium
+
+  * Initial packaging.
+
+ -- Joshua Riek <jjriek@verizon.net>  Tue, 03 Oct 2023 19:29:05 -0400
