@@ -88,6 +88,9 @@ elif [[ "${BOARD}" == nanopi-r6s ]]; then
 elif [[ "${BOARD}" == nanopc-t6 ]]; then
     DEVICE_TREE=rk3588-nanopc-t6.dtb
     OVERLAY_PREFIX=
+elif [[ "${BOARD}" == turing-rk1 ]]; then
+    DEVICE_TREE=rk3588-turing-rk1.dtb
+    OVERLAY_PREFIX=
 elif [[ "${BOARD}" == mixtile-blade3 ]]; then
     DEVICE_TREE=rk3588-blade3-v101-linux.dtb
     OVERLAY_PREFIX=mixtile-blade3
