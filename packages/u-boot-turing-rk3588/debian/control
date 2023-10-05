@@ -6,7 +6,7 @@ Maintainer: Joshua Riek <jjriek@verizon.net>
 Build-Depends: debhelper-compat (= 12), parted, gcc, make, bc, bison, python2, flex, device-tree-compiler, udev
 Vcs-Git: https://github.com/radxa/u-boot.git
 
-Package: u-boot-tpi2-rk1
+Package: u-boot-turing-rk1
 Architecture: arm64
 Priority: optional
 Provides: u-boot-turing-rk3588
