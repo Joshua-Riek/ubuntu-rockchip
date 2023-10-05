@@ -119,6 +119,8 @@ elif [ "${BOARD}" == indiedroid-nova ]; then
     export VENDOR=9tripod
 elif [ "${BOARD}" == mixtile-blade3 ]; then
     export VENDOR=mixtile
+elif [ "${BOARD}" == turing-rk1 ]; then
+    export VENDOR=turing
 elif [ "${BOARD}" == lubancat-4 ]; then
     export VENDOR=lubancat
 else
