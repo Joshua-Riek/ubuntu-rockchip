@@ -22,6 +22,7 @@ jobs:
           - nanopi-r6s
           - indiedroid-nova
           - mixtile-blade3
+          - turing-rk1
 
     steps:
       - name: Get more disk space
