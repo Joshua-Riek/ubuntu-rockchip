@@ -4,25 +4,22 @@ Date: Wed, 4 Oct 2023 20:12:31 -0400
 Subject: [PATCH] add defconfig and dtb of turing rk1
 
 ---
- arch/arm/dts/rk3588-turing-rk1.dts | 101 ++++++++++++++
+ arch/arm/dts/rk3588-turing-rk1.dts |  59 ++++++++
  configs/turing-rk1_defconfig       | 217 +++++++++++++++++++++++++++++
- 2 files changed, 318 insertions(+)
+ 2 files changed, 276 insertions(+)
  create mode 100644 arch/arm/dts/rk3588-turing-rk1.dts
  create mode 100644 configs/turing-rk1_defconfig
 
 diff --git a/arch/arm/dts/rk3588-turing-rk1.dts b/arch/arm/dts/rk3588-turing-rk1.dts
 new file mode 100644
-index 0000000000..36b65466ce
+index 0000000000..7376057d47
 --- /dev/null
 +++ b/arch/arm/dts/rk3588-turing-rk1.dts
-@@ -0,0 +1,101 @@
+@@ -0,0 +1,59 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (c) 2021 Rockchip Electronics Co., Ltd
-+ *
-+ */
 +
 +/dts-v1/;
++
 +#include "rk3588.dtsi"
 +#include "rk3588-u-boot.dtsi"
 +#include <dt-bindings/input/input.h>
@@ -31,17 +28,8 @@ index 0000000000..36b65466ce
 +	model = "Turing Machines RK1";
 +	compatible = "turing,rk1", "rockchip,rk3588";
 +
-+	vcc3v3_pcie30: vcc3v3-pcie30-regulator {
-+		u-boot,dm-pre-reloc;
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc3v3_pcie30";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		enable-active-high;
-+		gpios = <&gpio2 RK_PC5 GPIO_ACTIVE_HIGH>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&vcc3v3_pcie30_en>;
-+		startup-delay-us = <5000>;
++	aliases {
++		mmc0 = &sdhci;
 +	};
 +
 +	vcc5v0_sys: vcc5v0-sys-regulator {
@@ -52,6 +40,18 @@ index 0000000000..36b65466ce
 +		regulator-boot-on;
 +		regulator-min-microvolt = <5000000>;
 +		regulator-max-microvolt = <5000000>;
++	};
++
++	vcc3v3_pcie30: vcc3v3-pcie30-regulator {
++		u-boot,dm-pre-reloc;
++		compatible = "regulator-fixed";
++		regulator-name = "vcc3v3_pcie30";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		enable-active-high;
++		gpios = <&gpio2 RK_PC5 GPIO_ACTIVE_HIGH>;
++		startup-delay-us = <5000>;
++		vin-supply = <&vcc5v0_sys>;
 +	};
 +
 +	vcc_1v1_nldo_s3: vcc-1v1-nldo-s3-regulator {
@@ -67,55 +67,13 @@ index 0000000000..36b65466ce
 +};
 +
 +&sdhci {
-+    u-boot,dm-pre-reloc;
-+	status = "okay";
-+};
-+
-+&combphy2_psu {
 +	u-boot,dm-pre-reloc;
 +	status = "okay";
 +};
 +
-+&pcie2x1l1 {
++&sdmmc {
 +	u-boot,dm-pre-reloc;
-+	linux,pci-domain = <1>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pcie2_reset>;
-+	reset-gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
-+	status = "okay";
-+};
-+
-+&pcie30phy {
-+	u-boot,dm-pre-reloc;
-+	status = "okay";
-+};
-+
-+&pcie3x4 {
-+	u-boot,dm-pre-reloc;
-+	linux,pci-domain = <0>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pcie3_reset>;
-+	reset-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
-+	vpcie3v3-supply = <&vcc3v3_pcie30>;
-+	status = "okay";
-+};
-+
-+&pinctrl {
-+	pcie2 {
-+		pcie2_reset: pcie2-reset {
-+			rockchip,pins = <4 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
-+	};
-+
-+	pcie3 {
-+		pcie3_reset: pcie3-reset {
-+			rockchip,pins = <4 RK_PB6 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
-+
-+		vcc3v3_pcie30_en: pcie3-reg {
-+			rockchip,pins = <2 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
-+	};
++	status = "disabled";
 +};
 diff --git a/configs/turing-rk1_defconfig b/configs/turing-rk1_defconfig
 new file mode 100644
