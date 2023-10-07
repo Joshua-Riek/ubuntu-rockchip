@@ -29,6 +29,7 @@ jobs:
           - indiedroid-nova
           - mixtile-blade3
           - lubancat-4
+          - turing-rk1
 
     steps:
       - name: Get more disk space
