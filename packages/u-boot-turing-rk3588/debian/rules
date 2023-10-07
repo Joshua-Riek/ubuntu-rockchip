@@ -16,7 +16,7 @@ endif
 DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 BL31_BLOB := rk3588_bl31_v1.38.elf
 
-BOARDS := turing-rk1
+BOARDS := turing-rk1-rk3588
 
 ${BOARDS}: 
 	@mkdir -p debian/build/$@
