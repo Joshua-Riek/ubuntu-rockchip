@@ -1,21 +1,21 @@
-From 1de97df490abdb5f8b4273315620ca80fb0277f4 Mon Sep 17 00:00:00 2001
+From a10c0eb442818d428b1d1aad873ecab928dba43d Mon Sep 17 00:00:00 2001
 From: Joshua-Riek <jjriek@verizon.net>
 Date: Wed, 4 Oct 2023 20:12:31 -0400
 Subject: [PATCH] add defconfig and dtb of turing rk1
 
 ---
- arch/arm/dts/rk3588-turing-rk1.dts  |  85 +++++++++++
+ arch/arm/dts/rk3588-turing-rk1.dts  |  89 ++++++++++++
  configs/turing-rk1-rk3588_defconfig | 218 ++++++++++++++++++++++++++++
- 2 files changed, 303 insertions(+)
+ 2 files changed, 307 insertions(+)
  create mode 100644 arch/arm/dts/rk3588-turing-rk1.dts
  create mode 100644 configs/turing-rk1-rk3588_defconfig
 
 diff --git a/arch/arm/dts/rk3588-turing-rk1.dts b/arch/arm/dts/rk3588-turing-rk1.dts
 new file mode 100644
-index 0000000000..dd8cc49265
+index 0000000000..655f8f6da2
 --- /dev/null
 +++ b/arch/arm/dts/rk3588-turing-rk1.dts
-@@ -0,0 +1,85 @@
+@@ -0,0 +1,89 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (c) 2021 Rockchip Electronics Co., Ltd
@@ -46,6 +46,7 @@ index 0000000000..dd8cc49265
 +		regulator-max-microvolt = <5000000>;
 +	};
 +
++#if 0
 +	vcc3v3_pcie30: vcc3v3-pcie30-regulator {
 +		u-boot,dm-pre-reloc;
 +		compatible = "regulator-fixed";
@@ -60,6 +61,7 @@ index 0000000000..dd8cc49265
 +		pinctrl-0 = <&vcc3v3_pcie30_en>;
 +		startup-delay-us = <50000>;
 +	};
++#endif
 +};
 +
 +&sdhci {
@@ -71,6 +73,7 @@ index 0000000000..dd8cc49265
 +	status = "disabled";
 +};
 +
++#if 0
 +&pcie30phy {
 +	u-boot,dm-pre-reloc;
 +	status = "okay";
@@ -101,6 +104,7 @@ index 0000000000..dd8cc49265
 +		};
 +	};
 +};
++#endif
 diff --git a/configs/turing-rk1-rk3588_defconfig b/configs/turing-rk1-rk3588_defconfig
 new file mode 100644
 index 0000000000..194708536a
