@@ -1,4 +1,4 @@
-u-boot-turing-rk3588 (2017.09+20230920.git609a77ef-1) UNRELEASED; urgency=medium
+u-boot-turing-rk3588 (2017.09+20230920.git609a77ef-1) jammy; urgency=medium
 
   * Initial packaging.
 
