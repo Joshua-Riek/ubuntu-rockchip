@@ -362,6 +362,12 @@ chroot ${chroot_dir} /bin/bash -c "dconf update"
 mkdir -p ${chroot_dir}/etc/initramfs-tools/conf-hooks.d
 cp ${overlay_dir}/etc/initramfs-tools/conf-hooks.d/plymouth ${chroot_dir}/etc/initramfs-tools/conf-hooks.d/plymouth
 
+# Mouse lag/stutter (missed frames) in Wayland sessions
+# https://bugs.launchpad.net/ubuntu/+source/mutter/+bug/1982560
+echo "MUTTER_DEBUG_ENABLE_ATOMIC_KMS=0" >> ${chroot_dir}/etc/environment
+echo "MUTTER_DEBUG_FORCE_KMS_MODE=simple" >> ${chroot_dir}/etc/environment
+echo "CLUTTER_PAINT=disable-dynamic-max-render-time" >> ${chroot_dir}/etc/environment
+
 # Update initramfs
 chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
 
