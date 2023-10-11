@@ -1,9 +1,0 @@
-[Unit]
-Description=Set GPU governor to performance
-
-[Service]
-ExecStart=/usr/bin/bash -c 'echo performance > /sys/devices/platform/fb000000.gpu/devfreq/fb000000.gpu/governor'
-Type=oneshot
-
-[Install]
-WantedBy=default.target
