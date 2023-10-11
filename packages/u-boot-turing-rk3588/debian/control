@@ -3,7 +3,7 @@ Section: admin
 Priority: optional
 Standards-Version: 4.6.0
 Maintainer: Joshua Riek <jjriek@verizon.net>
-Build-Depends: debhelper-compat (= 12), parted, gcc, make, bc, bison, python2, flex, device-tree-compiler, udev
+Build-Depends: debhelper-compat (= 12), parted, gcc, make, bc, bison, python2, flex, device-tree-compiler, udev, python3-pyelftools
 Vcs-Git: https://github.com/radxa/u-boot.git
 
 Package: u-boot-turing-rk1
@@ -12,7 +12,7 @@ Priority: optional
 Provides: u-boot-turing-rk3588
 Replaces: u-boot-turing-rk3588
 Conflicts: u-boot-turing-rk3588
-Description: A boot loader for the Turing Pi 2 RK1.
+Description: A boot loader for the Turing RK1.
  Das U-Boot is a cross-platform bootloader for embedded systems,
  used as the default boot loader by several board vendors.  It is
  intended to be easy to port and to debug, and runs on many

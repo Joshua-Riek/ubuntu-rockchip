@@ -1,0 +1,64 @@
+From e2e16e326fc9514f0ee035509b7e400dd1ad12f9 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 1 Oct 2023 19:17:16 +0000
+Subject: [PATCH 08/16] net: dwc_eth_qos: Drop unused rx_pkt from eqos_priv
+
+rx_pkt is allocated and not used for anything, remove it.
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Reviewed-by: Kever Yang <kever.yang@rock-chips.com>
+---
+ drivers/net/dwc_eth_qos.c | 11 -----------
+ drivers/net/dwc_eth_qos.h |  1 -
+ 2 files changed, 12 deletions(-)
+
+diff --git a/drivers/net/dwc_eth_qos.c b/drivers/net/dwc_eth_qos.c
+index 1e92bd9ca9..555eaee3bb 100644
+--- a/drivers/net/dwc_eth_qos.c
++++ b/drivers/net/dwc_eth_qos.c
+@@ -1314,22 +1314,12 @@ static int eqos_probe_resources_core(struct udevice *dev)
+ 	}
+ 	debug("%s: rx_dma_buf=%p\n", __func__, eqos->rx_dma_buf);
+ 
+-	eqos->rx_pkt = malloc(EQOS_MAX_PACKET_SIZE);
+-	if (!eqos->rx_pkt) {
+-		debug("%s: malloc(rx_pkt) failed\n", __func__);
+-		ret = -ENOMEM;
+-		goto err_free_rx_dma_buf;
+-	}
+-	debug("%s: rx_pkt=%p\n", __func__, eqos->rx_pkt);
+-
+ 	eqos->config->ops->eqos_inval_buffer(eqos->rx_dma_buf,
+ 			EQOS_MAX_PACKET_SIZE * EQOS_DESCRIPTORS_RX);
+ 
+ 	debug("%s: OK\n", __func__);
+ 	return 0;
+ 
+-err_free_rx_dma_buf:
+-	free(eqos->rx_dma_buf);
+ err_free_tx_dma_buf:
+ 	free(eqos->tx_dma_buf);
+ err_free_descs:
+@@ -1348,7 +1338,6 @@ static int eqos_remove_resources_core(struct udevice *dev)
+ 
+ 	debug("%s(dev=%p):\n", __func__, dev);
+ 
+-	free(eqos->rx_pkt);
+ 	free(eqos->rx_dma_buf);
+ 	free(eqos->tx_dma_buf);
+ 	eqos_free_descs(eqos->rx_descs);
+diff --git a/drivers/net/dwc_eth_qos.h b/drivers/net/dwc_eth_qos.h
+index a6b719af80..06a082da72 100644
+--- a/drivers/net/dwc_eth_qos.h
++++ b/drivers/net/dwc_eth_qos.h
+@@ -273,7 +273,6 @@ struct eqos_priv {
+ 	unsigned int desc_per_cacheline;
+ 	void *tx_dma_buf;
+ 	void *rx_dma_buf;
+-	void *rx_pkt;
+ 	bool started;
+ 	bool reg_access_ok;
+ 	bool clk_ck_enabled;
+-- 
+2.25.1
+
