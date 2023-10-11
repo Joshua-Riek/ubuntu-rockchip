@@ -13,7 +13,7 @@ else
 NJOBS := -j $(shell nproc)
 endif
 
-DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+ROCKCHIP_TPL := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 BL31_BLOB := rk3588_bl31_v1.38.elf
 
 BOARDS := turing-rk1-rk3588
@@ -28,14 +28,7 @@ ${BOARDS}:
 	  $@_defconfig
 
 	@touch .scmversion
-	@sed -i 's/CONFIG_BOOTDELAY=.*/CONFIG_BOOTDELAY=1/g' debian/build/$@/.config
-	@sed -i 's/CONFIG_DISABLE_CONSOLE=y/CONFIG_DISABLE_CONSOLE=n/g' debian/build/$@/.config
 	@sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-turing-rk3588"/g' debian/build/$@/.config
-
-	@mkdir -p debian/build/$@/arch/arm/mach-rockchip
-	@cp arch/arm/mach-rockchip/decode_bl31.py debian/build/$@/arch/arm/mach-rockchip/decode_bl31.py
-
-	@cp debian/rkbin/$(BL31_BLOB) debian/build/$@/bl31.elf
 
 	make O=debian/build/$@ \
 	  CROSS_COMPILE=$(CROSS_COMPILE) \
@@ -43,11 +36,7 @@ ${BOARDS}:
 	  ARCH=arm \
 	  $(NJOBS) \
 	  BL31=../../../debian/rkbin/$(BL31_BLOB) \
-	  spl/u-boot-spl.bin u-boot.dtb u-boot.itb
-
-	./debian/build/$@/tools/mkimage -n rk3588 -T rksd -d \
-	  debian/rkbin/$(DDR_BLOB):debian/build/$@/spl/u-boot-spl.bin \
-	  debian/build/$@/idbloader.img
+	  ROCKCHIP_TPL=../../../debian/rkbin/$(ROCKCHIP_TPL)
 
 build: ${BOARDS}
 
@@ -57,8 +46,8 @@ binary: binary-arch
 
 package-%:
 	@rm -rf debian/tmp && mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot-turing-rk3588
-	@cp debian/build/$(subst package-,,$@)/u-boot.itb debian/tmp/u-boot/usr/lib/u-boot-turing-rk3588/u-boot.itb
-	@cp debian/build/$(subst package-,,$@)/idbloader.img debian/tmp/u-boot/usr/lib/u-boot-turing-rk3588/idbloader.img
+	@cp debian/build/$(subst package-,,$@)/u-boot-rockchip.bin debian/tmp/u-boot/usr/lib/u-boot-turing-rk3588/u-boot-rockchip.bin
+	@cp debian/build/$(subst package-,,$@)/u-boot-rockchip-spi.bin debian/tmp/u-boot/usr/lib/u-boot-turing-rk3588/u-boot-rockchip-spi.bin
 
 	@mkdir -m 755 -p "debian/tmp/u-boot/DEBIAN"
 	@mkdir -p "debian/tmp/u-boot/usr/share/doc/u-boot-turing-rk3588"

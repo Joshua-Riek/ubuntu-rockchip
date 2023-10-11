@@ -102,7 +102,7 @@ elif [[ "${BOARD}" == indiedroid-nova ]]; then
     OVERLAY_PREFIX=
     if [[ "${MAINLINE}" == "Y" ]]; then
         DEVICE_TREE=rk3588s-indiedroid-nova.dtb
-    fi
+    fi 
 elif [[ "${BOARD}" == lubancat-4 ]]; then
     DEVICE_TREE=rk3588s-lubancat-4.dtb
     OVERLAY_PREFIX=lubancat-4
@@ -262,8 +262,12 @@ EOF
 mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot/
 
 # Write bootloader to disk image
-dd if=${mount_point}/writable/usr/lib/u-boot-"${VENDOR}"-rk3588/idbloader.img of="${loop}" seek=64 conv=notrunc
-dd if=${mount_point}/writable/usr/lib/u-boot-"${VENDOR}"-rk3588/u-boot.itb of="${loop}" seek=16384 conv=notrunc
+if [ -f "${mount_point}/writable/usr/lib/u-boot-${VENDOR}-rk3588/u-boot-rockchip.bin" ]; then
+    dd if=${mount_point}/writable/usr/lib/u-boot-"${VENDOR}"-rk3588/u-boot-rockchip.bin of="${loop}" seek=1 bs=32k conv=fsync
+else
+    dd if=${mount_point}/writable/usr/lib/u-boot-"${VENDOR}"-rk3588/idbloader.img of="${loop}" seek=64 conv=notrunc
+    dd if=${mount_point}/writable/usr/lib/u-boot-"${VENDOR}"-rk3588/u-boot.itb of="${loop}" seek=16384 conv=notrunc
+fi
 
 # Cloud init config for server image
 if [ -z "${img##*server*}" ]; then

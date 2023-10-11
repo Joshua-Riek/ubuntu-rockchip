@@ -1,3 +1,9 @@
+u-boot-turing-rk3588 (2023.10-1) UNRELEASED; urgency=medium
+
+  * Bump to mainline u-boot v2023.10.
+
+ -- Joshua Riek <jjriek@verizon.net>  Wed, 11 Oct 2023 18:53:15 -0400
+
 u-boot-turing-rk3588 (2017.09+20230920.git609a77ef-1) jammy; urgency=medium
 
   * Initial packaging.

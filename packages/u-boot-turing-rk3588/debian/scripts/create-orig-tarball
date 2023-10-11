@@ -8,11 +8,11 @@ cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ../..
 # Current upstream commit and version
 . debian/upstream
 
-orig_tarball=../u-boot-turing-rk3588_${VERSION}.orig.tar.xz
+orig_tarball=../u-boot-turing-rk3588_2023.10.orig.tar.xz
 if [ -e "${orig_tarball}" ] ; then
     echo "Orig tarball ${orig_tarball} exists already"
     exit
 fi
 
 echo "Creating orig tarball ${orig_tarball} ..."
-git archive --format=tar --prefix=u-boot-turing-rk3588-"${VERSION}"/ "${COMMIT}" | XZ_OPT="-0 -T0" xz -3 -T0 -z - > "${orig_tarball}"
+git archive --format=tar --prefix=u-boot-turing-rk3588-2023.10/ "${COMMIT}" | XZ_OPT="-0 -T0" xz -3 -T0 -z - > "${orig_tarball}"

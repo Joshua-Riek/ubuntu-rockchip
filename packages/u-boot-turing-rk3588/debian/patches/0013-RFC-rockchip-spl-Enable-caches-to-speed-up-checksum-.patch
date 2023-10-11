@@ -1,0 +1,35 @@
+From 5a48fcbb1da3da74c98ee465085d4b20f4c3ad64 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 2 Jul 2023 11:01:02 +0000
+Subject: [PATCH 13/16] RFC: rockchip: spl: Enable caches to speed up checksum
+ validation
+
+FIT checksum validation is very slow in SPL due to D-cache not being
+enabled.
+
+Enable caches in SPL to speed up FIT checksum validation, from seconds
+to milliseconds.
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ arch/arm/mach-rockchip/spl.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm/mach-rockchip/spl.c b/arch/arm/mach-rockchip/spl.c
+index 87280e2ba7..e29c841100 100644
+--- a/arch/arm/mach-rockchip/spl.c
++++ b/arch/arm/mach-rockchip/spl.c
+@@ -136,6 +136,10 @@ void board_init_f(ulong dummy)
+ 	}
+ 	gd->ram_top = gd->ram_base + get_effective_memsize();
+ 	gd->ram_top = board_get_usable_ram_top(gd->ram_size);
++	gd->relocaddr = gd->ram_top;
++
++	arch_reserve_mmu();
++	enable_caches();
+ #endif
+ 	preloader_console_init();
+ }
+-- 
+2.25.1
+
