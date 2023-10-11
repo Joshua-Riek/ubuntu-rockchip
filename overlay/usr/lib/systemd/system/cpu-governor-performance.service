@@ -1,9 +1,0 @@
-[Unit]
-Description=Set CPU governor to performance
-
-[Service]
-ExecStart=/usr/bin/bash -c 'echo performance | tee /sys/bus/cpu/devices/cpu*/cpufreq/scaling_governor > /dev/null'
-Type=oneshot
-
-[Install]
-WantedBy=default.target
