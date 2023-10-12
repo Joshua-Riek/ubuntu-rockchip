@@ -1,4 +1,4 @@
-u-boot-turing-rk3588 (2023.10-1) UNRELEASED; urgency=medium
+u-boot-turing-rk3588 (2023.10-1) jammy; urgency=medium
 
   * Bump to mainline u-boot v2023.10.
 
