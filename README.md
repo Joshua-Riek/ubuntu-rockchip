@@ -31,7 +31,7 @@ The supported devices are undergoing continuous development. As a result, you ma
 * [NanoPi R6C](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6C)
 * [NanoPC T6](https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6)
 * [Mixtile Blade 3](https://www.mixtile.com/blade-3)
-* [Turing RK1](https://turingpi.com/product/turing-rk1) *(WIP)*
+* [Turing RK1](https://turingpi.com/product/turing-rk1)
 * [Indiedroid Nova](https://indiedroid.us)
 * [LubanCat 4](https://doc.embedfire.com/products/link/zh/latest/linux/ebf_lubancat.html)
 
