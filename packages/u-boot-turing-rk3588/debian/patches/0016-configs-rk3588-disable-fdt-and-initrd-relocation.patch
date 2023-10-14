@@ -1,7 +1,7 @@
-From 544474b296dbf999b4d57f925440474b4f39e564 Mon Sep 17 00:00:00 2001
+From f6ae67c66d263cf298fb479f7f698206b9916577 Mon Sep 17 00:00:00 2001
 From: Joshua-Riek <jjriek@verizon.net>
 Date: Wed, 11 Oct 2023 18:04:34 -0400
-Subject: [PATCH 16/16] configs: rk3588: disable fdt and initrd relocation
+Subject: [PATCH 3/3] configs: rk3588: disable fdt and initrd relocation
 
 ---
  include/configs/rk3588_common.h | 4 +++-
