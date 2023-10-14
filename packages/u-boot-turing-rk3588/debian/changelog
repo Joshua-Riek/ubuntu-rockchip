@@ -1,3 +1,11 @@
+u-boot-turing-rk3588 (2023.10-2) jammy; urgency=medium
+
+  * enable USB XHCI PCI boot support
+  * enable SATA AHCI boot support
+  * set boot targets to MMC1 -> USB -> NVMe -> SCSI -> MMC0
+
+ -- Joshua Riek <jjriek@verizon.net>  Sat, 14 Oct 2023 11:51:11 -0400
+
 u-boot-turing-rk3588 (2023.10-1) jammy; urgency=medium
 
   * Bump to mainline u-boot v2023.10.
