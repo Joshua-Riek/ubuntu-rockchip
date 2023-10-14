@@ -21,8 +21,10 @@
 # expire user passwords
 chpasswd:
   expire: true
-  list:
-  - ubuntu:ubuntu
+  users:
+  - name: ubuntu
+    password: ubuntu
+    type: text
 
 ## Set the system's hostname. Please note that, unless you have a local DNS
 ## setup where the hostname is derived from DHCP requests (as with dnsmasq),
