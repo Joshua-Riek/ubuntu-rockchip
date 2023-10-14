@@ -1,3 +1,9 @@
+u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-2) jammy; urgency=medium
+
+  * enable pcie3x4 node for the Mixtile Blade 3
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 13 Oct 2023 21:26:21 -0400
+
 u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-1) jammy; urgency=medium
 
   * configs: add radxa-cm5-rpi-cm4-io-rk3588s_defconfig
