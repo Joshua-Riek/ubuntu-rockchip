@@ -1,3 +1,11 @@
+u-boot-turing-rk3588 (2023.10-5) jammy; urgency=medium
+
+  * Fix baudrate in DDR blob
+  * Fix compile errors
+  * Remove ddrbin_tool
+
+ -- Joshua Riek <jjriek@verizon.net>  Sat, 14 Oct 2023 23:26:26 -0400
+
 u-boot-turing-rk3588 (2023.10-4) jammy; urgency=medium
 
   * update DDR blob to use UART9 with a 115200 baudrate
