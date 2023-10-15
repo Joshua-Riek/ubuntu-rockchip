@@ -190,6 +190,8 @@ for type in $target; do
         if [ "${BOARD}" == orangepi-5 ] || [ "${BOARD}" == orangepi-5b ] || [ "${BOARD}" == nanopi-r6c ] || [ "${BOARD}" == nanopi-r6s ]; then
             echo "set-default-sink alsa_output.platform-hdmi0-sound.stereo-fallback" >> ${chroot_dir}/etc/pulse/default.pa
         fi
+    else
+        chroot ${chroot_dir} /bin/bash -c "systemctl mask apt-daily-upgrade.service"
     fi
 
     if [[ ${MAINLINE} == "Y" ]]; then
