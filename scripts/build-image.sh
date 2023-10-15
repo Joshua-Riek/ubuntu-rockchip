@@ -196,6 +196,9 @@ tar -xpf "${rootfs}" -C ${mount_point}/writable
 # Set boot args for the splash screen
 [ -z "${img##*desktop*}" ] && bootargs="quiet splash plymouth.ignore-serial-consoles" || bootargs=""
 
+# Turing RK1 uses UART9 by default
+[ "${BOARD}" == turing-rk1 ] && bootargs="console=ttyS9,115200 ${bootargs}"
+
 # Create fstab entries
 boot_uuid="${boot_uuid:0:4}-${boot_uuid:4:4}"
 mkdir -p ${mount_point}/writable/boot/firmware
