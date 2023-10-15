@@ -1,3 +1,4 @@
 *.deb filter=lfs diff=lfs merge=lfs -text
 *.pdf filter=lfs diff=lfs merge=lfs -text
 overlay/usr/bin/brcm_patchram_plus filter=lfs diff=lfs merge=lfs -text
+packages/u-boot-turing-rk3588/debian/rkbin/tools/ddrbin_tool filter=lfs diff=lfs merge=lfs -text

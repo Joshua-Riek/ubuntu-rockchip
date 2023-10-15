@@ -1,3 +1,9 @@
+u-boot-turing-rk3588 (2023.10-3) jammy; urgency=medium
+
+  * use UART9 with a 115200 baudrate
+
+ -- Joshua Riek <jjriek@verizon.net>  Sat, 14 Oct 2023 21:18:07 -0400
+
 u-boot-turing-rk3588 (2023.10-2) jammy; urgency=medium
 
   * enable USB XHCI PCI boot support

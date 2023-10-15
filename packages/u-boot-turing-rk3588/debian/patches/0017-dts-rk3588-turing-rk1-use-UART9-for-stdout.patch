@@ -1,0 +1,62 @@
+From a6ce97bb5305148b50072d2416724501325665ae Mon Sep 17 00:00:00 2001
+From: Joshua-Riek <jjriek@verizon.net>
+Date: Sat, 14 Oct 2023 18:43:31 -0400
+Subject: [PATCH] dts: rk3588-turing-rk1: use UART9 for stdout
+
+---
+ arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi | 10 ++++++++++
+ arch/arm/dts/rk3588-turing-rk1.dts         |  3 ++-
+ configs/turing-rk1-rk3588_defconfig        |  2 +-
+ 3 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi b/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi
+index 288dc10ab6a..acb2fa78d08 100644
+--- a/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi
++++ b/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi
+@@ -21,3 +21,13 @@
+ &sdmmc {
+ 	status = "disabled";
+ };
++
++&uart9 {
++	clock-frequency = <24000000>;
++	bootph-pre-ram;
++	status = "okay";
++};
++​
++&uart9m0_xfer {
++	bootph-all;
++};
+diff --git a/arch/arm/dts/rk3588-turing-rk1.dts b/arch/arm/dts/rk3588-turing-rk1.dts
+index 0103a059384..eb4ad0b8bff 100644
+--- a/arch/arm/dts/rk3588-turing-rk1.dts
++++ b/arch/arm/dts/rk3588-turing-rk1.dts
+@@ -13,10 +13,11 @@
+ 	aliases {
+ 		mmc0 = &sdhci;
+ 		serial2 = &uart2;
++		serial9 = &uart9;
+ 	};
+ 
+ 	chosen {
+-		stdout-path = "serial2:1500000n8";
++		stdout-path = "serial9:115200n8";
+ 	};
+ 
+ 	vcc3v3_pcie30: vcc3v3-pcie30-regulator {
+diff --git a/configs/turing-rk1-rk3588_defconfig b/configs/turing-rk1-rk3588_defconfig
+index bc058bb9eaa..6fc883c9ac8 100644
+--- a/configs/turing-rk1-rk3588_defconfig
++++ b/configs/turing-rk1-rk3588_defconfig
+@@ -19,7 +19,7 @@ CONFIG_SPL_SERIAL=y
+ CONFIG_SPL_STACK_R_ADDR=0x600000
+ CONFIG_TARGET_EVB_RK3588=y
+ CONFIG_SPL_STACK=0x400000
+-CONFIG_DEBUG_UART_BASE=0xFEB50000
++CONFIG_DEBUG_UART_BASE=0xFEBC0000
+ CONFIG_DEBUG_UART_CLOCK=24000000
+ CONFIG_SPL_SPI_FLASH_SUPPORT=y
+ CONFIG_SPL_SPI=y
+-- 
+2.25.1
+
