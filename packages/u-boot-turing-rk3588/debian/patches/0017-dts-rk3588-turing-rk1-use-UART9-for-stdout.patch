@@ -1,19 +1,19 @@
-From a6ce97bb5305148b50072d2416724501325665ae Mon Sep 17 00:00:00 2001
+From 35658be789efc56c6c08c149ad16fdf20770cd33 Mon Sep 17 00:00:00 2001
 From: Joshua-Riek <jjriek@verizon.net>
 Date: Sat, 14 Oct 2023 18:43:31 -0400
 Subject: [PATCH] dts: rk3588-turing-rk1: use UART9 for stdout
 
 ---
- arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi | 10 ++++++++++
- arch/arm/dts/rk3588-turing-rk1.dts         |  3 ++-
- configs/turing-rk1-rk3588_defconfig        |  2 +-
- 3 files changed, 13 insertions(+), 2 deletions(-)
+ arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi | 7 +++++++
+ arch/arm/dts/rk3588-turing-rk1.dts         | 3 ++-
+ configs/turing-rk1-rk3588_defconfig        | 4 ++--
+ 3 files changed, 11 insertions(+), 3 deletions(-)
 
 diff --git a/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi b/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi
-index 288dc10ab6a..acb2fa78d08 100644
+index 288dc10ab6a..bf9b56024fd 100644
 --- a/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi
 +++ b/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi
-@@ -21,3 +21,13 @@
+@@ -21,3 +21,10 @@
  &sdmmc {
  	status = "disabled";
  };
@@ -23,10 +23,7 @@ index 288dc10ab6a..acb2fa78d08 100644
 +	bootph-pre-ram;
 +	status = "okay";
 +};
-+​
-+&uart9m0_xfer {
-+	bootph-all;
-+};
++
 diff --git a/arch/arm/dts/rk3588-turing-rk1.dts b/arch/arm/dts/rk3588-turing-rk1.dts
 index 0103a059384..eb4ad0b8bff 100644
 --- a/arch/arm/dts/rk3588-turing-rk1.dts
@@ -45,7 +42,7 @@ index 0103a059384..eb4ad0b8bff 100644
  
  	vcc3v3_pcie30: vcc3v3-pcie30-regulator {
 diff --git a/configs/turing-rk1-rk3588_defconfig b/configs/turing-rk1-rk3588_defconfig
-index bc058bb9eaa..6fc883c9ac8 100644
+index bc058bb9eaa..56eff461b62 100644
 --- a/configs/turing-rk1-rk3588_defconfig
 +++ b/configs/turing-rk1-rk3588_defconfig
 @@ -19,7 +19,7 @@ CONFIG_SPL_SERIAL=y
@@ -57,6 +54,15 @@ index bc058bb9eaa..6fc883c9ac8 100644
  CONFIG_DEBUG_UART_CLOCK=24000000
  CONFIG_SPL_SPI_FLASH_SUPPORT=y
  CONFIG_SPL_SPI=y
+@@ -101,7 +101,7 @@ CONFIG_PWM_ROCKCHIP=y
+ CONFIG_SPL_RAM=y
+ CONFIG_SCSI=y
+ CONFIG_DM_SCSI=y
+-CONFIG_BAUDRATE=1500000
++CONFIG_BAUDRATE=115200
+ CONFIG_DEBUG_UART_SHIFT=2
+ CONFIG_SYS_NS16550_MEM32=y
+ CONFIG_ROCKCHIP_SFC=y
 -- 
 2.25.1
 
