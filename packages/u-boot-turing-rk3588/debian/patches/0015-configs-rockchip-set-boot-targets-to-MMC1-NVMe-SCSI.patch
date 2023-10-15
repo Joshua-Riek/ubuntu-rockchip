@@ -1,8 +1,8 @@
 From db5b211a83602bbc450e94de745d9e467abf8d96 Mon Sep 17 00:00:00 2001
 From: Joshua-Riek <jjriek@verizon.net>
 Date: Wed, 11 Oct 2023 18:02:34 -0400
-Subject: [PATCH 2/3] configs: rockchip: set boot targets to MMC1 -> USB ->
- NVMe -> SCSI -> MMC0
+Subject: [PATCH 2/3] configs: rockchip: set boot targets to MMC1 -> NVMe ->
+ SCSI -> USB -> MMC0
 
 ---
  include/configs/rockchip-common.h | 2 +-
@@ -17,7 +17,7 @@ index 9121bba373..5f34336873 100644
  #ifndef CONFIG_SPL_BUILD
  
 -#define BOOT_TARGETS	"mmc1 mmc0 nvme scsi usb pxe dhcp spi"
-+#define BOOT_TARGETS	"mmc1 usb nvme scsi mmc0 pxe dhcp spi"
++#define BOOT_TARGETS	"mmc1 nvme scsi usb mmc0 pxe dhcp spi"
  
  #ifdef CONFIG_ARM64
  #define ROOT_UUID "B921B045-1DF0-41C3-AF44-4C6F280D3FAE;\0"

@@ -1,3 +1,9 @@
+u-boot-turing-rk3588 (2023.10-6) jammy; urgency=medium
+
+  * set boot targets to MMC1 -> NVMe -> SCSI -> USB -> MMC0
+
+ -- Joshua Riek <jjriek@verizon.net>  Sun, 15 Oct 2023 10:33:46 -0400
+
 u-boot-turing-rk3588 (2023.10-5) jammy; urgency=medium
 
   * Fix baudrate in DDR blob

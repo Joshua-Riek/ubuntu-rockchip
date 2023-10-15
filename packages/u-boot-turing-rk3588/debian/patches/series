@@ -12,6 +12,6 @@
 0012-net-dwc_eth_qos_rockchip-Add-support-for-RK3588.patch
 0013-RFC-rockchip-spl-Enable-caches-to-speed-up-checksum-.patch
 0014-board-rockchip-add-Turing-RK1-RK3588.patch
-0015-configs-rockchip-set-boot-targets-to-MMC1-USB-NVMe-S.patch
+0015-configs-rockchip-set-boot-targets-to-MMC1-NVMe-SCSI.patch
 0016-configs-rk3588-disable-fdt-and-initrd-relocation.patch
 0017-dts-rk3588-turing-rk1-use-UART9-for-stdout.patch
