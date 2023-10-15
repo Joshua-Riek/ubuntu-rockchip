@@ -21,10 +21,6 @@ BOARDS := turing-rk1-rk3588
 ${BOARDS}: 
 	@mkdir -p debian/build/$@
 
-	@./debian/rkbin/tools/ddrbin_tool -g gen_param.txt ./debian/rkbin/$(ROCKCHIP_TPL)
-	@sed -ie 's/\(uart id\=\).*/uart id=9/;s/\(uart baudrate\=\).*/uart baudrate=1115200/' gen_param.txt
-	@./debian/rkbin/tools/ddrbin_tool gen_param.txt ./debian/rkbin/$(ROCKCHIP_TPL)
-
 	make O=debian/build/$@ \
 	  CROSS_COMPILE=$(CROSS_COMPILE) \
 	  ARCH=arm \
