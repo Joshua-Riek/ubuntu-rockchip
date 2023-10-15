@@ -196,9 +196,6 @@ tar -xpf "${rootfs}" -C ${mount_point}/writable
 # Set boot args for the splash screen
 [ -z "${img##*desktop*}" ] && bootargs="quiet splash plymouth.ignore-serial-consoles" || bootargs=""
 
-# Turing RK1 uses UART9 by default
-[ "${BOARD}" == turing-rk1 ] && bootargs="console=ttyS9,115200 ${bootargs}"
-
 # Create fstab entries
 boot_uuid="${boot_uuid:0:4}-${boot_uuid:4:4}"
 mkdir -p ${mount_point}/writable/boot/firmware
@@ -260,6 +257,9 @@ fdtfile=${DEVICE_TREE}
 overlay_prefix=${OVERLAY_PREFIX}
 overlays=
 EOF
+
+# Turing RK1 uses UART9 by default
+[ "${BOARD}" == turing-rk1 ] && sed -i 's/console=ttyS2,1500000/console=ttyS9,115200 console=ttyS2,1500000/g' ${mount_point}/system-boot/ubuntuEnv.txt
 
 # Copy the device trees, kernel, and initrd to the boot partition
 mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot/
