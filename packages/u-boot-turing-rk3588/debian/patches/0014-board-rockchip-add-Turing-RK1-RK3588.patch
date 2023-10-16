@@ -1,20 +1,30 @@
-From 8c8e50913f9ea22c17c9e152cbc3e371f676c6e5 Mon Sep 17 00:00:00 2001
+From f5d27ea0ba421db7aeba746cc1ec0386cf985fe0 Mon Sep 17 00:00:00 2001
 From: Joshua-Riek <jjriek@verizon.net>
 Date: Wed, 4 Oct 2023 18:45:54 -0400
-Subject: [PATCH 1/3] board: rockchip: add Turing RK1 RK3588
+Subject: [PATCH] board: rockchip: add Turing RK1 RK3588
 
 ---
- arch/arm/dts/Makefile                      |   3 +-
- arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi |  23 +
- arch/arm/dts/rk3588-turing-rk1.dts         | 581 +++++++++++++++++++++
- configs/turing-rk1-rk3588_defconfig        | 133 +++++
- 4 files changed, 739 insertions(+), 1 deletion(-)
+ arch/arm/dts/Makefile                         |   3 +-
+ arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi    |  34 +
+ arch/arm/dts/rk3588-turing-rk1.dts            | 587 ++++++++++++++++++
+ arch/arm/mach-rockchip/rk3588/Kconfig         |   9 +
+ board/turing/turing-rk1-rk3588/Kconfig        |  15 +
+ board/turing/turing-rk1-rk3588/Makefile       |   6 +
+ .../turing-rk1-rk3588/turing-rk1-rk3588.c     |  39 ++
+ configs/turing-rk1-rk3588_defconfig           | 133 ++++
+ doc/board/rockchip/rockchip.rst               |   1 +
+ include/configs/turing-rk1-rk3588.h           |  23 +
+ 10 files changed, 849 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi
  create mode 100644 arch/arm/dts/rk3588-turing-rk1.dts
+ create mode 100644 board/turing/turing-rk1-rk3588/Kconfig
+ create mode 100644 board/turing/turing-rk1-rk3588/Makefile
+ create mode 100644 board/turing/turing-rk1-rk3588/turing-rk1-rk3588.c
  create mode 100644 configs/turing-rk1-rk3588_defconfig
+ create mode 100644 include/configs/turing-rk1-rk3588.h
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index 85fd5b1157..2ee278a463 100644
+index 85fd5b1157b..2ee278a463b 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
 @@ -190,7 +190,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3588) += \
@@ -29,11 +39,15 @@ index 85fd5b1157..2ee278a463 100644
  	rv1108-elgin-r1.dtb \
 diff --git a/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi b/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi
 new file mode 100644
-index 0000000000..288dc10ab6
+index 00000000000..bca28ef06fa
 --- /dev/null
 +++ b/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,34 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2023 Joshua Riek <jjriek@verizon.net>
++ *
++ */
 +
 +#include "rk3588-u-boot.dtsi"
 +
@@ -56,13 +70,25 @@ index 0000000000..288dc10ab6
 +&sdmmc {
 +	status = "disabled";
 +};
++
++&uart9 {
++	clock-frequency = <24000000>;
++	bootph-pre-ram;
++	status = "okay";
++};
++
 diff --git a/arch/arm/dts/rk3588-turing-rk1.dts b/arch/arm/dts/rk3588-turing-rk1.dts
 new file mode 100644
-index 0000000000..0103a05938
+index 00000000000..2616da74c1c
 --- /dev/null
 +++ b/arch/arm/dts/rk3588-turing-rk1.dts
-@@ -0,0 +1,581 @@
+@@ -0,0 +1,587 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
++ * Copyright (c) 2023 Joshua Riek <jjriek@verizon.net>
++ *
++ */
 +
 +/dts-v1/;
 +
@@ -77,10 +103,11 @@ index 0000000000..0103a05938
 +	aliases {
 +		mmc0 = &sdhci;
 +		serial2 = &uart2;
++		serial9 = &uart9;
 +	};
 +
 +	chosen {
-+		stdout-path = "serial2:1500000n8";
++		stdout-path = "serial9:115200n8";
 +	};
 +
 +	vcc3v3_pcie30: vcc3v3-pcie30-regulator {
@@ -643,9 +670,113 @@ index 0000000000..0103a05938
 +	extcon = <&u2phy0>;
 +	status = "okay";
 +};
+diff --git a/arch/arm/mach-rockchip/rk3588/Kconfig b/arch/arm/mach-rockchip/rk3588/Kconfig
+index 79fcc99b898..ce86b829cf8 100644
+--- a/arch/arm/mach-rockchip/rk3588/Kconfig
++++ b/arch/arm/mach-rockchip/rk3588/Kconfig
+@@ -80,6 +80,14 @@ config TARGET_ROCK5B_RK3588
+ 	  USB PD over USB Type-C
+ 	  Size: 100mm x 72mm (Pico-ITX form factor)
+ 
++config TARGET_TURING_RK1_RK3588
++	bool "Turing Machines TK1 RK3588 board"
++	select BOARD_LATE_INIT
++	help
++	  Turing Machines RK1 is a Rockchip RK3588 based SoM.
++
++	  There are three variants depending on the DRAM size : 8G, 16G and 32G.
++
+ config ROCKCHIP_BOOT_MODE_REG
+ 	default 0xfd588080
+ 
+@@ -96,5 +104,6 @@ source board/edgeble/neural-compute-module-6/Kconfig
+ source board/rockchip/evb_rk3588/Kconfig
+ source board/radxa/rock5a-rk3588s/Kconfig
+ source board/radxa/rock5b-rk3588/Kconfig
++source board/turing/turing-rk1-rk3588/Kconfig
+ 
+ endif
+diff --git a/board/turing/turing-rk1-rk3588/Kconfig b/board/turing/turing-rk1-rk3588/Kconfig
+new file mode 100644
+index 00000000000..f0d389f3b65
+--- /dev/null
++++ b/board/turing/turing-rk1-rk3588/Kconfig
+@@ -0,0 +1,15 @@
++if TARGET_TURING_RK1_RK3588
++
++config SYS_BOARD
++	default "turing-rk1-rk3588"
++
++config SYS_VENDOR
++	default "turing"
++
++config SYS_CONFIG_NAME
++	default "turing-rk1-rk3588"
++
++config BOARD_SPECIFIC_OPTIONS # dummy
++	def_bool y
++
++endif
+diff --git a/board/turing/turing-rk1-rk3588/Makefile b/board/turing/turing-rk1-rk3588/Makefile
+new file mode 100644
+index 00000000000..a979d8023aa
+--- /dev/null
++++ b/board/turing/turing-rk1-rk3588/Makefile
+@@ -0,0 +1,6 @@
++# SPDX-License-Identifier:     GPL-2.0+
++#
++# Copyright (c) 2023 Rockchip Electronics Co,. Ltd.
++#
++
++obj-y += turing-rk1-rk3588.o
+diff --git a/board/turing/turing-rk1-rk3588/turing-rk1-rk3588.c b/board/turing/turing-rk1-rk3588/turing-rk1-rk3588.c
+new file mode 100644
+index 00000000000..e2338a2a35a
+--- /dev/null
++++ b/board/turing/turing-rk1-rk3588/turing-rk1-rk3588.c
+@@ -0,0 +1,39 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (c) 2023 Rockchip Electronics Co,. Ltd.
++ */
++
++#include <fdtdec.h>
++#include <fdt_support.h>
++
++#ifdef CONFIG_OF_BOARD_SETUP
++int turing_rk1_add_reserved_memory_fdt_nodes(void *new_blob)
++{
++	struct fdt_memory gap1 = {
++		.start = 0x3fc000000,
++		.end = 0x3fc4fffff,
++	};
++	struct fdt_memory gap2 = {
++		.start = 0x3fff00000,
++		.end = 0x3ffffffff,
++	};
++	unsigned long flags = FDTDEC_RESERVED_MEMORY_NO_MAP;
++	unsigned int ret;
++
++	/*
++	 * Inject the reserved-memory nodes into the DTS
++	 */
++	ret = fdtdec_add_reserved_memory(new_blob, "gap1", &gap1,  NULL, 0,
++					 NULL, flags);
++	if (ret)
++		return ret;
++
++	return fdtdec_add_reserved_memory(new_blob, "gap2", &gap2,  NULL, 0,
++					  NULL, flags);
++}
++
++int ft_board_setup(void *blob, struct bd_info *bd)
++{
++	return turing_rk1_add_reserved_memory_fdt_nodes(blob);
++}
++#endif
 diff --git a/configs/turing-rk1-rk3588_defconfig b/configs/turing-rk1-rk3588_defconfig
 new file mode 100644
-index 0000000000..bc058bb9ea
+index 00000000000..1050ec0f368
 --- /dev/null
 +++ b/configs/turing-rk1-rk3588_defconfig
 @@ -0,0 +1,133 @@
@@ -668,9 +799,9 @@ index 0000000000..bc058bb9ea
 +CONFIG_ROCKCHIP_SPI_IMAGE=y
 +CONFIG_SPL_SERIAL=y
 +CONFIG_SPL_STACK_R_ADDR=0x600000
-+CONFIG_TARGET_EVB_RK3588=y
++CONFIG_TARGET_TURING_RK1_RK3588=y
 +CONFIG_SPL_STACK=0x400000
-+CONFIG_DEBUG_UART_BASE=0xFEB50000
++CONFIG_DEBUG_UART_BASE=0xFEBC0000
 +CONFIG_DEBUG_UART_CLOCK=24000000
 +CONFIG_SPL_SPI_FLASH_SUPPORT=y
 +CONFIG_SPL_SPI=y
@@ -752,7 +883,7 @@ index 0000000000..bc058bb9ea
 +CONFIG_SPL_RAM=y
 +CONFIG_SCSI=y
 +CONFIG_DM_SCSI=y
-+CONFIG_BAUDRATE=1500000
++CONFIG_BAUDRATE=115200
 +CONFIG_DEBUG_UART_SHIFT=2
 +CONFIG_SYS_NS16550_MEM32=y
 +CONFIG_ROCKCHIP_SFC=y
@@ -782,6 +913,47 @@ index 0000000000..bc058bb9ea
 +CONFIG_USB_GADGET_DOWNLOAD=y
 +CONFIG_USB_FUNCTION_ROCKUSB=y
 +CONFIG_ERRNO_STR=y
+diff --git a/doc/board/rockchip/rockchip.rst b/doc/board/rockchip/rockchip.rst
+index de9fe8e642b..f9dacdff5a6 100644
+--- a/doc/board/rockchip/rockchip.rst
++++ b/doc/board/rockchip/rockchip.rst
+@@ -112,6 +112,7 @@ List of mainline supported Rockchip boards:
+      - Rockchip EVB (evb-rk3588)
+      - Edgeble Neural Compute Module 6A SoM - Neu6a (neu6a-io-rk3588)
+      - Edgeble Neural Compute Module 6B SoM - Neu6b (neu6b-io-rk3588)
++     - Turing Machines RK1 (turing-rk1-rk3588)
+      - Radxa ROCK 5A (rock5a-rk3588s)
+      - Radxa ROCK 5B (rock5b-rk3588)
+ 
+diff --git a/include/configs/turing-rk1-rk3588.h b/include/configs/turing-rk1-rk3588.h
+new file mode 100644
+index 00000000000..921aceda920
+--- /dev/null
++++ b/include/configs/turing-rk1-rk3588.h
+@@ -0,0 +1,23 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (c) 2023 Rockchip Electronics Co., Ltd.
++ */
++
++#ifndef __TURING_RK1_RK3588_H
++#define __TURING_RK1_RK3588_H
++
++#define ROCKCHIP_DEVICE_SETTINGS \
++		"stdout=serial,vidconsole\0" \
++		"stderr=serial,vidconsole\0"	\
++		"fdt_high=0xffffffffffffffff\0"	\
++		"initrd_high=0xffffffffffffffff\0"
++
++#include <configs/rk3588_common.h>
++
++#ifdef BOOT_TARGETS
++#undef BOOT_TARGETS
++#endif
++
++#define BOOT_TARGETS	"mmc1 nvme scsi usb mmc0 pxe dhcp spi"
++
++#endif /* __TURING_RK1_RK3588_H */
 -- 
 2.25.1
 
