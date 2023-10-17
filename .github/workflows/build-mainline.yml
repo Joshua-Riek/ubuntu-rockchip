@@ -1,5 +1,5 @@
 name: Build Mainline
-run-name: Build with mainline Linux 6.6.0-rc5
+run-name: Build with mainline Linux 6.6.0-rc6
 
 on:
   workflow_dispatch:
@@ -69,8 +69,8 @@ jobs:
       - name: Upload server image
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-mainline-6.6.0-rc5
-          path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-mainline-6.6.0-rc5.*
+          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-mainline-6.6.0-rc6
+          path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-mainline-6.6.0-rc6.*
           if-no-files-found: error
     
       - name: Clean cache
