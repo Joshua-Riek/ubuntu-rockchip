@@ -14,11 +14,9 @@ wait_loopdev() {
     ls -l "${loop}" &> /dev/null
 }
 
-if [ "$EUID" != 0 ]; then
-    sudo -k
-    if sudo false; then
-        exit 1
-    fi
+if [ "$(id -u)" -ne 0 ]; then 
+    echo "$0: please run this command as root or with sudo"
+    exit 1
 fi
 
 if test $# -ne 1; then
@@ -29,21 +27,24 @@ fi
 disk=$1
 
 if test ! -b "${disk}"; then
-    echo "Block device \"${disk}\" not found"
+    echo "$0: block device '${disk}' not found"
     exit 1
 fi
 
 if [[ "/dev/$(lsblk -no pkname "$(findmnt -n -o SOURCE /)")" == "${disk}" ]]; then
-    echo "Invalid block device \"${disk}\""
+    echo "$0: invalid block device '${disk}'"
     exit 1
 fi
 
-echo "About to format \"${disk}\"";
-read -r -p "Are you sure? [y/N] " response
+echo -e "This script will install the currently running system onto '${disk}'\n"
+
+read -r -p "It may take up to a few minutes - Continue? [y/N] " response
 case "$response" in
     [yY][eE][sS]|[yY]) ;;
     *) exit 0 ;;
 esac
+
+echo
 
 # Ensure disk is not mounted
 mount_point=/tmp/mnt
@@ -58,12 +59,16 @@ mklabel gpt \
 mkpart primary fat16 16MiB 528MiB \
 mkpart primary ext4 528MiB 100%
 
-set +e
-
 # Create partitions
-echo -e "t\n1\nBC13C2FF-59E6-4262-A352-B275FD6F7172\nt\n2\n0FC63DAF-8483-4772-8E79-3D69D8477DE4\nw\n" | fdisk "${disk}" 2> /dev/null || true
-
-set -eE
+{
+    echo "t"
+    echo "1"
+    echo "BC13C2FF-59E6-4262-A352-B275FD6F7172"
+    echo "t"
+    echo "2"
+    echo "0FC63DAF-8483-4772-8E79-3D69D8477DE4"
+    echo "w"
+} | fdisk "${disk}" &> /dev/null || true
 
 partprobe "${disk}"
 
@@ -72,14 +77,14 @@ partition_char="$(if [[ ${disk: -1} == [0-9] ]]; then echo p; fi)"
 sleep 1
 
 wait_loopdev "${disk}${partition_char}2" 60 || {
-    echo "Failure to create ${disk}${partition_char}1 in time"
+    echo "$0: failure to create '${disk}${partition_char}1' in time"
     exit 1
 }
 
 sleep 1
 
 wait_loopdev "${disk}${partition_char}1" 60 || {
-    echo "Failure to create ${disk}${partition_char}1 in time"
+    echo "$0: failure to create '${disk}${partition_char}1' in time"
     exit 1
 }
 
@@ -118,18 +123,21 @@ UUID=${root_uuid,,} /              ext4    defaults    0       1
 /swapfile           none           swap    sw          0       0
 EOF
 
-uboot_paths=( "/usr/lib/u-boot-*-rk3588/" )
-uboot_path=${uboot_paths[0]}
+# Get bootloader path
+uboot_paths=("/usr/lib/u-boot-*-rk3588/")
+uboot_path="$(echo ${uboot_paths[0]})"
 
-if [ ! -d $uboot_path  ]; then
+# Bootloader path for future use
+if [ ! -d "${uboot_path}" ] || [ -z "${uboot_path}" ]; then
     uboot_path="/usr/lib/u-boot/"
 fi
 
-if [ -f "$(echo $uboot_path)/u-boot-rockchip.bin" ]; then
-    dd if="$(echo $uboot_path)/u-boot-rockchip.bin" of="${disk}" seek=1 bs=32k conv=fsync
+# Write the bootloader
+if [ -f "${uboot_path}/u-boot-rockchip.bin" ]; then
+    dd if="${uboot_path}/u-boot-rockchip.bin" of="${disk}" seek=1 bs=32k conv=fsync
 else
-    dd if="$(echo $uboot_path)/idbloader.img" of="${disk}" seek=64 conv=notrunc
-    dd if="$(echo $uboot_path)/u-boot.itb" of="${disk}" seek=16384 conv=notrunc
+    dd if="${uboot_path}/idbloader.img" of="${disk}" seek=64 conv=notrunc
+    dd if="${uboot_path}/u-boot.itb" of="${disk}" seek=16384 conv=notrunc
 fi
 
 sync --file-system
