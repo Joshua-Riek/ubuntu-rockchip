@@ -107,8 +107,8 @@ mount "${disk}${partition_char}1" ${mount_point}/system-boot/
 mount "${disk}${partition_char}2" ${mount_point}/writable/
 
 # Copy over the root and boot partitions
-sudo rsync -aPAHXx /boot/firmware/* ${mount_point}/system-boot/ 1> /dev/null
-sudo rsync -aPAHXx / ${mount_point}/writable/ 1> /dev/null
+sudo rsync -aPAHSXx /boot/firmware/* ${mount_point}/system-boot/ 1> /dev/null
+sudo rsync -aPAHSXx / ${mount_point}/writable/ 1> /dev/null
 
 # Update root uuid for kernel cmdline
 sed -i "s/^\(\s*bootargs=\s*\)root=UUID=[A-Fa-f0-9-]*/\1root=UUID=${root_uuid}/" ${mount_point}/system-boot/ubuntuEnv.txt
