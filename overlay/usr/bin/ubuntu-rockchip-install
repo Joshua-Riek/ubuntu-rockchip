@@ -1,0 +1,140 @@
+#!/bin/bash
+
+set -eE 
+trap 'echo Error: in $0 on line $LINENO' ERR
+
+wait_loopdev() {
+    local loop="$1"
+    local seconds="$2"
+
+    until test $((seconds--)) -eq 0 -o -b "${loop}"; do sleep 1; done
+
+    ((++seconds))
+
+    ls -l "${loop}" &> /dev/null
+}
+
+if [ "$EUID" != 0 ]; then
+    sudo -k
+    if sudo false; then
+        exit 1
+    fi
+fi
+
+if test $# -ne 1; then
+    echo "Usage: $0 /dev/mmcblk0"
+    exit 1
+fi
+
+disk=$1
+
+if test ! -b "${disk}"; then
+    echo "Block device \"${disk}\" not found"
+    exit 1
+fi
+
+if [[ "/dev/$(lsblk -no pkname "$(findmnt -n -o SOURCE /)")" == "${disk}" ]]; then
+    echo "Invalid block device \"${disk}\""
+    exit 1
+fi
+
+echo "About to format \"${disk}\"";
+read -r -p "Are you sure? [y/N] " response
+case "$response" in
+    [yY][eE][sS]|[yY]) ;;
+    *) exit 0 ;;
+esac
+
+# Ensure disk is not mounted
+mount_point=/tmp/mnt
+umount -lf "${disk}"* 2> /dev/null || true
+umount -lf ${mount_point}/* 2> /dev/null || true
+mkdir -p ${mount_point}
+
+# Setup partition table
+dd if=/dev/zero of="${disk}" count=4096 bs=512
+parted --script "${disk}" \
+mklabel gpt \
+mkpart primary fat16 16MiB 528MiB \
+mkpart primary ext4 528MiB 100%
+
+set +e
+
+# Create partitions
+echo -e "t\n1\nBC13C2FF-59E6-4262-A352-B275FD6F7172\nt\n2\n0FC63DAF-8483-4772-8E79-3D69D8477DE4\nw\n" | fdisk "${disk}" 2> /dev/null || true
+
+set -eE
+
+partprobe "${disk}"
+
+partition_char="$(if [[ ${disk: -1} == [0-9] ]]; then echo p; fi)"
+
+sleep 1
+
+wait_loopdev "${disk}${partition_char}2" 60 || {
+    echo "Failure to create ${disk}${partition_char}1 in time"
+    exit 1
+}
+
+sleep 1
+
+wait_loopdev "${disk}${partition_char}1" 60 || {
+    echo "Failure to create ${disk}${partition_char}1 in time"
+    exit 1
+}
+
+sleep 1
+
+# Generate random uuid for bootfs
+boot_uuid=$(uuidgen | head -c8)
+
+# Generate random uuid for rootfs
+root_uuid=$(uuidgen)
+
+# Create filesystems on partitions
+mkfs.vfat -i "${boot_uuid}" -F16 -n system-boot "${disk}${partition_char}1"
+dd if=/dev/zero of="${disk}${partition_char}2" bs=1KB count=10 > /dev/null
+mkfs.ext4 -U "${root_uuid}" -L writable "${disk}${partition_char}2"
+
+# Mount partitions
+mkdir -p ${mount_point}/{system-boot,writable}
+mount "${disk}${partition_char}1" ${mount_point}/system-boot/
+mount "${disk}${partition_char}2" ${mount_point}/writable/
+
+# Copy over the root and boot partitions
+sudo rsync -aPAHXx /boot/firmware/* ${mount_point}/system-boot/ 1> /dev/null
+sudo rsync -aPAHXx / ${mount_point}/writable/ 1> /dev/null
+
+# Update root uuid for kernel cmdline
+sed -i "s/^\(\s*bootargs=\s*\)root=UUID=[A-Fa-f0-9-]*/\1root=UUID=${root_uuid}/" ${mount_point}/system-boot/ubuntuEnv.txt
+
+# Update fstab entries
+boot_uuid="${boot_uuid:0:4}-${boot_uuid:4:4}"
+mkdir -p ${mount_point}/writable/boot/firmware
+cat > ${mount_point}/writable/etc/fstab << EOF
+# <file system>     <mount point>  <type>  <options>   <dump>  <fsck>
+UUID=${boot_uuid^^} /boot/firmware vfat    defaults    0       2
+UUID=${root_uuid,,} /              ext4    defaults    0       1
+/swapfile           none           swap    sw          0       0
+EOF
+
+uboot_paths=( "/usr/lib/u-boot-*-rk3588/" )
+uboot_path=${uboot_paths[0]}
+
+if [ ! -d $uboot_path  ]; then
+    uboot_path="/usr/lib/u-boot/"
+fi
+
+if [ -f "$(echo $uboot_path)/u-boot-rockchip.bin" ]; then
+    dd if="$(echo $uboot_path)/u-boot-rockchip.bin" of="${disk}" seek=1 bs=32k conv=fsync
+else
+    dd if="$(echo $uboot_path)/idbloader.img" of="${disk}" seek=64 conv=notrunc
+    dd if="$(echo $uboot_path)/u-boot.itb" of="${disk}" seek=16384 conv=notrunc
+fi
+
+sync --file-system
+sync
+
+# Umount partitions
+umount "${disk}${partition_char}1"
+umount "${disk}${partition_char}2"
