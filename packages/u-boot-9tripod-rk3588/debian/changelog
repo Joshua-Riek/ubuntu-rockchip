@@ -1,4 +1,4 @@
-u-boot-9tripod-rk3588 (2017.09+20230321.git2f6e967d-4) UNRELEASED; urgency=medium
+u-boot-9tripod-rk3588 (2017.09+20230321.git2f6e967d-4) jammy; urgency=medium
 
   * Update u-boot install path
 

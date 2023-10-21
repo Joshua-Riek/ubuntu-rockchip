@@ -1,4 +1,4 @@
-u-boot-lubancat-rk3588 (2017.09+20230711.gitddc91cd0-2) UNRELEASED; urgency=medium
+u-boot-lubancat-rk3588 (2017.09+20230711.gitddc91cd0-2) jammy; urgency=medium
 
   * Update u-boot install path 
 

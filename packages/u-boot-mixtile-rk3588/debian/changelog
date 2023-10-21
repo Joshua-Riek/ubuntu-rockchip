@@ -1,4 +1,4 @@
-u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-3) UNRELEASED; urgency=medium
+u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-3) jammy; urgency=medium
 
   * Update u-boot install path 
 
