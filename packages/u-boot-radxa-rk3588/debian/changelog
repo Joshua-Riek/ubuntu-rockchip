@@ -1,3 +1,9 @@
+u-boot-radxa-rk3588 (2017.09+20230920.git609a77ef-2) UNRELEASED; urgency=medium
+
+  * Update u-boot install path
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 20 Oct 2023 21:11:44 -0400
+
 u-boot-radxa-rk3588 (2017.09+20230920.git609a77ef-1) jammy; urgency=medium
 
   * configs: add radxa-cm5-rpi-cm4-io-rk3588s_defconfig

@@ -1,3 +1,9 @@
+u-boot-lubancat-rk3588 (2017.09+20230711.gitddc91cd0-2) UNRELEASED; urgency=medium
+
+  * Update u-boot install path 
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 20 Oct 2023 21:55:20 -0400
+
 u-boot-lubancat-rk3588 (2017.09+20230711.gitddc91cd0-1) jammy; urgency=medium
 
   * renamed package to u-boot-lubancat-rk3588

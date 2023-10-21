@@ -29,7 +29,7 @@ ${BOARDS}:
 	  $@_defconfig
 
 	@touch .scmversion
-	@sed -i 's/CONFIG_BOOTDELAY=.*/CONFIG_BOOTDELAY=1/g' debian/build/$@/.config
+	@sed -i 's/CONFIG_BOOTDELAY=.*/CONFIG_BOOTDELAY=2/g' debian/build/$@/.config
 	@sed -i 's/CONFIG_DISABLE_CONSOLE=y/CONFIG_DISABLE_CONSOLE=n/g' debian/build/$@/.config
 	@sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-friendlyelec-rk3588"/g' debian/build/$@/.config
 
@@ -70,18 +70,20 @@ binary-arch: $(addprefix package-,$(BOARDS))
 binary: binary-arch
 
 package-%:
-	@rm -rf debian/tmp && mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot-friendlyelec-rk3588
-	@cp debian/build/$(subst package-,,$@)/u-boot.itb debian/tmp/u-boot/usr/lib/u-boot-friendlyelec-rk3588/u-boot.itb
-	@cp debian/build/$(subst package-,,$@)/idbloader.img debian/tmp/u-boot/usr/lib/u-boot-friendlyelec-rk3588/idbloader.img
+	@rm -rf debian/tmp && mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot
+	@sh -c "cd 'debian/tmp/u-boot/usr/lib/'; ln -sfn /usr/lib/u-boot u-boot-friendlyelec-rk3588"
+	@cp debian/build/$(subst package-,,$@)/u-boot.itb debian/tmp/u-boot/usr/lib/u-boot/u-boot.itb
+	@cp debian/build/$(subst package-,,$@)/idbloader.img debian/tmp/u-boot/usr/lib/u-boot/idbloader.img
 	@if [ "nanopc_t6" = "$(subst package-,,$@)" ]; then \
-		cp debian/build/$(subst package-,,$@)/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot-friendlyelec-rk3588/rkspi_loader.img; \
+		cp debian/build/$(subst package-,,$@)/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader.img; \
 	fi
 
 	@mkdir -m 755 -p "debian/tmp/u-boot/DEBIAN"
-	@mkdir -p "debian/tmp/u-boot/usr/share/doc/u-boot-friendlyelec-rk3588"
-	@cp debian/copyright "debian/tmp/u-boot/usr/share/doc/u-boot-friendlyelec-rk3588"
-	@cp debian/changelog "debian/tmp/u-boot/usr/share/doc/u-boot-friendlyelec-rk3588/changelog.Debian"
-	@gzip -9 "debian/tmp/u-boot/usr/share/doc/u-boot-friendlyelec-rk3588/changelog.Debian"
+	@cp debian/preinst debian/tmp/u-boot/DEBIAN/preinst
+	@mkdir -p "debian/tmp/u-boot/usr/share/doc/u-boot"
+	@cp debian/copyright "debian/tmp/u-boot/usr/share/doc/u-boot"
+	@cp debian/changelog "debian/tmp/u-boot/usr/share/doc/u-boot/changelog.Debian"
+	@gzip -9 "debian/tmp/u-boot/usr/share/doc/u-boot/changelog.Debian"
 	@sh -c "cd 'debian/tmp/u-boot'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
 	@chown -R root:root "debian/tmp/u-boot" && chmod -R go-w "debian/tmp/u-boot" && chmod -R a+rX "debian/tmp/u-boot"
 	@dpkg-gencontrol -pu-boot-$(subst -rk3588,,$(subst -rk3588s,,$(subst _,-,$(subst package-,,$@)))) -P"debian/tmp/u-boot"
