@@ -123,21 +123,12 @@ UUID=${root_uuid,,} /              ext4    defaults    0       1
 /swapfile           none           swap    sw          0       0
 EOF
 
-# Get bootloader path
-uboot_paths=("/usr/lib/u-boot-*-rk3588/")
-uboot_path="$(echo ${uboot_paths[0]})"
-
-# Bootloader path for future use
-if [ ! -d "${uboot_path}" ] || [ -z "${uboot_path}" ]; then
-    uboot_path="/usr/lib/u-boot/"
-fi
-
 # Write the bootloader
-if [ -f "${uboot_path}/u-boot-rockchip.bin" ]; then
-    dd if="${uboot_path}/u-boot-rockchip.bin" of="${disk}" seek=1 bs=32k conv=fsync
+if [ -f "/usr/lib/u-boot/u-boot-rockchip.bin" ]; then
+    dd if="/usr/lib/u-boot/u-boot-rockchip.bin" of="${disk}" seek=1 bs=32k conv=fsync
 else
-    dd if="${uboot_path}/idbloader.img" of="${disk}" seek=64 conv=notrunc
-    dd if="${uboot_path}/u-boot.itb" of="${disk}" seek=16384 conv=notrunc
+    dd if="/usr/lib/u-boot/idbloader.img" of="${disk}" seek=64 conv=notrunc
+    dd if="/usr/lib/u-boot/u-boot.itb" of="${disk}" seek=16384 conv=notrunc
 fi
 
 sync --file-system

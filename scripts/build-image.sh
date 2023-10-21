@@ -268,18 +268,12 @@ fi
 # Copy the device trees, kernel, and initrd to the boot partition
 mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot/
 
-# WIP updating uboot dir
-uboot_path="u-boot-${VENDOR}-rk3588"
-if [ -d "${mount_point}/writable/usr/lib/u-boot/" ]; then
-    uboot_path="u-boot"
-fi
-
 # Write bootloader to disk image
-if [ -f "${mount_point}/writable/usr/lib/${uboot_path}/u-boot-rockchip.bin" ]; then
-    dd if="${mount_point}/writable/usr/lib/${uboot_path}/u-boot-rockchip.bin" of="${loop}" seek=1 bs=32k conv=fsync
+if [ -f "${mount_point}/writable/usr/lib/u-boot/u-boot-rockchip.bin" ]; then
+    dd if="${mount_point}/writable/usr/lib/u-boot/u-boot-rockchip.bin" of="${loop}" seek=1 bs=32k conv=fsync
 else
-    dd if="${mount_point}/writable/usr/lib/${uboot_path}/idbloader.img" of="${loop}" seek=64 conv=notrunc
-    dd if="${mount_point}/writable/usr/lib/${uboot_path}/u-boot.itb" of="${loop}" seek=16384 conv=notrunc
+    dd if="${mount_point}/writable/usr/lib/u-boot/idbloader.img" of="${loop}" seek=64 conv=notrunc
+    dd if="${mount_point}/writable/usr/lib/u-boot/u-boot.itb" of="${loop}" seek=16384 conv=notrunc
 fi
 
 # Cloud init config for server image
