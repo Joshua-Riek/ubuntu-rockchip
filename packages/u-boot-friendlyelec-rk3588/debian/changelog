@@ -1,4 +1,4 @@
-u-boot-friendlyelec-rk3588 (2017.09+20230711.gitddc91cd0-3) UNRELEASED; urgency=medium
+u-boot-friendlyelec-rk3588 (2017.09+20230711.gitddc91cd0-3) jammy; urgency=medium
 
   * Update u-boot install path 
 

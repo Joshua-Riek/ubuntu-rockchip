@@ -1,4 +1,4 @@
-u-boot-turing-rk3588 (2023.10-7) UNRELEASED; urgency=medium
+u-boot-turing-rk3588 (2023.10-7) jammy; urgency=medium
 
   * Move u-boot install dir
   * Cleanup the Turing RK1 u-boot patch 

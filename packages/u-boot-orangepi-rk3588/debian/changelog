@@ -1,4 +1,4 @@
-u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-4) UNRELEASED; urgency=medium
+u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-4) jammy; urgency=medium
 
   * Update u-boot install path
 
