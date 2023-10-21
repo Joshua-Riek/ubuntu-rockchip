@@ -29,9 +29,9 @@ Vcs-Git: https://salsa.debian.org/debian/u-boot.git
 Package: u-boot-turing-rk1
 Architecture: arm64
 Priority: optional
-Provides: u-boot-turing-rk3588
-Replaces: u-boot-turing-rk3588
-Conflicts: u-boot-turing-rk3588
+Provides: u-boot-turing-rk3588, u-boot
+Replaces: u-boot-turing-rk3588, u-boot
+Conflicts: u-boot-turing-rk3588, u-boot
 Description: A boot loader for the Turing RK1.
  Das U-Boot is a cross-platform bootloader for embedded systems,
  used as the default boot loader by several board vendors.  It is
