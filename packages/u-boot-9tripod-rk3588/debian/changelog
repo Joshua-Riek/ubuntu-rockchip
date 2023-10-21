@@ -1,3 +1,9 @@
+u-boot-9tripod-rk3588 (2017.09+20230321.git2f6e967d-4) UNRELEASED; urgency=medium
+
+  * Update u-boot install path
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 20 Oct 2023 21:47:35 -0400
+
 u-boot-9tripod-rk3588 (2017.09+20230321.git2f6e967d-3) jammy; urgency=medium
 
   * Updated the ddr blob to rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin

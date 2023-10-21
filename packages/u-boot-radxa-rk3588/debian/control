@@ -9,9 +9,9 @@ Vcs-Git: https://github.com/radxa/u-boot.git
 Package: u-boot-rock-5b
 Architecture: arm64
 Priority: optional
-Provides: u-boot-radxa-rk3588
-Replaces: u-boot-radxa-rk3588
-Conflicts: u-boot-radxa-rk3588
+Provides: u-boot-radxa-rk3588, u-boot
+Replaces: u-boot-radxa-rk3588, u-boot
+Conflicts: u-boot-radxa-rk3588, u-boot
 Description: A boot loader for the Radxa ROCK 5B.
  Das U-Boot is a cross-platform bootloader for embedded systems,
  used as the default boot loader by several board vendors.  It is
@@ -22,9 +22,9 @@ Description: A boot loader for the Radxa ROCK 5B.
 Package: u-boot-rock-5a
 Architecture: arm64
 Priority: optional
-Provides: u-boot-radxa-rk3588
-Replaces: u-boot-radxa-rk3588
-Conflicts: u-boot-radxa-rk3588
+Provides: u-boot-radxa-rk3588, u-boot
+Replaces: u-boot-radxa-rk3588, u-boot
+Conflicts: u-boot-radxa-rk3588, u-boot
 Description: A boot loader for the Radxa ROCK 5A.
  Das U-Boot is a cross-platform bootloader for embedded systems,
  used as the default boot loader by several board vendors.  It is
@@ -35,9 +35,9 @@ Description: A boot loader for the Radxa ROCK 5A.
 Package: u-boot-radxa-cm5-io
 Architecture: arm64
 Priority: optional
-Provides: u-boot-radxa-rk3588
-Replaces: u-boot-radxa-rk3588
-Conflicts: u-boot-radxa-rk3588
+Provides: u-boot-radxa-rk3588, u-boot
+Replaces: u-boot-radxa-rk3588, u-boot
+Conflicts: u-boot-radxa-rk3588, u-boot
 Description: A boot loader for the Radxa CM5 IO.
  Das U-Boot is a cross-platform bootloader for embedded systems,
  used as the default boot loader by several board vendors.  It is
