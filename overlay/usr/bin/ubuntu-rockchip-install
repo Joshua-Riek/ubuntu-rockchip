@@ -20,7 +20,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 if test $# -ne 1; then
-    echo "Usage: $0 /dev/mmcblk0"
+    echo "usage: $0 /dev/mmcblk0"
     exit 1
 fi
 
@@ -36,28 +36,27 @@ if [[ "/dev/$(lsblk -no pkname "$(findmnt -n -o SOURCE /)")" == "${disk}" ]]; th
     exit 1
 fi
 
-echo -e "This script will install the currently running system onto '${disk}'\n"
-
+echo "This script will install the currently running system onto ${disk}."
 read -r -p "It may take up to a few minutes - Continue? [y/N] " response
 case "$response" in
     [yY][eE][sS]|[yY]) ;;
     *) exit 0 ;;
 esac
 
-echo
-
 # Ensure disk is not mounted
 mount_point=/tmp/mnt
 umount -lf "${disk}"* 2> /dev/null || true
 umount -lf ${mount_point}/* 2> /dev/null || true
-mkdir -p ${mount_point}
+mkdir -p ${mount_point} 
+
+echo -e "\nCreating partition table for ${disk}."
 
 # Setup partition table
-dd if=/dev/zero of="${disk}" count=4096 bs=512
+dd if=/dev/zero of="${disk}" count=4096 bs=512 2> /dev/null
 parted --script "${disk}" \
 mklabel gpt \
 mkpart primary fat16 16MiB 528MiB \
-mkpart primary ext4 528MiB 100%
+mkpart primary ext4 528MiB 100% 2> /dev/null
 
 # Create partitions
 {
@@ -70,7 +69,7 @@ mkpart primary ext4 528MiB 100%
     echo "w"
 } | fdisk "${disk}" &> /dev/null || true
 
-partprobe "${disk}"
+partprobe "${disk}" 1> /dev/null
 
 partition_char="$(if [[ ${disk: -1} == [0-9] ]]; then echo p; fi)"
 
@@ -90,6 +89,8 @@ wait_loopdev "${disk}${partition_char}1" 60 || {
 
 sleep 1
 
+echo -e "Creating filesystem on partitions ${disk}${partition_char}1 and ${disk}${partition_char}2.\n"
+
 # Generate random uuid for bootfs
 boot_uuid=$(uuidgen | head -c8)
 
@@ -97,18 +98,62 @@ boot_uuid=$(uuidgen | head -c8)
 root_uuid=$(uuidgen)
 
 # Create filesystems on partitions
-mkfs.vfat -i "${boot_uuid}" -F16 -n system-boot "${disk}${partition_char}1"
-dd if=/dev/zero of="${disk}${partition_char}2" bs=1KB count=10 > /dev/null
-mkfs.ext4 -U "${root_uuid}" -L writable "${disk}${partition_char}2"
+mkfs.vfat -i "${boot_uuid}" -F16 -n system-boot "${disk}${partition_char}1" &> /dev/null
+dd if=/dev/zero of="${disk}${partition_char}2" bs=1KB count=10 2> /dev/null
+mkfs.ext4 -U "${root_uuid}" -L writable "${disk}${partition_char}2" &> /dev/null
+
+# Write the bootloader
+if [ -f /usr/lib/u-boot/u-boot-rockchip.bin ]; then
+    dd if=/usr/lib/u-boot/u-boot-rockchip.bin of="${disk}" seek=1 bs=32k conv=fsync 2> /dev/null
+else
+    dd if=/usr/lib/u-boot/idbloader.img of="${disk}" seek=64 conv=notrunc 2> /dev/null
+    dd if=/usr/lib/u-boot/u-boot.itb of="${disk}" seek=16384 conv=notrunc 2> /dev/null
+fi
 
 # Mount partitions
 mkdir -p ${mount_point}/{system-boot,writable}
 mount "${disk}${partition_char}1" ${mount_point}/system-boot/
 mount "${disk}${partition_char}2" ${mount_point}/writable/
 
-# Copy over the root and boot partitions
-sudo rsync -aPAHSXx /boot/firmware/* ${mount_point}/system-boot/ 1> /dev/null
-sudo rsync -aPAHSXx / ${mount_point}/writable/ 1> /dev/null
+echo "Counting files..."
+count=$(rsync -xahvrltDn --delete --stats /boot/firmware/* ${mount_point}/system-boot/ | grep "Number of files:" | awk '{print $4}' | tr -d '.,')
+
+# Figure out if we have enough free disk space to copy the bootfs
+usage=$(df -BM | grep ^/dev | head -2 | tail -n 1 | awk '{print $3}' | tr -cd '[0-9]. \n')
+dest=$(df -BM | grep ^/dev | grep ${mount_point}/system-boot | awk '{print $4}' | tr -cd '[0-9]. \n')
+if [[ ${usage} -gt ${dest} ]]; then
+    echo -e "\nPartition ${disk}${partition_char}1 is too small.\nNeeded: ${usage} MB Avaliable: ${dest} MB"
+    umount -lf "${disk}${partition_char}1" 2> /dev/null || true
+    umount -lf "${disk}${partition_char}2" 2> /dev/null || true
+    exit 1
+fi
+
+echo "Transferring $count files (${usage} MB) from the bootfs to ${disk}${partition_char}1. Please wait!"
+rsync -xavrltD --delete /boot/firmware/* ${mount_point}/system-boot/ >/dev/null 2>&1
+
+# Run rsync again to catch outstanding changes
+echo "Cleaning up..."
+rsync -xavrltD --delete /boot/firmware/* ${mount_point}/system-boot/ >/dev/null 2>&1
+
+echo -e "\nCounting files..."
+count=$(rsync -xahvrltDn --delete --stats / ${mount_point}/writable/ | grep "Number of files:" | awk '{print $4}' | tr -d '.,')
+
+# Figure out if we have enough free disk space to copy the rootfs
+usage=$(df -BM | grep ^/dev | head -1 | awk '{print $3}' | tr -cd '[0-9]. \n')
+dest=$(df -BM | grep ^/dev | grep ${mount_point}/writable | awk '{print $4}' | tr -cd '[0-9]. \n')
+if [[ ${usage} -gt ${dest} ]]; then
+    echo -e "\nPartition ${disk}${partition_char}2 is too small.\nNeeded: ${usage} MB Avaliable: ${dest} MB"
+    umount -lf "${disk}${partition_char}1" 2> /dev/null || true
+    umount -lf "${disk}${partition_char}2" 2> /dev/null || true
+    exit 1
+fi
+
+echo "Transferring $count files (${usage} MB) from the rootfs to ${disk}${partition_char}2. Please wait!"
+rsync -xavrltD --delete / ${mount_point}/writable/ >/dev/null 2>&1
+
+# Run rsync again to catch outstanding changes
+echo -e "Cleaning up..."
+rsync -xavrltD --delete / ${mount_point}/writable/ >/dev/null 2>&1
 
 # Update root uuid for kernel cmdline
 sed -i "s/^\(\s*bootargs=\s*\)root=UUID=[A-Fa-f0-9-]*/\1root=UUID=${root_uuid}/" ${mount_point}/system-boot/ubuntuEnv.txt
@@ -123,16 +168,12 @@ UUID=${root_uuid,,} /              ext4    defaults    0       1
 /swapfile           none           swap    sw          0       0
 EOF
 
-# Write the bootloader
-if [ -f "/usr/lib/u-boot/u-boot-rockchip.bin" ]; then
-    dd if="/usr/lib/u-boot/u-boot-rockchip.bin" of="${disk}" seek=1 bs=32k conv=fsync
-else
-    dd if="/usr/lib/u-boot/idbloader.img" of="${disk}" seek=64 conv=notrunc
-    dd if="/usr/lib/u-boot/u-boot.itb" of="${disk}" seek=16384 conv=notrunc
-fi
-
 sync --file-system
 sync
+
+sleep 2
+
+echo -e "\nDone!"
 
 # Umount partitions
 umount "${disk}${partition_char}1"
