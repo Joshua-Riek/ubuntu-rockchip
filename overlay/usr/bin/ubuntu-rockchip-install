@@ -110,6 +110,9 @@ else
     dd if=/usr/lib/u-boot/u-boot.itb of="${disk}" seek=16384 conv=notrunc 2> /dev/null
 fi
 
+# Read partition table again
+blockdev --rereadpt "${disk}"
+
 # Mount partitions
 mkdir -p ${mount_point}/{system-boot,writable}
 mount "${disk}${partition_char}1" ${mount_point}/system-boot/
