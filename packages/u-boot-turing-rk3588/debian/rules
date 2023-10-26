@@ -45,10 +45,15 @@ binary-arch: $(addprefix package-,$(BOARDS))
 binary: binary-arch
 
 package-%:
-	@rm -rf debian/tmp && mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot
+	@rm -rf debian/tmp
+	@mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot/
+	@mkdir -m 755 -p debian/tmp/u-boot/usr/bin/
 	@sh -c "cd 'debian/tmp/u-boot/usr/lib/'; ln -sfn /usr/lib/u-boot u-boot-turing-rk3588"
+
 	@cp debian/build/$(subst package-,,$@)/u-boot-rockchip.bin debian/tmp/u-boot/usr/lib/u-boot/u-boot-rockchip.bin
 	@cp debian/build/$(subst package-,,$@)/u-boot-rockchip-spi.bin debian/tmp/u-boot/usr/lib/u-boot/u-boot-rockchip-spi.bin
+	@cp debian/bin/u-boot-install debian/tmp/u-boot/usr/bin/u-boot-install
+	@cp debian/bin/u-boot-install-mtd debian/tmp/u-boot/usr/bin/u-boot-install-mtd
 
 	@mkdir -m 755 -p "debian/tmp/u-boot/DEBIAN"
 	@cp debian/preinst debian/tmp/u-boot/DEBIAN/preinst

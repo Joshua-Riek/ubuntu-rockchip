@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -eE 
+trap 'echo Error: in $0 on line $LINENO' ERR
+
+disk="$1"
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 /dev/mmcblk0"
+    exit 1
+fi
+
+if [ ! -b "${disk}" ]; then
+    echo "$0: block device '${disk}' not found"
+    exit 1
+fi
+
+if [ -f /usr/lib/u-boot/u-boot-rockchip.bin ]; then
+    echo "Writing idbloader and u-boot image"
+    sudo dd if=/usr/lib/u-boot/u-boot-rockchip.bin of="${disk}" seek=1 bs=32k conv=fsync
+else
+    echo "Writing idbloader"
+    sudo dd if=/usr/lib/u-boot/idbloader.img of="${disk}" seek=64 conv=notrunc
+    echo "Writing u-boot image"
+    sudo dd if=/usr/lib/u-boot/u-boot.itb of="${disk}" seek=16384 conv=notrunc
+fi
+
+sudo sync "${disk}"
+
+sleep 2
