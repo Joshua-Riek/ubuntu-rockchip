@@ -66,14 +66,20 @@ binary-arch: $(addprefix package-,$(filter-out orangepi_5_sata,$(BOARDS)))
 binary: binary-arch
 
 package-%:
-	@rm -rf debian/tmp && mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot
+	@rm -rf debian/tmp
+	@mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot/
+	@mkdir -m 755 -p debian/tmp/u-boot/usr/bin/
 	@sh -c "cd 'debian/tmp/u-boot/usr/lib/'; ln -sfn /usr/lib/u-boot u-boot-orangepi-rk3588"
+
 	@cp debian/build/$(subst package-,,$@)/u-boot.itb debian/tmp/u-boot/usr/lib/u-boot/u-boot.itb
 	@cp debian/build/$(subst package-,,$@)/idbloader.img debian/tmp/u-boot/usr/lib/u-boot/idbloader.img
 	@cp debian/build/$(subst package-,,$@)/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader.img
 	@if [ "orangepi_5" = "$(subst package-,,$@)" ]; then \
 		cp debian/build/orangepi_5_sata/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader_sata.img; \
+		cp debian/bin/u-boot-install-sata-mtd debian/tmp/u-boot/usr/bin/u-boot-install-sata-mtd; \
 	fi
+	@cp debian/bin/u-boot-install debian/tmp/u-boot/usr/bin/u-boot-install
+	@cp debian/bin/u-boot-install-mtd debian/tmp/u-boot/usr/bin/u-boot-install-mtd
 
 	@mkdir -m 755 -p "debian/tmp/u-boot/DEBIAN"
 	@cp debian/preinst debian/tmp/u-boot/DEBIAN/preinst
