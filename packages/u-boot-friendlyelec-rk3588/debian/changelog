@@ -1,3 +1,9 @@
+u-boot-friendlyelec-rk3588 (2017.09+20230711.gitddc91cd0-4) jammy; urgency=medium
+
+  * Add u-boot install scripts
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 26 Oct 2023 17:50:53 -0400
+
 u-boot-friendlyelec-rk3588 (2017.09+20230711.gitddc91cd0-3) jammy; urgency=medium
 
   * Update u-boot install path 
