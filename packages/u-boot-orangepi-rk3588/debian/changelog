@@ -1,3 +1,9 @@
+u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-5) jammy; urgency=medium
+
+  * Add u-boot install scripts
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 26 Oct 2023 17:52:06 -0400
+
 u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-4) jammy; urgency=medium
 
   * Update u-boot install path

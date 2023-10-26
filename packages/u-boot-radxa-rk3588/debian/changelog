@@ -1,3 +1,9 @@
+u-boot-radxa-rk3588 (2017.09+20230920.git609a77ef-3) jammy; urgency=medium
+
+  * Add u-boot install scripts
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 26 Oct 2023 17:52:34 -0400
+
 u-boot-radxa-rk3588 (2017.09+20230920.git609a77ef-2) jammy; urgency=medium
 
   * Update u-boot install path

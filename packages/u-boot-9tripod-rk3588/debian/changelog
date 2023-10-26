@@ -1,3 +1,9 @@
+u-boot-9tripod-rk3588 (2017.09+20230321.git2f6e967d-5) jammy; urgency=medium
+
+  * Add u-boot install scripts
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 26 Oct 2023 17:50:22 -0400
+
 u-boot-9tripod-rk3588 (2017.09+20230321.git2f6e967d-4) jammy; urgency=medium
 
   * Update u-boot install path

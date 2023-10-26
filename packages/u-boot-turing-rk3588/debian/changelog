@@ -1,3 +1,10 @@
+u-boot-turing-rk3588 (2023.10-8) jammy; urgency=medium
+
+  * Cleanup and rebase Turing RK1 patch
+  * Add u-boot install scripts
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 26 Oct 2023 17:53:16 -0400
+
 u-boot-turing-rk3588 (2023.10-7) jammy; urgency=medium
 
   * Move u-boot install dir
