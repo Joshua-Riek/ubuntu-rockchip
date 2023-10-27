@@ -1,3 +1,9 @@
+u-boot-turing-rk3588 (2023.10-9) jammy; urgency=medium
+
+  * Bump build number for launchpad rebuild
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 27 Oct 2023 14:57:58 -0400
+
 u-boot-turing-rk3588 (2023.10-8) jammy; urgency=medium
 
   * Cleanup and rebase Turing RK1 patch
