@@ -1,22 +1,24 @@
-From f5d27ea0ba421db7aeba746cc1ec0386cf985fe0 Mon Sep 17 00:00:00 2001
+From 7484a814fbb80d0ab6f9f103029958a5cbca7835 Mon Sep 17 00:00:00 2001
 From: Joshua-Riek <jjriek@verizon.net>
 Date: Wed, 4 Oct 2023 18:45:54 -0400
-Subject: [PATCH] board: rockchip: add Turing RK1 RK3588
+Subject: [PATCH 2/2] board: rockchip: add Turing RK1 RK3588
 
 ---
  arch/arm/dts/Makefile                         |   3 +-
  arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi    |  34 +
- arch/arm/dts/rk3588-turing-rk1.dts            | 587 ++++++++++++++++++
+ arch/arm/dts/rk3588-turing-rk1.dts            |  21 +
+ arch/arm/dts/rk3588-turing-rk1.dtsi           | 626 ++++++++++++++++++
  arch/arm/mach-rockchip/rk3588/Kconfig         |   9 +
  board/turing/turing-rk1-rk3588/Kconfig        |  15 +
  board/turing/turing-rk1-rk3588/Makefile       |   6 +
  .../turing-rk1-rk3588/turing-rk1-rk3588.c     |  39 ++
  configs/turing-rk1-rk3588_defconfig           | 133 ++++
  doc/board/rockchip/rockchip.rst               |   1 +
- include/configs/turing-rk1-rk3588.h           |  23 +
- 10 files changed, 849 insertions(+), 1 deletion(-)
+ include/configs/turing-rk1-rk3588.h           |  21 +
+ 11 files changed, 907 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi
  create mode 100644 arch/arm/dts/rk3588-turing-rk1.dts
+ create mode 100644 arch/arm/dts/rk3588-turing-rk1.dtsi
  create mode 100644 board/turing/turing-rk1-rk3588/Kconfig
  create mode 100644 board/turing/turing-rk1-rk3588/Makefile
  create mode 100644 board/turing/turing-rk1-rk3588/turing-rk1-rk3588.c
@@ -24,10 +26,10 @@ Subject: [PATCH] board: rockchip: add Turing RK1 RK3588
  create mode 100644 include/configs/turing-rk1-rk3588.h
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index 85fd5b1157b..2ee278a463b 100644
+index 96066a2b6b8..60ad3f9414a 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -190,7 +190,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3588) += \
+@@ -192,7 +192,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3588) += \
  	rk3588-edgeble-neu6b-io.dtb \
  	rk3588-evb1-v10.dtb \
  	rk3588s-rock-5a.dtb \
@@ -39,13 +41,13 @@ index 85fd5b1157b..2ee278a463b 100644
  	rv1108-elgin-r1.dtb \
 diff --git a/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi b/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi
 new file mode 100644
-index 00000000000..bca28ef06fa
+index 00000000000..226caa34656
 --- /dev/null
 +++ b/arch/arm/dts/rk3588-turing-rk1-u-boot.dtsi
 @@ -0,0 +1,34 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
-+ * Copyright (c) 2023 Joshua Riek <jjriek@verizon.net>
++ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
 + *
 + */
 +
@@ -79,35 +81,70 @@ index 00000000000..bca28ef06fa
 +
 diff --git a/arch/arm/dts/rk3588-turing-rk1.dts b/arch/arm/dts/rk3588-turing-rk1.dts
 new file mode 100644
-index 00000000000..2616da74c1c
+index 00000000000..7bcad28d73b
 --- /dev/null
 +++ b/arch/arm/dts/rk3588-turing-rk1.dts
-@@ -0,0 +1,587 @@
+@@ -0,0 +1,21 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
-+ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
-+ * Copyright (c) 2023 Joshua Riek <jjriek@verizon.net>
++ * This device tree covers the common case where the RK1 is used as a
++ * "compute node" system, where the carrier board is functioning more like a
++ * generic backplane (with no non-autoenumerable peripherals of its own) than
++ * like a device that the SoM is meant to enable.
 + *
++ * Copyright (c) 2023 Sam Edwards <CFSworks@gmail.com>
 + */
 +
 +/dts-v1/;
-+
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/pinctrl/rockchip.h>
-+#include "rk3588.dtsi"
++#include "rk3588-turing-rk1.dtsi"
 +
 +/ {
 +	model = "Turing Machines RK1";
 +	compatible = "turing,rk1", "rockchip,rk3588";
 +
++	chosen {
++		stdout-path = "serial9:115200n8";
++	};
++};
+diff --git a/arch/arm/dts/rk3588-turing-rk1.dtsi b/arch/arm/dts/rk3588-turing-rk1.dtsi
+new file mode 100644
+index 00000000000..c132c6427c3
+--- /dev/null
++++ b/arch/arm/dts/rk3588-turing-rk1.dtsi
+@@ -0,0 +1,626 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2023 Sam Edwards <CFSworks@gmail.com>
++ *
++ * Based on RK3588-EVB1 devicetree
++ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
++ */
++
++/dts-v1/;
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/pinctrl/rockchip.h>
++#include "rk3588.dtsi"
++
++/ {
++	compatible = "turing,rk1", "rockchip,rk3588";
++
 +	aliases {
++		ethernet0 = &gmac1;
 +		mmc0 = &sdhci;
 +		serial2 = &uart2;
 +		serial9 = &uart9;
 +	};
 +
-+	chosen {
-+		stdout-path = "serial9:115200n8";
++	fan: pwm-fan {
++		compatible = "pwm-fan";
++		cooling-levels = <0 25 95 145 195 255>;
++		fan-supply = <&vcc5v0_sys>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pwm0m2_pins &fan_int>;
++		interrupt-parent = <&gpio0>;
++		interrupts = <RK_PA4 IRQ_TYPE_EDGE_FALLING>;
++		pwms = <&pwm0 0 50000 0>;
++		#cooling-cells = <2>;
 +	};
 +
 +	vcc3v3_pcie30: vcc3v3-pcie30-regulator {
@@ -242,7 +279,94 @@ index 00000000000..2616da74c1c
 +	};
 +};
 +
++&i2c1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c1m2_xfer>;
++	status = "okay";
++
++	vdd_npu_s0: regulator@42 {
++		compatible = "rockchip,rk8602";
++		reg = <0x42>;
++		fcs,suspend-voltage-selector = <1>;
++		regulator-name = "vdd_npu_s0";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <550000>;
++		regulator-max-microvolt = <950000>;
++		regulator-ramp-delay = <2300>;
++		vin-supply = <&vcc5v0_sys>;
++
++		regulator-state-mem {
++			regulator-off-in-suspend;
++		};
++	};
++};
++
++&i2c6 {
++	status = "okay";
++
++
++	hym8563: rtc@51 {
++		compatible = "haoyu,hym8563";
++		reg = <0x51>;
++		#clock-cells = <0>;
++		clock-output-names = "hym8563";
++		pinctrl-names = "default";
++		pinctrl-0 = <&hym8563_int>;
++		interrupt-parent = <&gpio0>;
++		interrupts = <RK_PB0 IRQ_TYPE_LEVEL_LOW>;
++		wakeup-source;
++	};
++};
++
++&mdio1 {
++	rgmii_phy: ethernet-phy@1 {
++		/* RTL8211F */
++		compatible = "ethernet-phy-id001c.c916",
++			     "ethernet-phy-ieee802.3-c22";
++		reg = <0x1>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&rtl8211f_rst>;
++		reset-assert-us = <15000>;
++		reset-deassert-us = <50000>;
++		reset-gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
++	};
++};
++
++&pcie2x1l1 {
++	linux,pci-domain = <1>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pcie2_reset>;
++	reset-gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
++	status = "okay";
++};
++
++&pcie30phy {
++	status = "okay";
++};
++
++&pcie3x4 {
++	linux,pci-domain = <0>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pcie3_reset>, <&pcie3_clkreqn_m1>;
++	reset-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc3v3_pcie30>;
++	status = "okay";
++};
++
 +&pinctrl {
++	hym8563 {
++		hym8563_int: hym8563-int {
++			rockchip,pins = <0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	fan {
++		fan_int: fan-int {
++			rockchip,pins = <0 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
 +	pcie2 {
 +		pcie2_reset: pcie2-reset {
 +			rockchip,pins = <4 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
@@ -254,12 +378,12 @@ index 00000000000..2616da74c1c
 +			rockchip,pins = <4 RK_PB6 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +
-+		pcie3_clkreqn_m1: pcie3-clkreqn-m1 {
-+			rockchip,pins = <4 RK_PB4 RK_FUNC_GPIO &pcfg_pull_down>;
-+		};
-+
 +		vcc3v3_pcie30_en: pcie3-reg {
 +			rockchip,pins = <2 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		pcie3_clkreqn_m1: pcie3-clkreqn-m1 {
++			rockchip,pins = <4 RK_PB4 RK_FUNC_GPIO &pcfg_pull_down>;
 +		};
 +	};
 +
@@ -270,6 +394,10 @@ index 00000000000..2616da74c1c
 +	};
 +};
 +
++&pwm0 {
++	status = "okay";
++};
++
 +&sdhci {
 +	bus-width = <8>;
 +	no-sdio;
@@ -278,10 +406,6 @@ index 00000000000..2616da74c1c
 +	mmc-hs400-1_8v;
 +	mmc-hs400-enhanced-strobe;
 +	status = "okay";
-+};
-+
-+&sdmmc {
-+	status = "disabled";
 +};
 +
 +&spi2 {
@@ -605,41 +729,6 @@ index 00000000000..2616da74c1c
 +	};
 +};
 +
-+&mdio1 {
-+	rgmii_phy: ethernet-phy@1 {
-+		/* RTL8211F */
-+		compatible = "ethernet-phy-id001c.c916",
-+			     "ethernet-phy-ieee802.3-c22";
-+		reg = <0x1>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&rtl8211f_rst>;
-+		reset-assert-us = <15000>;
-+		reset-deassert-us = <50000>;
-+		reset-gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
-+	};
-+};
-+
-+&pcie2x1l1 {
-+	linux,pci-domain = <1>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pcie2_reset>;
-+	reset-gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
-+	status = "okay";
-+};
-+
-+&pcie30phy {
-+	status = "okay";
-+};
-+
-+&pcie3x4 {
-+	linux,pci-domain = <0>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pcie3_reset>, <&pcie3_clkreqn_m1>;
-+	reset-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
-+	vpcie3v3-supply = <&vcc3v3_pcie30>;
-+	status = "okay";
-+};
-+
 +&uart2 {
 +	pinctrl-0 = <&uart2m0_xfer>;
 +	status = "okay";
@@ -647,27 +736,6 @@ index 00000000000..2616da74c1c
 +
 +&uart9 {
 +	pinctrl-0 = <&uart9m0_xfer>;
-+	status = "okay";
-+};
-+
-+&u2phy0 {
-+	status = "okay";
-+};
-+
-+&u2phy0_otg {
-+	status = "okay";
-+};
-+
-+&usbdp_phy0 {
-+	status = "okay";
-+};
-+
-+&usbdp_phy0_u3 {
-+	status = "okay";
-+};
-+
-+&usb_host0_xhci {
-+	extcon = <&u2phy0>;
 +	status = "okay";
 +};
 diff --git a/arch/arm/mach-rockchip/rk3588/Kconfig b/arch/arm/mach-rockchip/rk3588/Kconfig
@@ -914,10 +982,10 @@ index 00000000000..1050ec0f368
 +CONFIG_USB_FUNCTION_ROCKUSB=y
 +CONFIG_ERRNO_STR=y
 diff --git a/doc/board/rockchip/rockchip.rst b/doc/board/rockchip/rockchip.rst
-index de9fe8e642b..f9dacdff5a6 100644
+index 8262fc0d32c..bbec3fb2509 100644
 --- a/doc/board/rockchip/rockchip.rst
 +++ b/doc/board/rockchip/rockchip.rst
-@@ -112,6 +112,7 @@ List of mainline supported Rockchip boards:
+@@ -115,6 +115,7 @@ List of mainline supported Rockchip boards:
       - Rockchip EVB (evb-rk3588)
       - Edgeble Neural Compute Module 6A SoM - Neu6a (neu6a-io-rk3588)
       - Edgeble Neural Compute Module 6B SoM - Neu6b (neu6b-io-rk3588)
@@ -927,10 +995,10 @@ index de9fe8e642b..f9dacdff5a6 100644
  
 diff --git a/include/configs/turing-rk1-rk3588.h b/include/configs/turing-rk1-rk3588.h
 new file mode 100644
-index 00000000000..921aceda920
+index 00000000000..b989236341b
 --- /dev/null
 +++ b/include/configs/turing-rk1-rk3588.h
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,21 @@
 +/* SPDX-License-Identifier: GPL-2.0+ */
 +/*
 + * Copyright (c) 2023 Rockchip Electronics Co., Ltd.
@@ -941,9 +1009,7 @@ index 00000000000..921aceda920
 +
 +#define ROCKCHIP_DEVICE_SETTINGS \
 +		"stdout=serial,vidconsole\0" \
-+		"stderr=serial,vidconsole\0"	\
-+		"fdt_high=0xffffffffffffffff\0"	\
-+		"initrd_high=0xffffffffffffffff\0"
++		"stderr=serial,vidconsole\0"
 +
 +#include <configs/rk3588_common.h>
 +

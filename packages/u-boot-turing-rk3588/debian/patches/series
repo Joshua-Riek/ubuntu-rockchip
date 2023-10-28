@@ -1,14 +1,2 @@
-0001-pci-pcie_dw_rockchip-Configure-number-of-lanes-and-l.patch
-0002-phy-rockchip-snps-pcie3-Refactor-to-use-clk_bulk-API.patch
-0003-phy-rockchip-snps-pcie3-Refactor-to-use-a-phy_init-o.patch
-0004-phy-rockchip-snps-pcie3-Add-bifurcation-support-for-.patch
-0005-phy-rockchip-snps-pcie3-Add-support-for-RK3588.patch
-0006-phy-rockchip-naneng-combphy-Use-signal-from-comb-PHY.patch
-0007-HACK-Sync-rk3588-device-tree-from-sre-rk3588-branch.patch
-0008-net-dwc_eth_qos-Drop-unused-rx_pkt-from-eqos_priv.patch
-0009-net-dwc_eth_qos-Return-error-code-when-start-fails.patch
-0010-net-dwc_eth_qos-Stop-spam-of-RX-packet-not-available.patch
-0011-net-dwc_eth_qos-Add-glue-driver-for-GMAC-on-Rockchip.patch
-0012-net-dwc_eth_qos_rockchip-Add-support-for-RK3588.patch
-0013-RFC-rockchip-spl-Enable-caches-to-speed-up-checksum-.patch
-0014-board-rockchip-add-Turing-RK1-RK3588.patch
+0001-RFC-rockchip-spl-Enable-caches-to-speed-up-checksum-.patch
+0002-board-rockchip-add-Turing-RK1-RK3588.patch
