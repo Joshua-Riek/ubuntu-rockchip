@@ -1,3 +1,3 @@
 GIT=https://github.com/u-boot/u-boot.git    
-COMMIT=4459ed60cb1e0562bc5b40405e2b4b9bbf766d57
-BRANCH=v2023.10
+COMMIT=351da15f71e3d70dbc63e90781b403415452d864
+BRANCH=v2024.01-rc1

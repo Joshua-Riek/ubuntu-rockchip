@@ -1,3 +1,10 @@
+u-boot-turing-rk3588 (2024.01~rc1-1) jammy; urgency=medium
+
+  * Sync the Turing RK1 DTS with mainline Linux
+  * Bump to mainline u-boot v2024.01-rc1
+
+ -- Joshua Riek <jjriek@verizon.net>  Sat, 28 Oct 2023 10:48:12 -0400
+
 u-boot-turing-rk3588 (2023.10-9) jammy; urgency=medium
 
   * Bump build number for launchpad rebuild
