@@ -139,20 +139,16 @@ mklabel gpt \
 mkpart primary fat16 16MiB 528MiB \
 mkpart primary ext4 528MiB 100%
 
-set +e
-
 # Create partitions
-fdisk "${disk}" << EOF
-t
-1
-BC13C2FF-59E6-4262-A352-B275FD6F7172
-t
-2
-0FC63DAF-8483-4772-8E79-3D69D8477DE4
-w
-EOF
-
-set -eE
+{
+    echo "t"
+    echo "1"
+    echo "BC13C2FF-59E6-4262-A352-B275FD6F7172"
+    echo "t"
+    echo "2"
+    echo "0FC63DAF-8483-4772-8E79-3D69D8477DE4"
+    echo "w"
+} | fdisk "${disk}" &> /dev/null || true
 
 partprobe "${disk}"
 
