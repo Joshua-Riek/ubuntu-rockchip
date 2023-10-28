@@ -256,7 +256,8 @@ EOF
 
 # Turing RK1 uses UART9 by default
 if [[ "${MAINLINE}" == "Y" ]]; then
-    [ "${BOARD}" == turing-rk1 ] && sed -i 's/console=ttyS2,1500000/console=ttyS0,115200 console=ttyS2,1500000/g' ${mount_point}/system-boot/ubuntuEnv.txt
+    sed -i 's/swapaccount=1/irqchip.gicv3_pseudo_nmi=0/g' ${mount_point}/system-boot/ubuntuEnv.txt
+    [ "${BOARD}" == turing-rk1 ] && sed -i 's/console=ttyS2,1500000/console=ttyS0,115200/g' ${mount_point}/system-boot/ubuntuEnv.txt
 else
     [ "${BOARD}" == turing-rk1 ] && sed -i 's/console=ttyS2,1500000/console=ttyS9,115200 console=ttyS2,1500000/g' ${mount_point}/system-boot/ubuntuEnv.txt
 fi
