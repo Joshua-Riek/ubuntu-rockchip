@@ -196,12 +196,6 @@ for type in $target; do
         fi
     fi
 
-    if [[ ${MAINLINE} == "Y" ]]; then
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-firmware"
-    else
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y install armbian-firmware"
-    fi
-
     # Install the bootloader
     if [[ ${LAUNCHPAD}  == "Y" ]]; then
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-${BOARD}"
