@@ -1,0 +1,40 @@
+From bae4f45fe2dfd3085ab1114c249bd907f8ef1b99 Mon Sep 17 00:00:00 2001
+From: Joshua-Riek <jjriek@verizon.net>
+Date: Sun, 12 Nov 2023 12:38:10 -0500
+Subject: [PATCH 2/3] arm: dts: rockchip: rk3588-turing-rk1: pull down
+ emmc_data_strobe
+
+This patch will fix HS400 write errors in linux userspace.
+---
+ arch/arm/dts/rk3588-turing-rk1.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/arm/dts/rk3588-turing-rk1.dtsi b/arch/arm/dts/rk3588-turing-rk1.dtsi
+index c132c6427c..b3209e3bed 100644
+--- a/arch/arm/dts/rk3588-turing-rk1.dtsi
++++ b/arch/arm/dts/rk3588-turing-rk1.dtsi
+@@ -273,6 +273,12 @@
+ 		};
+ 	};
+ 
++	emmc {
++		emmc_data_strobe: emmc-data-strobe {
++			rockchip,pins = <2 RK_PA2 1 &pcfg_pull_down>;
++		};
++    };
++
+ 	rtl8211f {
+ 		rtl8211f_rst: rtl8211f-rst {
+ 			rockchip,pins = <3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
+@@ -291,6 +297,8 @@
+ 	non-removable;
+ 	mmc-hs400-1_8v;
+ 	mmc-hs400-enhanced-strobe;
++	pinctrl-names = "default";
++	pinctrl-0 = <&emmc_data_strobe>;
+ 	status = "okay";
+ };
+ 
+-- 
+2.25.1
+

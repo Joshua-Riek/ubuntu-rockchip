@@ -1,7 +1,7 @@
 From 7484a814fbb80d0ab6f9f103029958a5cbca7835 Mon Sep 17 00:00:00 2001
 From: Joshua-Riek <jjriek@verizon.net>
 Date: Wed, 4 Oct 2023 18:45:54 -0400
-Subject: [PATCH 2/2] board: rockchip: add Turing RK1 RK3588
+Subject: [PATCH 2/3] board: rockchip: add Turing RK1 RK3588
 
 ---
  arch/arm/dts/Makefile                         |   3 +-
