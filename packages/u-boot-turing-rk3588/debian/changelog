@@ -1,3 +1,9 @@
+u-boot-turing-rk3588 (2024.01~rc1-2) jammy; urgency=medium
+
+  * Fix HS400 in Linux userspace 
+
+ -- Joshua Riek <jjriek@verizon.net>  Sun, 12 Nov 2023 13:25:39 -0500
+
 u-boot-turing-rk3588 (2024.01~rc1-1) jammy; urgency=medium
 
   * Sync the Turing RK1 DTS with mainline Linux
