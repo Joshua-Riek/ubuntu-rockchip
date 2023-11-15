@@ -178,6 +178,10 @@ UUID=${root_uuid,,} /              ext4    defaults    0       1
 /swapfile           none           swap    sw          0       0
 EOF
 
+# Let systemd create machine id on first boot
+rm -f ${mount_point}/writable/var/lib/dbus/machine-id
+true > ${mount_point}/writable/etc/machine-id
+
 sync --file-system
 sync
 
