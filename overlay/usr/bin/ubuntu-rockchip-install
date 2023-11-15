@@ -113,6 +113,13 @@ fi
 # Read partition table again
 blockdev --rereadpt "${disk}"
 
+# Ensure boot partition is mounted
+if [[ $(findmnt -M /boot/firmware/ -n -o SOURCE) != "/dev/$(lsblk -no pkname "$(findmnt -n -o SOURCE /)")p1" ]]; then
+    mkdir -p /boot/firmware/
+    umount -lf /boot/firmware/ 2> /dev/null || true
+    mount "/dev/$(lsblk -no pkname "$(findmnt -n -o SOURCE /)")p1" /boot/firmware/
+fi
+
 # Mount partitions
 mkdir -p ${mount_point}/{system-boot,writable}
 mount "${disk}${partition_char}1" ${mount_point}/system-boot/
