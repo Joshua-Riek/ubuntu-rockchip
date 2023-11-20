@@ -12,7 +12,7 @@ cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
 if [[ "${MAINLINE}" != "Y" ]]; then
-    test -d linux-rockchip || git clone --single-branch --progress -b rk1-dp https://github.com/Joshua-Riek/linux-rockchip.git linux-rockchip
+    test -d linux-rockchip || git clone --single-branch --progress -b linux-5.10-gen-rkr6 https://github.com/Joshua-Riek/linux-rockchip.git linux-rockchip
     cd linux-rockchip
 
     # Compile kernel into a deb package
@@ -20,7 +20,7 @@ if [[ "${MAINLINE}" != "Y" ]]; then
 
     rm -f ../*.buildinfo ../*.changes
 else
-    test -d linux ||  git clone --single-branch --progress -b v6.7-rc1-rk3588 https://github.com/Joshua-Riek/linux.git --depth=100
+    test -d linux ||  git clone --single-branch --progress -b v6.7-rc2-rk3588 https://github.com/Joshua-Riek/linux.git --depth=100
     cd linux
 
     make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- rockchip_defconfig
