@@ -5,8 +5,53 @@ on:
   workflow_dispatch:
 
 jobs:
+  kernel:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get more disk space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 2048
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout LFS
+        shell: bash
+        run: git lfs fetch && git lfs checkout
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt-get update && sudo apt-get upgrade -y
+          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
+          qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
+          debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
+          udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
+          python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+
+      - name: Build kernel
+        shell: bash
+        run: sudo ./build.sh --mainline --kernel-only
+
+      - name: Upload kernel
+        uses: actions/upload-artifact@master
+        with:
+            name: linux-rockchip-mainline
+            path: ./build/linux-*.deb
+            if-no-files-found: error
+
   build:
     runs-on: ubuntu-latest
+    needs: [kernel]
 
     strategy:
       matrix:
@@ -42,6 +87,11 @@ jobs:
       - name: Checkout LFS
         shell: bash
         run: git lfs fetch && git lfs checkout
+      - name: Checkout kernel
+        uses: actions/download-artifact@master
+        with:
+            name: linux-rockchip-mainline
+            path: ./build/
 
       - name: Install dependencies
         shell: bash
@@ -53,10 +103,6 @@ jobs:
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
           python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
-
-      - name: Build kernel
-        shell: bash
-        run: sudo ./build.sh -b ${{ matrix.platform }} --mainline --kernel-only
 
       - name: Build u-boot
         shell: bash
