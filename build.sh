@@ -92,13 +92,21 @@ for i in "$@"; do
     esac
 done
 
+if [[ ${MAINLINE} != "Y" ]]; then
+    export MAINLINE=N
+fi
+
+if [[ ${KERNEL_ONLY} == "Y" ]]; then
+    mkdir -p build/logs
+    exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
+
+    eval "${DOCKER}" ./scripts/build-kernel.sh
+    exit 0
+fi
+
 if [[ -z ${BOARD} ]]; then
     usage
     exit 1
-fi
-
-if [[ ${MAINLINE} != "Y" ]]; then
-    export MAINLINE=N
 fi
 
 if [[ ${CLEAN} == "Y" ]]; then
