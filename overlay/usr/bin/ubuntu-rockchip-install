@@ -114,10 +114,11 @@ fi
 blockdev --rereadpt "${disk}"
 
 # Ensure boot partition is mounted
-if [[ $(findmnt -M /boot/firmware/ -n -o SOURCE) != "/dev/$(lsblk -no pkname "$(findmnt -n -o SOURCE /)")p1" ]]; then
+root_partition_char=$(lsblk -no pkname "$(findmnt -n -o SOURCE /)")
+if [[ $(findmnt -M /boot/firmware/ -n -o SOURCE) != "/dev/$(lsblk -no pkname "$(findmnt -n -o SOURCE /)")$(if [[ ${root_partition_char: -1} == [0-9] ]]; then echo p; fi)1" ]]; then
     mkdir -p /boot/firmware/
     umount -lf /boot/firmware/ 2> /dev/null || true
-    mount "/dev/$(lsblk -no pkname "$(findmnt -n -o SOURCE /)")p1" /boot/firmware/
+    mount "/dev/$(lsblk -no pkname "$(findmnt -n -o SOURCE /)")$(if [[ ${root_partition_char: -1} == [0-9] ]]; then echo p; fi)1" /boot/firmware/
 fi
 
 # Mount partitions
