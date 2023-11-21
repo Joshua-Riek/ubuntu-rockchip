@@ -47,7 +47,7 @@ Insert your SD card into the slot on the board and power on the device. The firs
 
 ## Login Information
 
-For the server image you will be able to login through HDMI or a serial console connection. The predefined user is `ubuntu` and the password is `ubuntu`.
+For the server image you will be able to login through HDMI, a serial console connection, or SSH. The predefined user is `ubuntu` and the password is `ubuntu`.
 
 For the desktop image you must connect through HDMI and follow the setup-wizard.
 
