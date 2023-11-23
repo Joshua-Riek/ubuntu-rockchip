@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     cpio \
     debootstrap \
+    debhelper \
     device-tree-compiler \
     dosfstools \
     fakeroot \
