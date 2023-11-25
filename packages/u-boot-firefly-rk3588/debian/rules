@@ -1,0 +1,97 @@
+#!/usr/bin/make -f
+
+include /usr/share/dpkg/architecture.mk
+include /usr/share/dpkg/pkg-info.mk
+
+ifneq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
+CROSS_COMPILE ?= $(DEB_HOST_GNU_TYPE)-
+endif
+
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+NJOBS := -j $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+else
+NJOBS := -j $(shell nproc)
+endif
+
+DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+BL31_BLOB := rk3588_bl31_v1.38.elf
+BL32_BLOB := rk3588_bl32_v1.13.bin
+
+BOARDS := roc-rk3588s-pc
+
+${BOARDS}:
+	@mkdir -p debian/build/$@
+
+	make O=debian/build/$@ \
+	  CROSS_COMPILE=$(CROSS_COMPILE) \
+	  ARCH=arm \
+	  $(NJOBS) \
+	  $@_defconfig
+
+	@touch .scmversion
+	@sed -i 's/CONFIG_BOOTDELAY=.*/CONFIG_BOOTDELAY=1/g' debian/build/$@/.config
+	@sed -i 's/CONFIG_DISABLE_CONSOLE=y/CONFIG_DISABLE_CONSOLE=n/g' debian/build/$@/.config
+	@sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-firefly-rk3588"/g' debian/build/$@/.config
+
+	@mkdir -p debian/build/$@/arch/arm/mach-rockchip
+	@cp arch/arm/mach-rockchip/decode_bl31.py debian/build/$@/arch/arm/mach-rockchip/decode_bl31.py
+
+	@cp debian/rkbin/$(BL31_BLOB) debian/build/$@/bl31.elf
+	@cp debian/rkbin/$(BL32_BLOB) debian/build/$@/tee.bin
+
+	make O=debian/build/$@ \
+	  CROSS_COMPILE=$(CROSS_COMPILE) \
+	  SOURCE_DATE_EPOCH=$(shell date +%s) \
+	  ARCH=arm \
+	  $(NJOBS) \
+	  BL31=../../../debian/rkbin/$(BL31_BLOB) \
+	  spl/u-boot-spl.bin u-boot.dtb u-boot.itb
+
+	./debian/build/$@/tools/mkimage -n rk3588 -T rksd -d \
+	  debian/rkbin/$(DDR_BLOB):debian/build/$@/spl/u-boot-spl.bin \
+	  debian/build/$@/idbloader.img
+
+	@dd if=/dev/zero of=debian/build/$@/rkspi_loader.img bs=1M count=0 seek=16
+	@parted -s debian/build/$@/rkspi_loader.img mklabel gpt
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart idbloader 64 7167
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart vnvm 7168 7679
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart reserved_space 7680 8063
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart reserved1 8064 8127
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart uboot_env 8128 8191
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart reserved2 8192 16383
+	@parted -s debian/build/$@/rkspi_loader.img unit s mkpart uboot 16384 32734
+	@dd if=debian/build/$@/idbloader.img of=debian/build/$@/rkspi_loader.img seek=64 conv=notrunc
+	@dd if=debian/build/$@/u-boot.itb of=debian/build/$@/rkspi_loader.img seek=16384 conv=notrunc
+
+build: ${BOARDS}
+
+binary-arch: $(addprefix package-,$(BOARDS))
+
+binary: binary-arch
+
+package-%:
+	@rm -rf debian/tmp
+	@mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot/
+	@mkdir -m 755 -p debian/tmp/u-boot/usr/bin/
+	@sh -c "cd 'debian/tmp/u-boot/usr/lib/'; ln -sfn /usr/lib/u-boot u-boot-firefly-rk3588"
+
+	@cp debian/build/$(subst package-,,$@)/u-boot.itb debian/tmp/u-boot/usr/lib/u-boot/u-boot.itb
+	@cp debian/build/$(subst package-,,$@)/idbloader.img debian/tmp/u-boot/usr/lib/u-boot/idbloader.img
+	@cp debian/build/$(subst package-,,$@)/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader.img
+	@cp debian/bin/u-boot-install debian/tmp/u-boot/usr/bin/u-boot-install
+	@cp debian/bin/u-boot-install-mtd debian/tmp/u-boot/usr/bin/u-boot-install-mtd
+
+	@mkdir -m 755 -p "debian/tmp/u-boot/DEBIAN"
+	@cp debian/preinst debian/tmp/u-boot/DEBIAN/preinst
+	@mkdir -p "debian/tmp/u-boot/usr/share/doc/u-boot"
+	@cp debian/copyright "debian/tmp/u-boot/usr/share/doc/u-boot"
+	@cp debian/changelog "debian/tmp/u-boot/usr/share/doc/u-boot/changelog.Debian"
+	@gzip -9 "debian/tmp/u-boot/usr/share/doc/u-boot/changelog.Debian"
+	@sh -c "cd 'debian/tmp/u-boot'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
+	@chown -R root:root "debian/tmp/u-boot" && chmod -R go-w "debian/tmp/u-boot" && chmod -R a+rX "debian/tmp/u-boot"
+	@dpkg-gencontrol -pu-boot-$(subst _,-,$(subst package-,,$@)) -P"debian/tmp/u-boot"
+	@dpkg --build "debian/tmp/u-boot" ..
+
+clean:
+	@rm -rf debian/*tmp debian/tmp debian/build debian/files
+	$(MAKE) clean

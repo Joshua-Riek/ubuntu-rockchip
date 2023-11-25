@@ -1,0 +1,3 @@
+debian/rkbin/rk3588_bl31_v1.38.elf
+debian/rkbin/rk3588_bl32_v1.13.bin
+debian/rkbin/rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin

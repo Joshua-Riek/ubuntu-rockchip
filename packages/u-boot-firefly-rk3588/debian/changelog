@@ -1,0 +1,5 @@
+u-boot-firefly-rk3588 (2017.09+20231201.git1dab5a4c) jammy; urgency=medium
+
+  * Initial packaging.
+
+ -- zouxf <zxf@t-chip.com.cn>  Fri, 01 Dec 2023 11:52:36 -0400
