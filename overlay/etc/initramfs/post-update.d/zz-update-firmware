@@ -1,0 +1,34 @@
+#!/bin/sh 
+
+set -e
+
+version="$1"
+
+# Passing the kernel version is required
+if [ -z "${version}" ]; then
+	echo "ubuntu-rockchip: ${DPKG_MAINTSCRIPT_PACKAGE:-kernel package} did not pass a version number"
+	exit 2
+fi
+
+# Do not run inside an LXC container or chroot
+if systemd-detect-virt --quiet --container || systemd-detect-virt --quiet --chroot; then
+    exit 0
+fi
+
+# Ensure boot partition is mounted
+partition_root=$(findmnt -n -o SOURCE /)
+partition_pkname="$(lsblk -no pkname "${partition_root}")"
+partition_char=$(if printf "%s" "${partition_pkname}" | tail -c 1 | grep -q '^[0-9]*$'; then echo p; fi)
+
+if [ "$(findmnt -M /boot/firmware/ -n -o SOURCE)" != "/dev/${partition_pkname}${partition_char}1" ]; then
+    mkdir -p /boot/firmware/
+    umount -lf /boot/firmware/ 2> /dev/null || true
+    mount "/dev/${partition_pkname}${partition_char}1" /boot/firmware/
+fi
+
+rm -rf /boot/firmware/dtbs/
+cp -r /usr/lib/linux-image-${version}/. /boot/firmware/dtbs/
+cp "/boot/initrd.img-${version}" /boot/firmware/initrd.img
+cp "/boot/vmlinuz-${version}" /boot/firmware/vmlinuz
+
+sync

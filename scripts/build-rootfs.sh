@@ -136,7 +136,7 @@ ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
 pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
-gcc libc6-dev bison libssl-dev flex flash-kernel fake-hwclock wireless-regdb \
+gcc libc6-dev bison libssl-dev flex fake-hwclock wireless-regdb \
 uuid-runtime rsync linux-firmware rockchip-firmware
 
 # Remove cryptsetup and needrestart
@@ -177,6 +177,9 @@ cp ${overlay_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg ${chroot_dir}/etc/clou
 
 # Default adduser config
 cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
+
+mkdir -p ${chroot_dir}/etc/initramfs/post-update.d/
+cp ${overlay_dir}/etc/initramfs/post-update.d/zz-update-firmware ${chroot_dir}/etc/initramfs/post-update.d/zz-update-firmware
 
 # Realtek 8811CU/8821CU usb modeswitch support
 cp ${chroot_dir}/lib/udev/rules.d/40-usb_modeswitch.rules ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
@@ -236,9 +239,6 @@ cp ${overlay_dir}/usr/bin/ubuntu-rockchip-install ${chroot_dir}/usr/bin/ubuntu-r
 # Let systemd create machine id on first boot
 rm -f ${chroot_dir}/var/lib/dbus/machine-id
 true > ${chroot_dir}/etc/machine-id 
-
-# Do not create bak files for flash-kernel
-echo "NO_CREATE_DOT_BAK_FILES=true" >> ${chroot_dir}/etc/environment
 
 # Umount temporary API filesystems
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
