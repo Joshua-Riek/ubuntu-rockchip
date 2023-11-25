@@ -1,0 +1,4 @@
+GIT=https://github.com/zouxf/u-boot.git
+COMMIT=1dab5a4c87184a21e31fac9bb69e68b2151ab9bb
+BRANCH=main
+VERSION=2017.09+20231201.git1dab5a4c
