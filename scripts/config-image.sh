@@ -224,7 +224,7 @@ for type in $target; do
 
     # Copy device trees and overlays for the boot partition
     mkdir -p ${chroot_dir}/boot/firmware/dtbs/
-    cp -r ${chroot_dir}/usr/lib/linux-image-*/. ${chroot_dir}/boot/firmware/dtb/
+    cp -r ${chroot_dir}/usr/lib/linux-image-*/. ${chroot_dir}/boot/firmware/dtbs/
 
     # Umount temporary API filesystems
     umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
