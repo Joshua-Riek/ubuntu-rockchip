@@ -1,3 +1,7 @@
 Package: *
 Pin: release o=LP-PPA-jjriek-rockchip
 Pin-Priority: 1001
+
+Package: flash-kernel
+Pin: release o=LP-PPA-jjriek-rockchip
+Pin-Priority: 1
