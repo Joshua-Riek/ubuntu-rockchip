@@ -63,49 +63,49 @@ fi
 
 if [[ "${BOARD}" == orangepi-5 ]]; then
     DEVICE_TREE=rk3588s-orangepi-5.dtb
-    OVERLAY_PREFIX=orangepi-5
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == orangepi-5b ]]; then
     DEVICE_TREE=rk3588s-orangepi-5b.dtb
-    OVERLAY_PREFIX=orangepi-5
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == orangepi-5-plus ]]; then
     DEVICE_TREE=rk3588-orangepi-5-plus.dtb
-    OVERLAY_PREFIX=orangepi-5-plus
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == rock-5a ]]; then
     DEVICE_TREE=rk3588s-rock-5a.dtb
-    OVERLAY_PREFIX=rock-5a
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == rock-5b ]]; then
     DEVICE_TREE=rk3588-rock-5b.dtb
-    OVERLAY_PREFIX=rock-5b
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == radxa-cm5-io ]]; then
     DEVICE_TREE=rk3588s-radxa-cm5-io.dtb
-    OVERLAY_PREFIX=radxa-cm5-io
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == nanopi-r6c ]]; then
     DEVICE_TREE=rk3588s-nanopi-r6c.dtb
-    OVERLAY_PREFIX=
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == nanopi-r6s ]]; then
     DEVICE_TREE=rk3588s-nanopi-r6s.dtb
-    OVERLAY_PREFIX=
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == nanopc-t6 ]]; then
     DEVICE_TREE=rk3588-nanopc-t6.dtb
-    OVERLAY_PREFIX=
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == turing-rk1 ]]; then
     DEVICE_TREE=rk3588-turing-rk1.dtb
-    OVERLAY_PREFIX=
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == mixtile-blade3 ]]; then
     DEVICE_TREE=rk3588-blade3-v101-linux.dtb
-    OVERLAY_PREFIX=mixtile-blade3
+    OVERLAY_PREFIX=rk3588
     if [[ "${MAINLINE}" == "Y" ]]; then
         DEVICE_TREE=rk3588-mixtile-blade3.dtb
     fi
 elif [[ "${BOARD}" == indiedroid-nova ]]; then
     DEVICE_TREE=rk3588s-9tripod-linux.dtb
-    OVERLAY_PREFIX=
+    OVERLAY_PREFIX=rk3588
     if [[ "${MAINLINE}" == "Y" ]]; then
         DEVICE_TREE=rk3588s-indiedroid-nova.dtb
     fi 
 elif [[ "${BOARD}" == lubancat-4 ]]; then
     DEVICE_TREE=rk3588s-lubancat-4.dtb
-    OVERLAY_PREFIX=lubancat-4
+    OVERLAY_PREFIX=rk3588
 fi
 
 KVER=""
@@ -223,16 +223,14 @@ load ${devtype} ${devnum}:${distro_bootpart} ${fdt_addr_r} /dtbs/rockchip/${fdtf
 fdt addr ${fdt_addr_r} && fdt resize 0x10000
 
 for overlay_file in ${overlays}; do
-    if load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/rockchip/overlay/${overlay_prefix}-${overlay_file}.dtbo; then
-        echo "Applying device tree overlay: /dtbs/rockchip/overlay/${overlay_prefix}-${overlay_file}.dtbo"
-        fdt apply ${fdtoverlay_addr_r} || setenv overlay_error "true"
-    elif load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/rockchip/overlay/${overlay_file}.dtbo; then
-        echo "Applying device tree overlay: /dtbs/rockchip/overlay/${overlay_file}.dtbo"
-        fdt apply ${fdtoverlay_addr_r} || setenv overlay_error "true"
-    elif load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/rockchip/overlay/rk3588-${overlay_file}.dtbo; then
-        echo "Applying device tree overlay: /dtbs/rockchip/overlay/rk3588-${overlay_file}.dtbo"
-        fdt apply ${fdtoverlay_addr_r} || setenv overlay_error "true"
-    fi
+    for i in "${overlay_prefix}-${overlay_file}.dtbo ${overlay_prefix}-${overlay_file} ${overlay_file}.dtbo ${overlay_file}"; do
+        if test -e ${devtype} ${devnum}:${distro_bootpart} /dtbs/rockchip/overlay/${i}; then
+            if load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/rockchip/overlay/${i}; then
+                echo "Applying device tree overlay: /dtbs/rockchip/overlay/${i}"
+                fdt apply ${fdtoverlay_addr_r} || setenv overlay_error "true"
+            fi
+        fi
+    done
 done
 if test "${overlay_error}" = "true"; then
     echo "Error applying device tree overlays, restoring original device tree"
