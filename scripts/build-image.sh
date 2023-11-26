@@ -177,7 +177,7 @@ boot_uuid=$(uuidgen | head -c8)
 root_uuid=$(uuidgen)
 
 # Create filesystems on partitions
-mkfs.vfat -i "${boot_uuid}" -F16 -n system-boot "${disk}${partition_char}1"
+mkfs.vfat -i "${boot_uuid}" -F32 -n system-boot "${disk}${partition_char}1"
 dd if=/dev/zero of="${disk}${partition_char}2" bs=1KB count=10 > /dev/null
 mkfs.ext4 -U "${root_uuid}" -L writable "${disk}${partition_char}2"
 
