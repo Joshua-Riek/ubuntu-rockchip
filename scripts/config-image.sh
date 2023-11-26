@@ -187,6 +187,7 @@ for type in $target; do
     elif [ "${BOARD}" == turing-rk1 ]; then
     {
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"'
+        echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-dp0-sound", ENV{SOUND_DESCRIPTION}="DP0 Audio"'
     } > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
     fi
 
