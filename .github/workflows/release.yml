@@ -1,5 +1,5 @@
-name: Build
-run-name: Build Release with Rockchip Linux 5.10.160
+name: Release
+run-name: Release with Rockchip Linux 5.10.160
 
 on:
   workflow_dispatch:
@@ -78,10 +78,29 @@ jobs:
       - name: Build image
         shell: bash
         run: |
-            sudo ./build.sh -b ${{ matrix.platform }} --launchpad -so
+            sudo ./build.sh -b ${{ matrix.platform }} --launchpad
 
-      - name: Upload Release Asset
-        id: upload-release-asset 
+      - name: Upload Ubuntu Desktop Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.job1.outputs.upload_url }}
+          asset_path: ./images/ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}.img.xz
+          asset_name: ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}.img.xz
+          asset_content_type: application/zip
+
+      - name: Upload Ubuntu Desktop SHA256 Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.job1.outputs.upload_url }}
+          asset_path: ./images/ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}.img.xz.sha256
+          asset_name: ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}.img.xz.sha256
+          asset_content_type: application/zip
+
+      - name: Upload Ubuntu Server Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -89,6 +108,16 @@ jobs:
           upload_url: ${{ needs.job1.outputs.upload_url }}
           asset_path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.img.xz
           asset_name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.img.xz
+          asset_content_type: application/zip
+
+      - name: Upload Ubuntu Server SHA256 Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.job1.outputs.upload_url }}
+          asset_path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.img.xz.sha256
+          asset_name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.img.xz.sha256
           asset_content_type: application/zip
 
       - name: Clean cache
