@@ -20,7 +20,7 @@ if [[ "${MAINLINE}" != "Y" ]]; then
 
     rm -f ../*.buildinfo ../*.changes
 else
-    test -d linux ||  git clone --single-branch --progress -b v6.7-rc3-rk3588 https://github.com/Joshua-Riek/linux.git --depth=100
+    test -d linux ||  git clone --single-branch --progress -b v6.7-rc4-rk3588 https://github.com/Joshua-Riek/linux.git --depth=100
     cd linux
 
     make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- rockchip_defconfig
