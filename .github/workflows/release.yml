@@ -16,15 +16,10 @@ jobs:
 
     steps:
       - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v1.32
-          name: v1.32
-          draft: true
-          prerelease: false
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release create --draft v1.35 --title v1.35
 
   build:
     permissions:
@@ -80,15 +75,12 @@ jobs:
 
       - name: Build image
         shell: bash
-        run: sudo ./build.sh -b ${{ matrix.platform }} --launchpad
+        run: sudo ./build.sh -b ${{ matrix.platform }} --launchpad -so
 
-      - name: Upload release assets
-        uses: softprops/action-gh-release@v1
+      - name: Upload Release Asset
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.job1.outputs.upload_url }}
-          files: ./images/ubuntu-*-preinstalled-*-arm64-${{ matrix.platform }}.*
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload v1.35 ./images/ubuntu-*-preinstalled-*-arm64-${{ matrix.platform }}.*
 
       - name: Clean cache
         shell: bash
