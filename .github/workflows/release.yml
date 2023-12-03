@@ -5,9 +5,31 @@ on:
   workflow_dispatch:
 
 jobs:
+  job1:
+    name: Create Release
+    permissions:
+        contents: write
+    
+    runs-on: ubuntu-latest
+    outputs: 
+      upload_url: ${{ steps.create_release.outputs.upload_url }} 
+
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v1.32
+          name: v1.32
+          draft: true
+          prerelease: false
+
   build:
     permissions:
         contents: write
+    needs: [job1]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -60,12 +82,12 @@ jobs:
         shell: bash
         run: sudo ./build.sh -b ${{ matrix.platform }} --launchpad
 
-      - name: Release
+      - name: Upload release assets
         uses: softprops/action-gh-release@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: v1.31
-          tag_name: v1.31
-          draft: true
+          upload_url: ${{ needs.job1.outputs.upload_url }}
           files: ./images/ubuntu-*-preinstalled-*-arm64-${{ matrix.platform }}.*
 
       - name: Clean cache
