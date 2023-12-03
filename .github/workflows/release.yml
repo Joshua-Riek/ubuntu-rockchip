@@ -5,29 +5,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  job1:
-    name: Create Release
-    permissions: write-all
-    runs-on: ubuntu-latest
-    outputs: 
-      upload_url: ${{ steps.create_release.outputs.upload_url }} 
-
-    steps:
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v1.32
-          release_name: v1.32
-          draft: true
-          prerelease: false
-
   build:
-    permissions: write-all
+    permissions:
+        contents: write
     runs-on: ubuntu-latest
-    needs: [job1]
     strategy:
       matrix:
         platform:
@@ -78,47 +59,15 @@ jobs:
       - name: Build image
         shell: bash
         run: |
-            sudo ./build.sh -b ${{ matrix.platform }} --launchpad
+            sudo ./build.sh -b ${{ matrix.platform }} --launchpad -so
 
-      - name: Upload Ubuntu Desktop Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ needs.job1.outputs.upload_url }}
-          asset_path: ./images/ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}.img.xz
-          asset_name: ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}.img.xz
-          asset_content_type: application/zip
-
-      - name: Upload Ubuntu Desktop SHA256 Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.job1.outputs.upload_url }}
-          asset_path: ./images/ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}.img.xz.sha256
-          asset_name: ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}.img.xz.sha256
-          asset_content_type: application/zip
-
-      - name: Upload Ubuntu Server Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.job1.outputs.upload_url }}
-          asset_path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.img.xz
-          asset_name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.img.xz
-          asset_content_type: application/zip
-
-      - name: Upload Ubuntu Server SHA256 Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.job1.outputs.upload_url }}
-          asset_path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.img.xz.sha256
-          asset_name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.img.xz.sha256
-          asset_content_type: application/zip
+          name: v1.33
+          tag_name: v1.33
+          draft: true
+          files: ./images/ubuntu-22.04.3-preinstalled-*-arm64-${{ matrix.platform }}.*
 
       - name: Clean cache
         shell: bash
