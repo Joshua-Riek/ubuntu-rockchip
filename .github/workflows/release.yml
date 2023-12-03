@@ -58,16 +58,15 @@ jobs:
 
       - name: Build image
         shell: bash
-        run: |
-            sudo ./build.sh -b ${{ matrix.platform }} --launchpad -so
+        run: sudo ./build.sh -b ${{ matrix.platform }} --launchpad
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          name: v1.33
-          tag_name: v1.33
+          name: v1.31
+          tag_name: v1.31
           draft: true
-          files: ./images/ubuntu-22.04.3-preinstalled-*-arm64-${{ matrix.platform }}.*
+          files: ./images/ubuntu-*-preinstalled-*-arm64-${{ matrix.platform }}.*
 
       - name: Clean cache
         shell: bash
