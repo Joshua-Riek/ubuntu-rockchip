@@ -1,5 +1,5 @@
-u-boot-firefly-rk3588 (2017.09+20231201.git1dab5a4c) jammy; urgency=medium
+u-boot-firefly-rk3588 (2017.09+20231201.git1dab5a4c-1) jammy; urgency=medium
 
-  * Initial packaging.
+  * Release
 
- -- zouxf <zxf@t-chip.com.cn>  Fri, 01 Dec 2023 11:52:36 -0400
+ -- Joshua Riek <jjriek@verizon.net>  Mon, 04 Dec 2023 18:18:29 -0500
