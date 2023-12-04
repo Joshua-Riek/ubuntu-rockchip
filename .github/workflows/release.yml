@@ -38,6 +38,7 @@ jobs:
           - mixtile-blade3
           - lubancat-4
           - turing-rk1
+          - roc-rk3588s-pc
 
     steps:
       - name: Get more disk space
