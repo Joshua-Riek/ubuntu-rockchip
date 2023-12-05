@@ -108,7 +108,7 @@ elif [[ "${BOARD}" == lubancat-4 ]]; then
     OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == roc-rk3588s-pc ]]; then
     DEVICE_TREE=rk3588s-roc-rk3588s-pc-v12.dtb
-    OVERLAY_PREFIX=
+    OVERLAY_PREFIX=rk3588
 fi
 
 KVER=""
