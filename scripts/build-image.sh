@@ -226,10 +226,10 @@ load ${devtype} ${devnum}:${distro_bootpart} ${fdt_addr_r} /dtbs/rockchip/${fdtf
 fdt addr ${fdt_addr_r} && fdt resize 0x10000
 
 for overlay_file in ${overlays}; do
-    for i in "${overlay_prefix}-${overlay_file}.dtbo ${overlay_prefix}-${overlay_file} ${overlay_file}.dtbo ${overlay_file}"; do
-        if test -e ${devtype} ${devnum}:${distro_bootpart} /dtbs/rockchip/overlay/${i}; then
-            if load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/rockchip/overlay/${i}; then
-                echo "Applying device tree overlay: /dtbs/rockchip/overlay/${i}"
+    for file in "${overlay_prefix}-${overlay_file}.dtbo ${overlay_prefix}-${overlay_file} ${overlay_file}.dtbo ${overlay_file}"; do
+        if test -e ${devtype} ${devnum}:${distro_bootpart} /dtbs/rockchip/overlay/${file}; then
+            if load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/rockchip/overlay/${file}; then
+                echo "Applying device tree overlay: /dtbs/rockchip/overlay/${file}"
                 fdt apply ${fdtoverlay_addr_r} || setenv overlay_error "true"
             fi
         fi
