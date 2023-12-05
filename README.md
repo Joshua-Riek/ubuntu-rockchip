@@ -34,6 +34,7 @@ The supported devices are undergoing continuous development. As a result, you ma
 * [Turing RK1](https://turingpi.com/product/turing-rk1)
 * [Indiedroid Nova](https://indiedroid.us)
 * [LubanCat 4](https://doc.embedfire.com/products/link/zh/latest/linux/ebf_lubancat.html)
+* [Firefly ROC-RK3588S-PC](https://en.t-firefly.com/product/industry/rocrk3588spc)
 
 ## Installation
 
