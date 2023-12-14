@@ -76,6 +76,12 @@ elif [[ "${BOARD}" == rock-5a ]]; then
 elif [[ "${BOARD}" == rock-5b ]]; then
     DEVICE_TREE=rk3588-rock-5b.dtb
     OVERLAY_PREFIX=rk3588
+elif [[ "${BOARD}" == rock-5-itx ]]; then
+    DEVICE_TREE=rk3588-rock-5-itx.dtb
+    OVERLAY_PREFIX=rk3588
+elif [[ "${BOARD}" == radxa-nx5-io ]]; then
+    DEVICE_TREE=rk3588s-radxa-nx5-io.dtb
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == radxa-cm5-io ]]; then
     DEVICE_TREE=rk3588s-radxa-cm5-io.dtb
     OVERLAY_PREFIX=rk3588
