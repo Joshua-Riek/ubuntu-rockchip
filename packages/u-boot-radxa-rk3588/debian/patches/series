@@ -1,4 +1,4 @@
 0001-fix-srctree-path.patch
 0002-fix_source_so_boot_scr_works.patch
 0003-give-SD-higher-boot-priority-than-NVME.patch
-
+0004-add-support-for-the-rock-5-itx.patch

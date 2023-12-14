@@ -16,7 +16,7 @@ endif
 DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 BL31_BLOB := rk3588_bl31_v1.38.elf
 
-BOARDS := rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s radxa-cm5-io-rk3588s
+BOARDS := rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s rock-5-itx-rk3588 radxa-cm5-io-rk3588s radxa-nx5-io-rk3588s
 
 ${BOARDS}: 
 	@mkdir -p debian/build/$@
