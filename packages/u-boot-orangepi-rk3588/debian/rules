@@ -13,8 +13,8 @@ else
 NJOBS := -j $(shell nproc)
 endif
 
-DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.13.bin
-BL31_BLOB := rk3588_bl31_v1.41.elf
+DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+BL31_BLOB := rk3588_bl31_v1.38.elf
 
 BOARDS := orangepi_5 orangepi_5_sata orangepi_5b orangepi_5_plus
 
