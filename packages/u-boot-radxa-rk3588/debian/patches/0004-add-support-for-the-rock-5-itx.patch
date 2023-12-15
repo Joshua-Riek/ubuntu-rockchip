@@ -1,21 +1,22 @@
-From 21ecd3700ebf263d2d2504ce06ef3b1b350a4610 Mon Sep 17 00:00:00 2001
-From: Joshua-Riek <jjriek@verizon.net>
-Date: Mon, 11 Dec 2023 21:41:18 -0500
-Subject: [PATCH] add support for the rock 5 itx
+From c10423194a6275c5587f170a7621145f9fa41483 Mon Sep 17 00:00:00 2001
+From: Joshua Riek <jjriek@verizon.net>
+Date: Thu, 14 Dec 2023 19:49:01 -0500
+Subject: [PATCH] board: rockchip: Add ROCK 5 ITX support
 
+Signed-off-by: Joshua Riek <jjriek@verizon.net>
 ---
- arch/arm/dts/rk3588-rock-5-itx.dts  |  86 +++++++++++
- configs/rock-5-itx-rk3588_defconfig | 217 ++++++++++++++++++++++++++++
- 2 files changed, 303 insertions(+)
+ arch/arm/dts/rk3588-rock-5-itx.dts  |  87 +++++++++++
+ configs/rock-5-itx-rk3588_defconfig | 223 ++++++++++++++++++++++++++++
+ 2 files changed, 310 insertions(+)
  create mode 100644 arch/arm/dts/rk3588-rock-5-itx.dts
  create mode 100644 configs/rock-5-itx-rk3588_defconfig
 
 diff --git a/arch/arm/dts/rk3588-rock-5-itx.dts b/arch/arm/dts/rk3588-rock-5-itx.dts
 new file mode 100644
-index 0000000000..0d97de5145
+index 0000000000..faf30c06d9
 --- /dev/null
 +++ b/arch/arm/dts/rk3588-rock-5-itx.dts
-@@ -0,0 +1,86 @@
+@@ -0,0 +1,87 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2021 Rockchip Electronics Co., Ltd
@@ -26,6 +27,7 @@ index 0000000000..0d97de5145
 +#include "rk3588.dtsi"
 +#include "rk3588-u-boot.dtsi"
 +#include <dt-bindings/input/input.h>
++#include <dt-bindings/phy/phy-snps-pcie3.h>
 +
 +/ {
 +	model = "Radxa ROCK 5 ITX";
@@ -104,10 +106,10 @@ index 0000000000..0d97de5145
 +};
 diff --git a/configs/rock-5-itx-rk3588_defconfig b/configs/rock-5-itx-rk3588_defconfig
 new file mode 100644
-index 0000000000..2e67a8286c
+index 0000000000..de71bdaa4e
 --- /dev/null
 +++ b/configs/rock-5-itx-rk3588_defconfig
-@@ -0,0 +1,217 @@
+@@ -0,0 +1,223 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -133,6 +135,7 @@ index 0000000000..2e67a8286c
 +CONFIG_SPL_SPI_SUPPORT=y
 +CONFIG_DEFAULT_DEVICE_TREE="rk3588-rock-5-itx"
 +CONFIG_DEBUG_UART=y
++CONFIG_AHCI=y
 +CONFIG_FIT=y
 +CONFIG_FIT_IMAGE_POST_PROCESS=y
 +CONFIG_FIT_HW_CRYPTO=y
@@ -201,6 +204,8 @@ index 0000000000..2e67a8286c
 +CONFIG_SPL_SYSCON=y
 +# CONFIG_SARADC_ROCKCHIP is not set
 +CONFIG_SARADC_ROCKCHIP_V2=y
++CONFIG_AHCI_PCI=y
++CONFIG_DWC_AHCI=y
 +CONFIG_CLK=y
 +CONFIG_SPL_CLK=y
 +CONFIG_CLK_SCMI=y
@@ -256,6 +261,7 @@ index 0000000000..2e67a8286c
 +CONFIG_DM_PCI_COMPAT=y
 +CONFIG_PCIE_DW_ROCKCHIP=y
 +CONFIG_PHY_ROCKCHIP_INNO_USB2=y
++CONFIG_PHY_ROCKCHIP_NANENG_COMBOPHY=y
 +CONFIG_PHY_ROCKCHIP_SAMSUNG_HDPTX=y
 +CONFIG_PHY_ROCKCHIP_SNPS_PCIE3=y
 +CONFIG_PINCTRL=y
@@ -276,6 +282,8 @@ index 0000000000..2e67a8286c
 +CONFIG_DM_RESET=y
 +CONFIG_SPL_DM_RESET=y
 +CONFIG_SPL_RESET_ROCKCHIP=y
++CONFIG_SCSI=y
++CONFIG_DM_SCSI=y
 +CONFIG_BAUDRATE=1500000
 +CONFIG_DEBUG_UART_BASE=0xFEB50000
 +CONFIG_DEBUG_UART_CLOCK=24000000
