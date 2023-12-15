@@ -1,0 +1,44 @@
+From 3d9c7c633d564c04d892ef72daffc4827a8900dd Mon Sep 17 00:00:00 2001
+From: 7Ji <pugokushin@gmail.com>
+Date: Sat, 9 Sep 2023 15:56:37 +0800
+Subject: [PATCH] opi5b/plus: fix eMMC boot is skipped when SD card is plugged
+
+The current distro_bootcmd uses a single bootcmd_mmc0 to boot both
+SD (mmc0) and eMMC (mmc1), which includes an if condition to only
+run mmc_boot for mmc0 if mmc dev 0 is detected, and for mmc1 if
+mmc dev 0 is not detected. As a result, booting from mmc1 would
+always be skipped once SD card (mmc0) is plugged.
+
+Not in all cases would a SD card contain a system image, e.g. when
+a SD card is only used for data storage, and in those cases eMMC
+boot would still be skipped when they should not be.
+
+This converts the either-case logic to a both-case logic, using
+two if-conditions to run mmc_boot for SD card (mmc0) then eMMC
+(mmc1), so eMMC boot would not be skipped even if there's a SD card
+without any bootable image on it.
+
+Tested on my opi5plus
+
+Signed-off-by: 7Ji <pugokushin@gmail.com>
+---
+ include/config_distro_bootcmd.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/include/config_distro_bootcmd.h b/include/config_distro_bootcmd.h
+index b33fbfd94..925b4f44d 100644
+--- a/include/config_distro_bootcmd.h
++++ b/include/config_distro_bootcmd.h
+@@ -82,7 +82,8 @@
+ 		"mmc list;" \
+ 		"setenv devnum 0;" \
+ 		"run mmc_boot;" \
+-	"else " \
++	"fi;" \
++	"if mmc dev 1; then " \
+ 		"mmc list;" \
+ 		"setenv devnum 1;" \
+ 		"run mmc_boot;" \
+-- 
+2.25.1
+
