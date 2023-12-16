@@ -22,7 +22,9 @@ jobs:
           - orangepi-5-plus
           - rock-5b
           - rock-5a
+          - rock-5-itx
           - radxa-cm5-io
+          - radxa-nx5-io
           - nanopc-t6
           - nanopi-r6c
           - nanopi-r6s
