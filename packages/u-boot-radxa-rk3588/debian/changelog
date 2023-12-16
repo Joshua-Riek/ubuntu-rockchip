@@ -1,3 +1,23 @@
+u-boot-radxa-rk3588 (2017.09+20231108.git957d61fa-1) jammy; urgency=medium
+
+  * Add build for the ROCK 5 ITX and NX5 io
+  * Add dts for the ROCK 5 ITX
+  * Merge pull request #40 from Ken-Vamrs/next-dev
+  * arm: dts: rock5b plus: split pcie 3.0 into two pcie
+  * configs: add rock-5b-plus-rk3588_defconfig
+  * arm: dts: add rock 5b plus
+  * Merge pull request #36 from Ken-Vamrs/next-dev
+  * rockchip: radxa-cm5-rpi-cm4-io: update defconfig
+  * rockchip: radxa-cm5-io: update defconfig
+  * Merge pull request #35 from vamrs-feng/next-dev
+  * rockchip: rk3328: enable CONFIG_MISC_INIT_R
+  * rockchip: rk3328-rock-pi-e: update defconfig
+  * rockchip: radxa-nx5-io: update defconfig
+  * rockchip: rk3588s-rock-5a: update defconfig
+  * rockchip: rk3588: derive ethaddr from cpuid
+
+ -- Joshua Riek <jjriek@verizon.net>  Sat, 16 Dec 2023 17:45:18 -0500
+
 u-boot-radxa-rk3588 (2017.09+20230920.git609a77ef-3) jammy; urgency=medium
 
   * Add u-boot install scripts
