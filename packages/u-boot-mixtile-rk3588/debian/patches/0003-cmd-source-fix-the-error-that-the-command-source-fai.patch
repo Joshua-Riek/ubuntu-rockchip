@@ -1,7 +1,7 @@
-From a98d4bfb53b3527e9250812138c1307933b338bd Mon Sep 17 00:00:00 2001
+From b58348c681a2e14bc177698a594d28bb5ce1297b Mon Sep 17 00:00:00 2001
 From: Ricardo Pardini <ricardo@pardini.net>
 Date: Fri, 30 Jun 2023 00:02:51 +0200
-Subject: [PATCH 4/9] cmd: source: fix the error that the command source failed
+Subject: [PATCH 3/6] cmd: source: fix the error that the command source failed
  to execute
 
 ---

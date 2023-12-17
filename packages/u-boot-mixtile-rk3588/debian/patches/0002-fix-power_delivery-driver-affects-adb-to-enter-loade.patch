@@ -1,7 +1,7 @@
-From aa821819fb2a8f0144d35da6eef323aece78fd25 Mon Sep 17 00:00:00 2001
+From 237a48e45da42d5fc24530c51e26faef2f7e6778 Mon Sep 17 00:00:00 2001
 From: tom <tom@focalcrest.com>
 Date: Thu, 18 May 2023 17:35:31 +0800
-Subject: [PATCH 3/9] fix power_delivery driver affects adb to enter loader
+Subject: [PATCH 2/6] fix power_delivery driver affects adb to enter loader
  mode.
 
 ---

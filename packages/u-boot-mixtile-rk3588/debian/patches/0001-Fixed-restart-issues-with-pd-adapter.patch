@@ -1,7 +1,7 @@
-From 3d05f7e6514c45e1d75bfdb34b0ccb17577fef06 Mon Sep 17 00:00:00 2001
+From 047413c04bf021e627b0236f61e5a270397b86a5 Mon Sep 17 00:00:00 2001
 From: tom <tom@focalcrest.com>
 Date: Fri, 28 Apr 2023 01:44:01 +0800
-Subject: [PATCH 2/9] Fixed restart issues with pd adapter.
+Subject: [PATCH 1/6] Fixed restart issues with pd adapter.
 
 ---
  arch/arm/mach-rockchip/board.c         |   9 ++

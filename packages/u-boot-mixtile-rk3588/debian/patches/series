@@ -1,10 +1,6 @@
-0001-Add-Blade-3-defines.patch
-0002-Fixed-restart-issues-with-pd-adapter.patch
-0003-fix-power_delivery-driver-affects-adb-to-enter-loade.patch
-0004-cmd-source-fix-the-error-that-the-command-source-fai.patch
-0005-add-device-tree-with-sata-support.patch
-0006-disable-optee-in-defconfig.patch
-0007-mixtile-blade3-enable-OTP-in-defconfig.patch
-0008-enable-nvme-pci-and-scsi-in-the-defconfig.patch
-0009-arch-arm-mach-rockchip-fix-srctree-path.patch
-0010-blade3-enable-pcie3x4.patch
+0001-Fixed-restart-issues-with-pd-adapter.patch
+0002-fix-power_delivery-driver-affects-adb-to-enter-loade.patch
+0003-cmd-source-fix-the-error-that-the-command-source-fai.patch
+0004-arch-arm-mach-rockchip-fix-srctree-path.patch
+0005-board-rockchip-Add-the-Mixtile-Core-3588E.patch
+0006-board-rockchip-Add-the-Mixtile-Blade-3.patch
