@@ -103,6 +103,9 @@ elif [[ "${BOARD}" == mixtile-blade3 ]]; then
     if [[ "${MAINLINE}" == "Y" ]]; then
         DEVICE_TREE=rk3588-mixtile-blade3.dtb
     fi
+elif [[ "${BOARD}" == mixtile-core3588e ]]; then
+    DEVICE_TREE=rk3588-mixtile-core3588e.dtb
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == indiedroid-nova ]]; then
     DEVICE_TREE=rk3588s-9tripod-linux.dtb
     OVERLAY_PREFIX=rk3588
