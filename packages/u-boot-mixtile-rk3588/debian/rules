@@ -16,7 +16,7 @@ endif
 DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 BL31_BLOB := rk3588_bl31_v1.38.elf
 
-BOARDS := blade3 blade3_sata
+BOARDS := mixtile-blade3-rk3588 mixtile-core3588e-rk3588
 
 ${BOARDS}:
 	@mkdir -p debian/build/$@
@@ -63,7 +63,7 @@ ${BOARDS}:
 
 build: ${BOARDS}
 
-binary-arch: $(addprefix package-,$(filter-out blade3_sata,$(BOARDS)))
+binary-arch: $(addprefix package-,$(BOARDS))
 
 binary: binary-arch
 
@@ -79,10 +79,6 @@ package-%:
 	@cp debian/bin/u-boot-install debian/tmp/u-boot/usr/bin/u-boot-install
 	@cp debian/bin/u-boot-install-mtd debian/tmp/u-boot/usr/bin/u-boot-install-mtd
 
-	@cp debian/build/$(subst package-,,$@)_sata/u-boot.itb debian/tmp/u-boot/usr/lib/u-boot/u-boot-sata.itb
-	@cp debian/build/$(subst package-,,$@)_sata/idbloader.img debian/tmp/u-boot/usr/lib/u-boot/idbloader_sata.img
-	@cp debian/build/$(subst package-,,$@)_sata/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader_sata.img
-
 	@mkdir -m 755 -p "debian/tmp/u-boot/DEBIAN"
 	@cp debian/preinst debian/tmp/u-boot/DEBIAN/preinst
 	@mkdir -p "debian/tmp/u-boot/usr/share/doc/u-boot"
@@ -91,7 +87,7 @@ package-%:
 	@gzip -9 "debian/tmp/u-boot/usr/share/doc/u-boot/changelog.Debian"
 	@sh -c "cd 'debian/tmp/u-boot'; find . -type f ! -path './DEBIAN/*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums"
 	@chown -R root:root "debian/tmp/u-boot" && chmod -R go-w "debian/tmp/u-boot" && chmod -R a+rX "debian/tmp/u-boot"
-	@dpkg-gencontrol -pu-boot-mixtile-$(subst package-,,$@) -P"debian/tmp/u-boot"
+	@dpkg-gencontrol -pu-boot-$(subst -rk3588,,$(subst package-,,$@)) -P"debian/tmp/u-boot"
 	@dpkg --build "debian/tmp/u-boot" ..
 
 clean:
