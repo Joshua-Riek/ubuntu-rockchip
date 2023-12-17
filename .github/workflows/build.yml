@@ -82,18 +82,11 @@ jobs:
             fi
             sudo ./build.sh -b ${{ matrix.platform }} $args
 
-      - name: Upload server image
+      - name: Upload image
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}
-          path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}.*
-          if-no-files-found: error
-    
-      - name: Upload desktop image
-        uses: actions/upload-artifact@v3
-        with:
-          name: ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}
-          path: ./images/ubuntu-22.04.3-preinstalled-desktop-arm64-${{ matrix.platform }}.*
+          name: ubuntu-22.04.3-preinstalled-arm64-${{ matrix.platform }}
+          path: ./images/ubuntu-22.04.3-preinstalled-*-arm64-${{ matrix.platform }}.*
           if-no-files-found: error
 
       - name: Clean cache
