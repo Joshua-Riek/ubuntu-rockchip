@@ -16,7 +16,10 @@ endif
 ROCKCHIP_TPL := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 BL31_BLOB := rk3588_bl31_v1.38.elf
 
-BOARDS := turing-rk1-rk3588
+turing-rk1-rk3588_tpl :=  rk3588_ddr_lp4_2112MHz_lp5_2736MHz_uart9_v1.11.bin
+mixtile-core3588e-rk3588_tpl :=  rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+
+BOARDS := turing-rk1-rk3588 mixtile-core3588e-rk3588
 
 ${BOARDS}: 
 	@mkdir -p debian/build/$@
@@ -28,7 +31,7 @@ ${BOARDS}:
 	  $@_defconfig
 
 	@touch .scmversion
-	@sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-turing-rk3588"/g' debian/build/$@/.config
+	@sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION=""/g' debian/build/$@/.config
 
 	make O=debian/build/$@ \
 	  CROSS_COMPILE=$(CROSS_COMPILE) \
@@ -36,7 +39,7 @@ ${BOARDS}:
 	  ARCH=arm \
 	  $(NJOBS) \
 	  BL31=../../../debian/rkbin/$(BL31_BLOB) \
-	  ROCKCHIP_TPL=../../../debian/rkbin/$(ROCKCHIP_TPL)
+	  ROCKCHIP_TPL=../../../debian/rkbin/$($@_tpl)
 
 build: ${BOARDS}
 
@@ -48,7 +51,6 @@ package-%:
 	@rm -rf debian/tmp
 	@mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot/
 	@mkdir -m 755 -p debian/tmp/u-boot/usr/bin/
-	@sh -c "cd 'debian/tmp/u-boot/usr/lib/'; ln -sfn /usr/lib/u-boot u-boot-turing-rk3588"
 
 	@cp debian/build/$(subst package-,,$@)/u-boot-rockchip.bin debian/tmp/u-boot/usr/lib/u-boot/u-boot-rockchip.bin
 	@cp debian/build/$(subst package-,,$@)/u-boot-rockchip-spi.bin debian/tmp/u-boot/usr/lib/u-boot/u-boot-rockchip-spi.bin

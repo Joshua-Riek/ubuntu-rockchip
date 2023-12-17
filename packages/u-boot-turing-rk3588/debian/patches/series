@@ -1,3 +1,4 @@
 0001-RFC-rockchip-spl-Enable-caches-to-speed-up-checksum-.patch
 0002-board-rockchip-add-Turing-RK1-RK3588.patch
 0003-arm-dts-rockchip-rk3588-turing-rk1-pull-down-emmc_da.patch
+0004-board-rockchip-Add-the-Mixtile-Core-3588E.patch
