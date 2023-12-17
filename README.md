@@ -21,22 +21,22 @@ The supported devices are undergoing continuous development. As a result, you ma
 
 ## Supported Boards
 
-* [Orange Pi 5](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5.html)
-* [Orange Pi 5B](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5B.html)
-* [Orange Pi 5 Plus](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-plus.html)
-* [Radxa ROCK 5B](https://radxa.com/products/rock5/5b/)
-* [Radxa ROCK 5A](https://radxa.com/products/rock5/5a/)
-* [Radxa ROCK 5 ITX](https://radxa.com/products)
-* [Radxa CM5 IO](https://radxa.com/products/compute-module/cm5)
-* [Radxa NX5 IO](https://radxa.com/products/compute-module/nx5)
-* [NanoPi R6S](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6S)
-* [NanoPi R6C](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6C)
-* [NanoPC T6](https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6)
-* [Mixtile Blade 3](https://www.mixtile.com/blade-3)
-* [Turing RK1](https://turingpi.com/product/turing-rk1)
+* [ROC-RK3588S-PC](https://en.t-firefly.com/product/industry/rocrk3588spc)
 * [Indiedroid Nova](https://indiedroid.us)
 * [LubanCat 4](https://doc.embedfire.com/products/link/zh/latest/linux/ebf_lubancat.html)
-* [Firefly ROC-RK3588S-PC](https://en.t-firefly.com/product/industry/rocrk3588spc)
+* [Mixtile Blade 3](https://www.mixtile.com/blade-3)
+* [NanoPC T6](https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6)
+* [NanoPi R6C](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6C)
+* [NanoPi R6S](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6S)
+* [Orange Pi 5 Plus](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-plus.html)
+* [Orange Pi 5B](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5B.html)
+* [Orange Pi 5](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5.html)
+* [Radxa CM5 IO](https://radxa.com/products/compute-module/cm5)
+* [Radxa NX5 IO](https://radxa.com/products/compute-module/nx5)
+* [Radxa ROCK 5 ITX](https://radxa.com/products)
+* [Radxa ROCK 5A](https://radxa.com/products/rock5/5a/)
+* [Radxa ROCK 5B](https://radxa.com/products/rock5/5b/)
+* [Turing RK1](https://turingpi.com/product/turing-rk1)
 
 ## Installation
 
