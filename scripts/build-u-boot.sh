@@ -16,6 +16,10 @@ if [[ -z ${VENDOR} ]]; then
     exit 1
 fi
 
+if [[ "${BOARD}" == mixtile-core3588e ]]; then
+    VENDOR=turing
+fi
+
 if [ ! -d u-boot-"${VENDOR}" ]; then
     # shellcheck source=/dev/null
     source ../packages/u-boot-"${VENDOR}"-rk3588/debian/upstream
