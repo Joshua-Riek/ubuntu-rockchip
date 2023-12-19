@@ -70,6 +70,9 @@ elif [[ "${BOARD}" == orangepi-5b ]]; then
 elif [[ "${BOARD}" == orangepi-5-plus ]]; then
     DEVICE_TREE=rk3588-orangepi-5-plus.dtb
     OVERLAY_PREFIX=rk3588
+elif [[ "${BOARD}" == armsom-w3 ]]; then
+    DEVICE_TREE=rk3588-armsom-w3.dtb
+    OVERLAY_PREFIX=rk3588
 elif [[ "${BOARD}" == rock-5a ]]; then
     DEVICE_TREE=rk3588s-rock-5a.dtb
     OVERLAY_PREFIX=rk3588
@@ -287,6 +290,8 @@ fi
 if [ -z "${img##*server*}" ]; then
     cp ../overlay/boot/firmware/{meta-data,user-data,network-config} ${mount_point}/system-boot
     if [ "${BOARD}" == rock-5b ] || [ "${BOARD}" == indiedroid-nova ]; then
+        sed -i 's/eth0:/enP4p65s0:/g' ${mount_point}/system-boot/network-config
+    elif [ "${BOARD}" == armsom-w3 ]; then
         sed -i 's/eth0:/enP4p65s0:/g' ${mount_point}/system-boot/network-config
     elif [ "${BOARD}" == orangepi-5-plus ]; then
         sed -i 's/eth0:/enP4p65s0:\n      dhcp4: true\n      optional: true\n    enP3p49s0:/g' ${mount_point}/system-boot/network-config

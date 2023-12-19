@@ -12,7 +12,8 @@ cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
 if [[ "${MAINLINE}" != "Y" ]]; then
-    test -d linux-rockchip || git clone --single-branch --progress -b linux-5.10-gen-rkr6 https://github.com/Joshua-Riek/linux-rockchip.git linux-rockchip
+    # test -d linux-rockchip || git clone --single-branch --progress -b linux-5.10-gen-rkr6 https://github.com/Joshua-Riek/linux-rockchip.git linux-rockchip
+    test -d linux-rockchip || git clone --single-branch --progress -b linux-5.10-gen-rkr6 https://github.com/zhouxp5300747/linux-rockchip.git linux-rockchip
     cd linux-rockchip
 
     # Compile kernel into a deb package
