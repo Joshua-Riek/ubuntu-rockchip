@@ -129,15 +129,15 @@ index 0000000000..e0e974a89f
 +	mem-supply = <&vdd_cpu_lit_mem_s0>;
 +};
 +
-+&gmac1 {
++&gmac0 {
 +	clock_in_out = "output";
 +	phy-handle = <&rgmii_phy>;
 +	phy-mode = "rgmii-rxid";
-+	pinctrl-0 = <&gmac1_miim
-+		     &gmac1_tx_bus2
-+		     &gmac1_rx_bus2
-+		     &gmac1_rgmii_clk
-+		     &gmac1_rgmii_bus>;
++	pinctrl-0 = <&gmac0_miim
++		     &gmac0_tx_bus2
++		     &gmac0_rx_bus2
++		     &gmac0_rgmii_clk
++		     &gmac0_rgmii_bus>;
 +	pinctrl-names = "default";
 +
 +	rx_delay = <0x00>;
@@ -225,7 +225,7 @@ index 0000000000..e0e974a89f
 +	};
 +};
 +
-+&mdio1 {
++&mdio0 {
 +	rgmii_phy: ethernet-phy@1 {
 +		/* RTL8211F */
 +		compatible = "ethernet-phy-id001c.c916",
@@ -235,7 +235,7 @@ index 0000000000..e0e974a89f
 +		pinctrl-0 = <&rtl8211f_rst>;
 +		reset-assert-us = <15000>;
 +		reset-deassert-us = <50000>;
-+		reset-gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
++		reset-gpios = <&gpio1 RK_PA4 GPIO_ACTIVE_LOW>;
 +	};
 +};
 +
@@ -295,7 +295,7 @@ index 0000000000..e0e974a89f
 +
 +	rtl8211f {
 +		rtl8211f_rst: rtl8211f-rst {
-+			rockchip,pins = <3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
++			rockchip,pins = <1 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +	};
 +};
