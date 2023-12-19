@@ -1,7 +1,7 @@
-From c9febba17fbab3968a089cb958466489dedc9b04 Mon Sep 17 00:00:00 2001
+From 9c1a9f2b9020e7211fa497a89959de2b01aca7b9 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Sun, 17 Dec 2023 09:55:49 -0500
-Subject: [PATCH 6/6] board: rockchip: Add the Mixtile Blade 3
+Subject: [PATCH 6/7] board: rockchip: Add the Mixtile Blade 3
 
 ---
  arch/arm/dts/rk3588-mixtile-blade3.dts  | 122 ++++++++++++
