@@ -1,0 +1,66 @@
+u-boot-armsom-rk3588 (2017.09+20230920.git609a77ef-3) jammy; urgency=medium
+
+  * Add u-boot install scripts
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 26 Oct 2023 17:52:34 -0400
+
+u-boot-armsom-rk3588 (2017.09+20230920.git609a77ef-2) jammy; urgency=medium
+
+  * Update u-boot install path
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 20 Oct 2023 21:11:44 -0400
+
+u-boot-armsom-rk3588 (2017.09+20230920.git609a77ef-1) jammy; urgency=medium
+
+  * configs: add armsom-w3-io-rk3588s_defconfig
+  * arm: dts: add rk3588s armsom w3 io support
+  * HACK: rockchip: rkimg: enter download mode when pressing recovery button
+  * rockchip: rk3328: define fdtfile and fdtoverlay_addr_r variable
+
+ -- Joshua Riek <jjriek@verizon.net>  Wed, 20 Sep 2023 20:36:50 -0400
+
+u-boot-armsom-rk3588 (2017.09+20230711.gitddc91cd0-3) jammy; urgency=medium
+
+  * Add ddr and bl31 blobs again
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 11 Aug 2023 17:53:16 -0400
+
+u-boot-armsom-rk3588 (2017.09+20230711.gitddc91cd0-2) jammy; urgency=medium
+
+  * Revert ddr and bl31 blob update
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 11 Aug 2023 11:39:32 -0400
+
+u-boot-armsom-rk3588 (2017.09+20230711.gitddc91cd0-1) jammy; urgency=medium
+
+  * Updated the ddr blob to rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+  * Updated the bl31 blob to rk3588_bl31_v1.38.elf 
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 10 Aug 2023 01:33:57 -0400
+
+u-boot-armsom-rk3588 (2017.09+20230711.gitddc91cd0) jammy; urgency=medium
+
+  * renamed armsom-w3 and armsom-sige7 package
+  * added package for armsom-w3-io
+
+  * upstream changes
+    - Merge pull request #27 from Ken-Vamrs/next-dev
+    - rockchip: rk3399: define fdtfile variable
+    - power: regulator: fan53555: add rk860 calibration
+    - common: fix buidl error
+    - arm: dts: add armsom w3 io
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 14 Jul 2023 18:13:31 -0400
+
+u-boot-armsom-rk3588 (2017.09+20230607.gitbf47e817-1) jammy; urgency=medium
+
+  * rockchip: rk3588: Set emmc iomux for better extention
+  * give SD higher boot priority than NVME
+
+ -- Joshua Riek <jjriek@verizon.net>  Tue, 13 Jun 2023 09:03:27 -0400
+
+u-boot-armsom-rk3588 (2017.09+20230413.gita2a9f1df-1) jammy; urgency=medium
+
+  * Initial packaging.
+
+ -- Joshua Riek <jjriek@verizon.net>  Tue, 16 May 2023 09:04:54 -0400

@@ -1,0 +1,4 @@
+GIT=https://github.com/ArmSoM/u-boot.git
+COMMIT=cc35f9e395f8d4877b860b8d4f4a1e79600db76c
+BRANCH=next-dev
+VERSION=2017.09+20230920.gitcc35f9e3
