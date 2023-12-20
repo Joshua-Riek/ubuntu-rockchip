@@ -7,7 +7,7 @@ cd "$(dirname -- "$(readlink -f -- "$0")")"
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi-5|orangepi-5b|orangepi-5-plus|armsom-w3|rock-5b|rock-5a|rock-5-itx|radxa-nx5-io|radxa-cm5-io|nanopc-t6|nanopi-r6c|nanopi-r6s|indiedroid-nova|mixtile-blade3|mixtile-core3588e|lubancat-4|turing-rk1|roc-rk3588s-pc]
+Usage: $0 --board=[orangepi-5|orangepi-5b|orangepi-5-plus|armsom-w3|armsom-sige7|rock-5b|rock-5a|rock-5-itx|radxa-nx5-io|radxa-cm5-io|nanopc-t6|nanopi-r6c|nanopi-r6s|indiedroid-nova|mixtile-blade3|mixtile-core3588e|lubancat-4|turing-rk1|roc-rk3588s-pc]
 
 Required arguments:
   -b, --board=BOARD      target board 
@@ -121,7 +121,7 @@ if [ "${BOARD}" == orangepi-5 ] || [ "${BOARD}" == orangepi-5b ] || [ "${BOARD}"
     export VENDOR=orangepi
 elif [ "${BOARD}" == rock-5b ] || [ "${BOARD}" == rock-5a ] || [ "${BOARD}" == rock-5-itx ] || [ "${BOARD}" == radxa-cm5-io ] || [ "${BOARD}" == radxa-nx5-io ]; then
     export VENDOR=radxa
-elif [ "${BOARD}" == armsom-w3 ]; then
+elif [ "${BOARD}" == armsom-w3 ] || [ "${BOARD}" == armsom-sige7 ]; then
     export VENDOR=armsom
 elif [ "${BOARD}" == nanopi-r6c ] || [ "${BOARD}" == nanopi-r6s ] || [ "${BOARD}" == nanopc-t6 ]; then
     export VENDOR=friendlyelec
