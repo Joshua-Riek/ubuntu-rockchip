@@ -113,7 +113,7 @@ for type in $target; do
 
         chroot ${chroot_dir} /bin/bash -c "apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev"
         echo "BOARD=orangepi5" > ${chroot_dir}/etc/orangepi-release
-    elif [ "${BOARD}" == armsom-w3 ]; then
+    elif [ "${BOARD}" == armsom-w3 ] || [ "${BOARD}" == armsom-sige7 ]; then
     {
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"'
         echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi1-sound", ENV{SOUND_DESCRIPTION}="HDMI1 Audio"'
