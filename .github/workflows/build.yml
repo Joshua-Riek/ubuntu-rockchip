@@ -30,8 +30,11 @@ jobs:
           - nanopi-r6s
           - indiedroid-nova
           - mixtile-blade3
+          - mixtile-core3588e
           - lubancat-4
           - turing-rk1
+          - armsom-sige7
+          - armsom-w3
 
     steps:
       - name: Get more disk space
