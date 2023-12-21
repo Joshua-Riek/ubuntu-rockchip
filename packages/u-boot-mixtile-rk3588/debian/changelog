@@ -1,3 +1,9 @@
+u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-5) jammy; urgency=medium
+
+  * Add the Mixtile Core 3588E
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 21 Dec 2023 15:19:24 -0500
+
 u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-4) jammy; urgency=medium
 
   * Add u-boot install scripts
