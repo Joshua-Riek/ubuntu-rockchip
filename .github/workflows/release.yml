@@ -15,7 +15,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: gh release create --draft v1.31 --title v1.31
+        run: gh release create --draft v1.32 --title v1.32
 
   build:
     permissions:
@@ -30,15 +30,20 @@ jobs:
           - orangepi-5-plus
           - rock-5b
           - rock-5a
+          - rock-5-itx
           - radxa-cm5-io
+          - radxa-nx5-io
           - nanopc-t6
           - nanopi-r6c
           - nanopi-r6s
           - indiedroid-nova
           - mixtile-blade3
+          - mixtile-core3588e
           - lubancat-4
           - turing-rk1
           - roc-rk3588s-pc
+          - armsom-sige7
+          - armsom-w3
 
     steps:
       - name: Get more disk space
