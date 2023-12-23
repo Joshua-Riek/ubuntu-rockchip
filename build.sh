@@ -126,7 +126,7 @@ elif [ "${BOARD}" == armsom-w3 ] || [ "${BOARD}" == armsom-sige7 ]; then
 elif [ "${BOARD}" == nanopi-r6c ] || [ "${BOARD}" == nanopi-r6s ] || [ "${BOARD}" == nanopc-t6 ]; then
     export VENDOR=radxa
 elif [ "${BOARD}" == indiedroid-nova ]; then
-    export VENDOR=9tripod
+    export VENDOR=radxa
 elif [ "${BOARD}" == mixtile-blade3 ] || [ "${BOARD}" == mixtile-core3588e ]; then
     export VENDOR=mixtile
 elif [ "${BOARD}" == turing-rk1 ]; then
