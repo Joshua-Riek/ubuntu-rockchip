@@ -124,7 +124,7 @@ elif [ "${BOARD}" == rock-5b ] || [ "${BOARD}" == rock-5a ] || [ "${BOARD}" == r
 elif [ "${BOARD}" == armsom-w3 ] || [ "${BOARD}" == armsom-sige7 ]; then
     export VENDOR=armsom
 elif [ "${BOARD}" == nanopi-r6c ] || [ "${BOARD}" == nanopi-r6s ] || [ "${BOARD}" == nanopc-t6 ]; then
-    export VENDOR=friendlyelec
+    export VENDOR=radxa
 elif [ "${BOARD}" == indiedroid-nova ]; then
     export VENDOR=9tripod
 elif [ "${BOARD}" == mixtile-blade3 ] || [ "${BOARD}" == mixtile-core3588e ]; then
@@ -132,7 +132,7 @@ elif [ "${BOARD}" == mixtile-blade3 ] || [ "${BOARD}" == mixtile-core3588e ]; th
 elif [ "${BOARD}" == turing-rk1 ]; then
     export VENDOR=turing
 elif [ "${BOARD}" == lubancat-4 ]; then
-    export VENDOR=lubancat
+    export VENDOR=radxa
 elif [ "${BOARD}" == roc-rk3588s-pc ]; then
     export VENDOR=firefly
 else
