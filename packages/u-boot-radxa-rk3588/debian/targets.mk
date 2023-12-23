@@ -52,3 +52,7 @@ armsom-w3-rk3588_bl31 := rk3588_bl31_v1.38.elf
 u-boot-rockchip_platforms += armsom-sige7-rk3588
 armsom-sige7-rk3588_ddr := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 armsom-sige7-rk3588_bl31 := rk3588_bl31_v1.38.elf
+
+u-boot-rockchip_platforms += roc-rk3588s-pc-rk3588s
+roc-rk3588s-pc-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+roc-rk3588s-pc-rk3588s_bl31 := rk3588_bl31_v1.38.elf

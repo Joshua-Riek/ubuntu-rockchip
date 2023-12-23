@@ -177,12 +177,10 @@ fdt addr ${fdt_addr_r} && fdt resize 0x10000
 
 for overlay_file in ${overlays}; do
     for file in "${overlay_prefix}-${overlay_file}.dtbo ${overlay_prefix}-${overlay_file} ${overlay_file}.dtbo ${overlay_file}"; do
-        if test -e ${devtype} ${devnum}:${distro_bootpart} /dtbs/rockchip/overlay/${file}; then
-            if load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/rockchip/overlay/${file}; then
-                echo "Applying device tree overlay: /dtbs/rockchip/overlay/${file}"
-                fdt apply ${fdtoverlay_addr_r} || setenv overlay_error "true"
-            fi
-        fi
+        test -e ${devtype} ${devnum}:${distro_bootpart} /dtbs/rockchip/overlay/${file} \
+        && load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /dtbs/rockchip/overlay/${file} \
+        && echo "Applying device tree overlay: /dtbs/rockchip/overlay/${file}" \
+        && fdt apply ${fdtoverlay_addr_r} || setenv overlay_error "true"
     done
 done
 if test "${overlay_error}" = "true"; then
@@ -200,7 +198,7 @@ mkimage -A arm64 -O linux -T script -C none -n "Boot Script" -d ${mount_point}/s
 # Uboot env
 cat > ${mount_point}/system-boot/ubuntuEnv.txt << EOF
 bootargs=root=UUID=${root_uuid} rootfstype=ext4 rootwait rw console=ttyS2,1500000 console=tty1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0 ${bootargs}
-fdtfile=${DEVICE_TREE}
+fdtfile=${DEVICE_TREE_FILE}
 overlay_prefix=${OVERLAY_PREFIX}
 overlays=
 EOF
