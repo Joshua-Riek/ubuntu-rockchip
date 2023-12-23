@@ -13,12 +13,9 @@ else
 NJOBS := -j $(shell nproc)
 endif
 
-DDR_BLOB := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
-BL31_BLOB := rk3588_bl31_v1.38.elf
+include debian/targets.mk
 
-BOARDS := rock-5b-rk3588 rock-5a-rk3588s rock-5a-spi-rk3588s rock-5-itx-rk3588 radxa-cm5-io-rk3588s radxa-nx5-io-rk3588s
-
-${BOARDS}: 
+${u-boot-rockchip_platforms}:
 	@mkdir -p debian/build/$@
 
 	make O=debian/build/$@ \
@@ -28,25 +25,25 @@ ${BOARDS}:
 	  $@_defconfig
 
 	@touch .scmversion
-	@sed -i 's/CONFIG_BOOTDELAY=.*/CONFIG_BOOTDELAY=1/g' debian/build/$@/.config
+	@sed -i 's/CONFIG_BOOTDELAY=.*/CONFIG_BOOTDELAY=2/g' debian/build/$@/.config
 	@sed -i 's/CONFIG_DISABLE_CONSOLE=y/CONFIG_DISABLE_CONSOLE=n/g' debian/build/$@/.config
-	@sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-radxa-rk3588"/g' debian/build/$@/.config
+	@sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION=""/g' debian/build/$@/.config
 
 	@mkdir -p debian/build/$@/arch/arm/mach-rockchip
 	@cp arch/arm/mach-rockchip/decode_bl31.py debian/build/$@/arch/arm/mach-rockchip/decode_bl31.py
 
-	@cp debian/rkbin/$(BL31_BLOB) debian/build/$@/bl31.elf
+	@cp debian/rkbin/$($@_bl31) debian/build/$@/bl31.elf
 
 	make O=debian/build/$@ \
 	  CROSS_COMPILE=$(CROSS_COMPILE) \
 	  SOURCE_DATE_EPOCH=$(shell date +%s) \
 	  ARCH=arm \
 	  $(NJOBS) \
-	  BL31=../../../debian/rkbin/$(BL31_BLOB) \
+	  BL31=../../../debian/rkbin/$($@_bl31) \
 	  spl/u-boot-spl.bin u-boot.dtb u-boot.itb
 
 	./debian/build/$@/tools/mkimage -n rk3588 -T rksd -d \
-	  debian/rkbin/$(DDR_BLOB):debian/build/$@/spl/u-boot-spl.bin \
+	  debian/rkbin/$($@_ddr):debian/build/$@/spl/u-boot-spl.bin \
 	  debian/build/$@/idbloader.img
 
 	@dd if=/dev/zero of=debian/build/$@/rkspi_loader.img bs=1M count=0 seek=16
@@ -61,9 +58,9 @@ ${BOARDS}:
 	@dd if=debian/build/$@/idbloader.img of=debian/build/$@/rkspi_loader.img seek=64 conv=notrunc
 	@dd if=debian/build/$@/u-boot.itb of=debian/build/$@/rkspi_loader.img seek=16384 conv=notrunc
 
-build: ${BOARDS}
+build: ${u-boot-rockchip_platforms}
 
-binary-arch: $(addprefix package-,$(filter-out rock-5a-spi-rk3588s,$(BOARDS)))  
+binary-arch: $(addprefix package-,$(filter-out rock-5a-spi-rk3588s,$(u-boot-rockchip_platforms)))  
 
 binary: binary-arch
 
@@ -71,7 +68,6 @@ package-%:
 	@rm -rf debian/tmp
 	@mkdir -m 755 -p debian/tmp/u-boot/usr/lib/u-boot/
 	@mkdir -m 755 -p debian/tmp/u-boot/usr/bin/
-	@sh -c "cd 'debian/tmp/u-boot/usr/lib/'; ln -sfn /usr/lib/u-boot u-boot-radxa-rk3588"
 
 	@cp debian/build/$(subst package-,,$@)/u-boot.itb debian/tmp/u-boot/usr/lib/u-boot/u-boot.itb
 	@cp debian/build/$(subst package-,,$@)/idbloader.img debian/tmp/u-boot/usr/lib/u-boot/idbloader.img
