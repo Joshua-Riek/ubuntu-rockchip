@@ -70,3 +70,8 @@ u-boot-rockchip_platforms += roc-rk3588s-pc-rk3588s
 roc-rk3588s-pc-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 roc-rk3588s-pc-rk3588s_bl31 := rk3588_bl31_v1.38.elf
 roc-rk3588s-pc-rk3588s_pkg := roc-rk3588s-pc
+
+u-boot-rockchip_platforms += mixtile-core3588e-rk3588
+mixtile-core3588e-rk3588_ddr := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+mixtile-core3588e-rk3588_bl31 := rk3588_bl31_v1.38.elf
+mixtile-core3588e-rk3588_pkg := mixtile-core3588e
