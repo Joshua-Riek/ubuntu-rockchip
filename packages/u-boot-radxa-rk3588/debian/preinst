@@ -16,4 +16,9 @@ if [ -d ${path} ] && [ ! -L ${path} ]; then
     rm -rf ${path}
 fi
 
+path="/usr/lib/u-boot-9tripod-rk3588/"
+if [ -d ${path} ] && [ ! -L ${path} ]; then
+    rm -rf ${path}
+fi
+
 exit 0
