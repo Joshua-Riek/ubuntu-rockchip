@@ -2,3 +2,5 @@
 0002-fix_source_so_boot_scr_works.patch
 0003-give-SD-higher-boot-priority-than-NVME.patch
 0004-add-support-for-the-rock-5-itx.patch
+0005-add-the-nanopir6-and-nanopct6.patch
+0006-add-the-lubancat4.patch
