@@ -117,25 +117,18 @@ if [[ ${CLEAN} == "Y" ]]; then
     rm -rf build
 fi
 
-if [ "${BOARD}" == orangepi-5 ] || [ "${BOARD}" == orangepi-5b ] || [ "${BOARD}" == orangepi-5-plus ]; then
-    export VENDOR=orangepi
-elif [ "${BOARD}" == rock-5b ] || [ "${BOARD}" == rock-5a ] || [ "${BOARD}" == rock-5-itx ] || [ "${BOARD}" == radxa-cm5-io ] || [ "${BOARD}" == radxa-nx5-io ]; then
-    export VENDOR=radxa
-elif [ "${BOARD}" == armsom-w3 ] || [ "${BOARD}" == armsom-sige7 ]; then
-    export VENDOR=armsom
-elif [ "${BOARD}" == nanopi-r6c ] || [ "${BOARD}" == nanopi-r6s ] || [ "${BOARD}" == nanopc-t6 ]; then
-    export VENDOR=radxa
-elif [ "${BOARD}" == indiedroid-nova ]; then
-    export VENDOR=radxa
-elif [ "${BOARD}" == mixtile-blade3 ] || [ "${BOARD}" == mixtile-core3588e ]; then
-    export VENDOR=mixtile
-elif [ "${BOARD}" == turing-rk1 ]; then
-    export VENDOR=turing
-elif [ "${BOARD}" == lubancat-4 ]; then
-    export VENDOR=radxa
-elif [ "${BOARD}" == roc-rk3588s-pc ]; then
-    export VENDOR=firefly
-else
+set -o allexport
+
+for file in config/boards/*; do
+    if [ "${BOARD}" == "$(basename "${file%.conf}")" ]; then
+        # shellcheck source=/dev/null
+        source "$file"
+    fi
+done
+
+set +o allexport
+
+if [[ -z ${BOARD_NAME} ]]; then
     echo "Error: \"${BOARD}\" is an unsupported board"
     exit 1
 fi
