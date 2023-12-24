@@ -1,3 +1,9 @@
+u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-6) jammy; urgency=medium
+
+  * Cleanup packaging and build process
+
+ -- Joshua Riek <jjriek@verizon.net>  Sun, 24 Dec 2023 09:55:07 -0500
+
 u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-5) jammy; urgency=medium
 
   * Add u-boot install scripts
