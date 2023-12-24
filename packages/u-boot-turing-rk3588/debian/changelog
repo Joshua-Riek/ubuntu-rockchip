@@ -1,3 +1,9 @@
+u-boot-turing-rk3588 (2024.01~rc1-3) jammy; urgency=medium
+
+  * Cleanup packging and add Mixtile Core 3588E patch
+
+ -- Joshua Riek <jjriek@verizon.net>  Sun, 24 Dec 2023 10:06:16 -0500
+
 u-boot-turing-rk3588 (2024.01~rc1-2) jammy; urgency=medium
 
   * Fix HS400 in Linux userspace 
