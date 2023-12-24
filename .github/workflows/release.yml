@@ -82,7 +82,7 @@ jobs:
       - name: Upload release assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload v1.31 ./images/ubuntu-*-preinstalled-*-arm64-${{ matrix.platform }}.*
+        run: gh release upload v1.32 ./images/ubuntu-*-preinstalled-*-arm64-${{ matrix.platform }}.*
 
       - name: Clean cache
         shell: bash
