@@ -16,11 +16,6 @@ if [[ -z ${BOARD} ]]; then
     exit 1
 fi
 
-if [[ -z ${VENDOR} ]]; then
-    echo "Error: VENDOR is not set"
-    exit 1
-fi
-
 if [[ ${LAUNCHPAD} != "Y" ]]; then
     uboot_package="$(basename "$(find u-boot-"${BOARD}"_*.deb | sort | tail -n1)")"
     if [ ! -e "$uboot_package" ]; then
