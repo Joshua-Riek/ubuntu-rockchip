@@ -1,3 +1,9 @@
+u-boot-radxa-rk3588 (2017.09+20231220.git84dc6c96-1) jammy; urgency=medium
+
+  * Squash u-boot source code into radxa package
+
+ -- Joshua Riek <jjriek@verizon.net>  Sat, 23 Dec 2023 19:27:47 -0500
+
 u-boot-radxa-rk3588 (2017.09+20231108.git957d61fa-1) jammy; urgency=medium
 
   * Add build for the ROCK 5 ITX and NX5 io
