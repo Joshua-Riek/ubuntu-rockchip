@@ -56,11 +56,6 @@ if [[ -z ${BOARD} ]]; then
     exit 1
 fi
 
-if [[ -z ${VENDOR} ]]; then
-    echo "Error: VENDOR is not set"
-    exit 1
-fi
-
 KVER=""
 if [[ "${MAINLINE}" == "Y" ]]; then
     KVER="-mainline-6.7.0-rc4"
