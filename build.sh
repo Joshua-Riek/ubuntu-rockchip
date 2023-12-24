@@ -96,19 +96,22 @@ if [[ ${MAINLINE} != "Y" ]]; then
     export MAINLINE=N
 fi
 
+# Build only the Linux kernel then exit
 if [[ ${KERNEL_ONLY} == "Y" ]]; then
-    mkdir -p build/logs
-    exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
+    # Start logging the build process
+    mkdir -p build/logs && exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
 
     eval "${DOCKER}" ./scripts/build-kernel.sh
     exit 0
 fi
 
+# No board param passed
 if [[ -z ${BOARD} ]]; then
     usage
     exit 1
 fi
 
+# Clean the build directory
 if [[ ${CLEAN} == "Y" ]]; then
     if [ -d build/rootfs ]; then
         umount -lf build/rootfs/dev/pts 2> /dev/null || true
@@ -117,48 +120,53 @@ if [[ ${CLEAN} == "Y" ]]; then
     rm -rf build
 fi
 
-set -o allexport
-
+# Read board configuration files
 for file in config/boards/*; do
     if [ "${BOARD}" == "$(basename "${file%.conf}")" ]; then
         # shellcheck source=/dev/null
-        source "$file"
+        set -o allexport && source "${file}" && set +o allexport
     fi
 done
 
-set +o allexport
-
+# Exit with error if invalid board
 if [[ -z ${BOARD_NAME} ]]; then
     echo "Error: \"${BOARD}\" is an unsupported board"
     exit 1
 fi
 
-mkdir -p build/logs
-exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
+# Start logging the build process
+mkdir -p build/logs && exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
 
+# Build only the Linux kernel then exit
 if [[ ${KERNEL_ONLY} == "Y" ]]; then
     eval "${DOCKER}" ./scripts/build-kernel.sh
     exit 0
 fi
 
+# Build only U-Boot then exit
 if [[ ${UBOOT_ONLY} == "Y" ]]; then
     eval "${DOCKER}" ./scripts/build-u-boot.sh
     exit 0
 fi
 
+# Build the Linux kernel if not found
 if [[ ${LAUNCHPAD} != "Y" ]]; then
     if [[ ! -e "$(find build/linux-image-*.deb | sort | tail -n1)" || ! -e "$(find build/linux-headers-*.deb | sort | tail -n1)" ]]; then
         eval "${DOCKER}" ./scripts/build-kernel.sh
     fi
 fi
 
+# Build U-Boot if not found
 if [[ ${LAUNCHPAD} != "Y" ]]; then
     if [[ ! -e "$(find build/u-boot-"${BOARD}"_*.deb | sort | tail -n1)" ]]; then
         eval "${DOCKER}" ./scripts/build-u-boot.sh
     fi
 fi
 
+# Create the root filesystem
 eval "${DOCKER}" ./scripts/build-rootfs.sh
+
+# Create the disk image
 eval "${DOCKER}" ./scripts/config-image.sh
 
 exit 0
