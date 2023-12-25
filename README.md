@@ -21,10 +21,13 @@ The supported devices are undergoing continuous development. As a result, you ma
 
 ## Supported Boards
 
-* [ROC-RK3588S-PC](https://en.t-firefly.com/product/industry/rocrk3588spc)
+* [ArmSoM-Sige7](https://docs.armsom.org/docs/category/sige7-1)
+* [ArmSoM-w3](http://wiki.armsom.org/index.php/ArmSoM-w3)
 * [Indiedroid Nova](https://indiedroid.us)
+* [ROC-RK3588S-PC](https://en.t-firefly.com/product/industry/rocrk3588spc)
 * [LubanCat 4](https://doc.embedfire.com/products/link/zh/latest/linux/ebf_lubancat.html)
 * [Mixtile Blade 3](https://www.mixtile.com/blade-3)
+* [Mixtile Core 3588E](https://www.mixtile.com/core-3588e/)
 * [NanoPC T6](https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6)
 * [NanoPi R6C](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6C)
 * [NanoPi R6S](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6S)
