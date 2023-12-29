@@ -1,3 +1,9 @@
+u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-7) jammy; urgency=medium
+
+  * Remove emmc skip patch
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 29 Dec 2023 07:50:18 -0500
+
 u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-6) jammy; urgency=medium
 
   * Cleanup packaging and build process
