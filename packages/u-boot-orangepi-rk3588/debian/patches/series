@@ -1,3 +1,2 @@
 0001-fix-srctree-path.patch
 0002-enable-set-local-mac-address.patch
-0003-fix-eMMC-boot-is-skipped-when-SD-card-is-inserted.patch
