@@ -11,20 +11,39 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
-if [[ "${MAINLINE}" != "Y" ]]; then
-    test -d linux-rockchip || git clone --single-branch --progress -b linux-5.10-gen-rkr6 https://github.com/Joshua-Riek/linux-rockchip.git linux-rockchip
-    cd linux-rockchip
-
-    # Compile kernel into a deb package
-    dpkg-buildpackage -a "$(cat debian/arch)" -d -b -nc -uc
-
-    rm -f ../*.buildinfo ../*.changes
-else
-    test -d linux ||  git clone --single-branch --progress -b v6.7-rc4-rk3588 https://github.com/Joshua-Riek/linux.git --depth=100
-    cd linux
-
-    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- rockchip_defconfig
-    make KERNELRELEASE="$(make kernelversion)-rockchip" KBUILD_IMAGE="arch/arm64/boot/Image" CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 -j "$(nproc)" bindeb-pkg
-
-    rm -f ../linux-image-*dbg*.deb ../linux-libc-dev_*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.gz
+if [[ -z ${KERNEL_CONFIG} ]]; then
+    echo "Error: KERNEL_CONFIG is not set"
+    exit 1
 fi
+
+# shellcheck source=/dev/null
+source ../config/kernel/"${KERNEL_CONFIG}"
+
+if ! git -C "${KERNEL_CLONE_DIR}" pull; then
+    git clone --progress -b "${KERNEL_BRANCH}" "${KERNEL_REPO}" "${KERNEL_CLONE_DIR}" --depth=2
+fi
+
+cd "${KERNEL_CLONE_DIR}"
+git checkout "${KERNEL_BRANCH}"
+
+if [[ ${DPKG_BUILDPACKAGE} == "Y" ]]; then
+    dpkg-buildpackage -a "$(cat debian/arch)" -d -b -nc -uc
+else
+    echo 1 > .version
+    touch .scmversion
+
+    make "${KERNEL_DEFCONFIG}" \
+    CROSS_COMPILE=aarch64-linux-gnu- \
+    ARCH=arm64 \
+    -j "$(nproc)"
+
+    make bindeb-pkg \
+    KBUILD_IMAGE="arch/arm64/boot/Image" \
+    KDEB_PKGVERSION="$(make kernelversion)-1" \
+    KERNELRELEASE="$(make kernelversion)-rockchip" \
+    CROSS_COMPILE=aarch64-linux-gnu- \
+    ARCH=arm64 \
+    -j "$(nproc)"
+fi
+
+rm -f ../linux-image-*dbg*.deb ../linux-libc-dev_*.deb ../*.buildinfo ../*.changes ../*.dsc ../*.tar.gz

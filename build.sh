@@ -70,6 +70,7 @@ for i in "$@"; do
             ;;
         -m|--mainline)
             export MAINLINE=Y
+            export KERNEL_CONFIG=mainline.conf
             shift
             ;;
         -l|--launchpad)
@@ -94,6 +95,7 @@ done
 
 if [[ ${MAINLINE} != "Y" ]]; then
     export MAINLINE=N
+    export KERNEL_CONFIG=bsp.conf
 fi
 
 # Build only the Linux kernel then exit
