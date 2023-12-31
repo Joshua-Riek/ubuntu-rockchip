@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Get more disk space
         uses: easimon/maximize-build-space@master
-        if: ${{ inputs.launchpad == 'false' }}
+        if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
           root-reserve-mb: 2048
           swap-size-mb: 1024
@@ -28,17 +28,17 @@ jobs:
           remove-docker-images: 'true'
 
       - name: Checkout code
-        if: ${{ inputs.launchpad == 'false' }}
+        if: ${{ github.event.inputs.launchpad == 'false' }}
         uses: actions/checkout@v4
 
       - name: Checkout LFS
         shell: bash
-        if: ${{ inputs.launchpad == 'false' }}
+        if: ${{ github.event.inputs.launchpad == 'false' }}
         run: git lfs fetch && git lfs checkout
 
       - name: Install dependencies
         shell: bash
-        if: ${{ inputs.launchpad == 'false' }}
+        if: ${{ github.event.inputs.launchpad == 'false' }}
         run: |
           sudo apt-get update && sudo apt-get upgrade -y
           sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
@@ -50,12 +50,12 @@ jobs:
 
       - name: Build kernel
         shell: bash
-        if: ${{ inputs.launchpad == 'false' }}
+        if: ${{ github.event.inputs.launchpad == 'false' }}
         run: sudo ./build.sh --board=orangepi-5 --kernel-only
 
       - name: Upload kernel
         uses: actions/upload-artifact@master
-        if: ${{ inputs.launchpad == 'false' }}
+        if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
             name: linux-rockchip
             path: ./build/linux-*.deb
@@ -108,7 +108,7 @@ jobs:
 
       - name: Checkout kernel
         uses: actions/download-artifact@master
-        if: ${{ inputs.launchpad == 'false' }}
+        if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
             name: linux-rockchip
             path: ./build/
