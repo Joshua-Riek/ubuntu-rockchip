@@ -1,3 +1,9 @@
+u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-7) jammy; urgency=medium
+
+  * Packaging cleanup
+
+ -- Joshua Riek <jjriek@verizon.net>  Sun, 31 Dec 2023 14:54:55 -0500
+
 u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-6) jammy; urgency=medium
 
   * Drop Mixtile Core 3588E
