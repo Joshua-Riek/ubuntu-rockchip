@@ -54,7 +54,7 @@ jobs:
         run: sudo ./build.sh --board=orangepi-5 --kernel-only
 
       - name: Upload kernel
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v3
         if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
             name: linux-rockchip
@@ -107,7 +107,7 @@ jobs:
         run: git lfs fetch && git lfs checkout
 
       - name: Checkout kernel
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v3
         if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
             name: linux-rockchip
