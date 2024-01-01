@@ -116,7 +116,7 @@ for type in $target; do
     umount -lf ${chroot_dir}/* 2> /dev/null || true
 
     # Tar the entire rootfs
-    cd ${chroot_dir} && tar -cpf ../ubuntu-22.04.3-preinstalled-${type}-arm64-"${BOARD}".rootfs.tar . && cd ..
+    cd ${chroot_dir} && tar -cpf ../ubuntu-22.04.3-preinstalled-${type}-arm64-"${BOARD}".rootfs.tar . && cd .. && rm -rf ${chroot_dir}
     ../scripts/build-image.sh ubuntu-22.04.3-preinstalled-${type}-arm64-"${BOARD}".rootfs.tar
     rm -f ubuntu-22.04.3-preinstalled-${type}-arm64-"${BOARD}".rootfs.tar
 done
