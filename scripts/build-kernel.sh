@@ -17,7 +17,7 @@ if [[ -z ${KERNEL_CONFIG} ]]; then
 fi
 
 # shellcheck source=/dev/null
-source ../config/kernel/"${KERNEL_CONFIG}"
+source ../config/kernels/"${KERNEL_CONFIG}"
 
 # Clone the kernel repo
 if ! git -C "${KERNEL_CLONE_DIR}" pull; then
