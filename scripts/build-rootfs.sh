@@ -255,12 +255,9 @@ mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-# Install rkaiq and rkisp
-cp -r ../packages/rkaiq/camera_engine_*_arm64.deb ${chroot_dir}/tmp
-chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkaiq_rk3588_1.0.3_arm64.deb"
-chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkaiq_rk3588_update_arm64.deb"
-chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkisp-v2.2.0_arm64.deb"
-rm -f ${chroot_dir}/tmp/camera_engine_*_arm64.deb
+if [[ ${MAINLINE} != "Y" ]]; then
+    extras="libwidevinecdm librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config gstreamer1.0-rockchip1 chromium-browser mali-g610-firmware malirun"
+fi
 
 # Download and update packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
@@ -270,54 +267,74 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 # Desktop packages
 apt-get -y install ubuntu-desktop dbus-x11 xterm pulseaudio pavucontrol qtwayland5 \
 gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-plugins-good mpv \
-gstreamer1.0-tools gstreamer1.0-rockchip1 chromium-browser mali-g610-firmware malirun \
-rockchip-multimedia-config librist4 librist-dev rist-tools dvb-tools ir-keytable \
-libdvbv5-0 libdvbv5-dev libdvbv5-doc libv4l-0 libv4l2rds0 libv4lconvert0 libv4l-dev \
-libv4l-rkmpp qv4l2 v4l-utils librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 \
-rockchip-mpp-demos librga2 librga-dev libegl-mesa0 libegl1-mesa-dev libgbm-dev \
-libgl1-mesa-dev libgles2-mesa-dev libglx-mesa0 mesa-common-dev mesa-vulkan-drivers \
-mesa-utils libwidevinecdm libcanberra-pulse
+gstreamer1.0-tools dvb-tools ir-keytable libdvbv5-0 libdvbv5-dev libdvbv5-doc libv4l-0 \
+libv4l2rds0 libv4lconvert0 libv4l-dev qv4l2 v4l-utils libegl-mesa0 libegl1-mesa-dev \
+libgbm-dev libgl1-mesa-dev libgles2-mesa-dev libglx-mesa0 mesa-common-dev mesa-vulkan-drivers \
+mesa-utils libcanberra-pulse oem-config-slideshow-ubuntu oem-config oem-config-gtk \
+ubiquity-frontend-gtk ubiquity-ubuntu-artwork ubiquity 
 
-# Remove cloud-init and landscape-common
-apt-get -y purge cloud-init landscape-common
-
-# Chromium uses fixed paths for libv4l2.so
-ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
-[ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64
-
-# Clean package cache
-apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
-EOF
-
-# Setup and configure oem installer
-cat << EOF | chroot ${chroot_dir} /bin/bash
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
-
+# Create temporary oem user
 addgroup --gid 29999 oem
 adduser --gecos "OEM Configuration (temporary user)" --add_extra_groups --disabled-password --gid 29999 --uid 29999 oem
 usermod -a -G adm,sudo -p "$(date +%s | sha256sum | base64 | head -c 32)" oem
 
-apt-get -y install --no-install-recommends oem-config-slideshow-ubuntu oem-config \
-oem-config-gtk ubiquity-frontend-gtk ubiquity-ubuntu-artwork ubiquity 
-
+# Prepare the oem installer
 mkdir -p /var/log/installer
 touch /var/log/{syslog,installer/debug}
 oem-config-prepare --quiet
+
+# Remove cloud-init and landscape-common
+apt-get -y purge cloud-init landscape-common
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
-# Hack for GDM to restart on first HDMI hotplug
-cp ${overlay_dir}/usr/lib/scripts/gdm-hack.sh ${chroot_dir}/usr/lib/scripts/gdm-hack.sh
-cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
+if [[ ${MAINLINE} != "Y" ]]; then
+    # Install rkaiq and rkisp
+    cp -r ../packages/rkaiq/camera_engine_*_arm64.deb ${chroot_dir}/tmp
+    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkaiq_rk3588_1.0.3_arm64.deb"
+    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkaiq_rk3588_update_arm64.deb"
+    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkisp-v2.2.0_arm64.deb"
+    rm -f ${chroot_dir}/tmp/camera_engine_*_arm64.deb
 
-# Config file for mpv
-cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
+    # Chromium uses fixed paths for libv4l2.so
+    chroot ${chroot_dir} /bin/bash -c "ln -rsf /usr/lib/*/libv4l2.so /usr/lib/"
+    chroot ${chroot_dir} /bin/bash -c "[ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64"
 
-# Use mpv as the default video player
-sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
+    # Hack for GDM to restart on first HDMI hotplug
+    cp ${overlay_dir}/usr/lib/scripts/gdm-hack.sh ${chroot_dir}/usr/lib/scripts/gdm-hack.sh
+    cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
+
+    # Config file for mpv
+    cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
+
+    # Use mpv as the default video player
+    sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
+
+    # Config file for xorg
+    mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
+    cp ${overlay_dir}/etc/X11/xorg.conf.d/20-modesetting.conf ${chroot_dir}/etc/X11/xorg.conf.d/20-modesetting.conf
+
+    # Set chromium inital prefrences
+    mkdir -p ${chroot_dir}/usr/lib/chromium-browser
+    cp ${overlay_dir}/usr/lib/chromium-browser/initial_preferences ${chroot_dir}/usr/lib/chromium-browser/initial_preferences
+
+    # Set chromium default launch args
+    mkdir -p ${chroot_dir}/usr/lib/chromium-browser
+    cp ${overlay_dir}/etc/chromium-browser/default ${chroot_dir}/etc/chromium-browser/default
+
+    # Set chromium as default browser
+    chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium-browser 500"
+    chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium-browser"
+    sed -i 's/firefox-esr\.desktop/chromium-browser\.desktop/g;s/firefox\.desktop;//g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
+
+    # Add chromium to favorites bar
+    mkdir -p ${chroot_dir}/etc/dconf/db/local.d
+    cp ${overlay_dir}/etc/dconf/db/local.d/00-favorite-apps ${chroot_dir}/etc/dconf/db/local.d/00-favorite-apps
+    cp ${overlay_dir}/etc/dconf/profile/user ${chroot_dir}/etc/dconf/profile/user
+    chroot ${chroot_dir} /bin/bash -c "dconf update"
+fi
 
 # Adjust hostname for desktop
 echo "localhost.localdomain" > ${chroot_dir}/etc/hostname
@@ -326,10 +343,6 @@ echo "localhost.localdomain" > ${chroot_dir}/etc/hostname
 sed -i 's/127.0.0.1 localhost/127.0.0.1\tlocalhost.localdomain\tlocalhost\n::1\t\tlocalhost6.localdomain6\tlocalhost6/g' ${chroot_dir}/etc/hosts
 sed -i 's/::1 ip6-localhost ip6-loopback/::1     localhost ip6-localhost ip6-loopback/g' ${chroot_dir}/etc/hosts
 sed -i "/ff00::0 ip6-mcastprefix\b/d" ${chroot_dir}/etc/hosts
-
-# Config file for xorg
-mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
-cp ${overlay_dir}/etc/X11/xorg.conf.d/20-modesetting.conf ${chroot_dir}/etc/X11/xorg.conf.d/20-modesetting.conf
 
 # Networking interfaces
 cp ${overlay_dir}/etc/NetworkManager/NetworkManager.conf ${chroot_dir}/etc/NetworkManager/NetworkManager.conf
@@ -342,25 +355,6 @@ rm -rf ${chroot_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/o
 
 # Enable wayland session
 cp ${overlay_dir}/etc/gdm3/custom.conf ${chroot_dir}/etc/gdm3/custom.conf
-
-# Set chromium inital prefrences
-mkdir -p ${chroot_dir}/usr/lib/chromium-browser
-cp ${overlay_dir}/usr/lib/chromium-browser/initial_preferences ${chroot_dir}/usr/lib/chromium-browser/initial_preferences
-
-# Set chromium default launch args
-mkdir -p ${chroot_dir}/usr/lib/chromium-browser
-cp ${overlay_dir}/etc/chromium-browser/default ${chroot_dir}/etc/chromium-browser/default
-
-# Set chromium as default browser
-chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium-browser 500"
-chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium-browser"
-sed -i 's/firefox-esr\.desktop/chromium-browser\.desktop/g;s/firefox\.desktop;//g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
-
-# Add chromium to favorites bar
-mkdir -p ${chroot_dir}/etc/dconf/db/local.d
-cp ${overlay_dir}/etc/dconf/db/local.d/00-favorite-apps ${chroot_dir}/etc/dconf/db/local.d/00-favorite-apps
-cp ${overlay_dir}/etc/dconf/profile/user ${chroot_dir}/etc/dconf/profile/user
-chroot ${chroot_dir} /bin/bash -c "dconf update"
 
 # Have plymouth use the framebuffer
 mkdir -p ${chroot_dir}/etc/initramfs-tools/conf-hooks.d
