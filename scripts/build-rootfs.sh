@@ -136,7 +136,7 @@ ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
 pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
-gcc libc6-dev bison libssl-dev flex fake-hwclock wireless-regdb \
+gcc libc6-dev bison libssl-dev flex fake-hwclock wireless-regdb network-manager \
 uuid-runtime rsync linux-firmware rockchip-firmware
 
 # Remove cryptsetup and needrestart
@@ -221,6 +221,9 @@ cp ${overlay_dir}/usr/lib/systemd/system/serial-getty@.service.d/10-term.conf ${
 # Fix 120 second timeout bug
 mkdir -p ${chroot_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/
 cp ${overlay_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf ${chroot_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
+
+# Fix network management not being taken over
+cp ${overlay_dir}/etc/netplan/01-network-manager-all.yaml ${chroot_dir}/etc/netplan/01-network-manager-all.yaml
 
 # Use gzip compression for the initrd
 cp ${overlay_dir}/etc/initramfs-tools/conf.d/compression.conf ${chroot_dir}/etc/initramfs-tools/conf.d/compression.conf
