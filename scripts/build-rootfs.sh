@@ -137,7 +137,7 @@ p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
 pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
 gcc libc6-dev bison libssl-dev flex fake-hwclock wireless-regdb \
-uuid-runtime rsync linux-firmware rockchip-firmware
+uuid-runtime rsync linux-firmware rockchip-firmware cloud-initramfs-growroot
 
 # Remove cryptsetup and needrestart
 apt-get -y remove cryptsetup needrestart
@@ -193,12 +193,6 @@ EOF
 
 # Add usb modeswitch to initrd this fixes a boot hang with 8811CU/8821CU
 cp ${overlay_dir}/usr/share/initramfs-tools/hooks/usb_modeswitch ${chroot_dir}/usr/share/initramfs-tools/hooks/usb_modeswitch
-
-# Expand root filesystem on first boot
-mkdir -p ${chroot_dir}/usr/lib/scripts
-cp ${overlay_dir}/usr/lib/scripts/resize-filesystem.sh ${chroot_dir}/usr/lib/scripts/resize-filesystem.sh
-cp ${overlay_dir}/usr/lib/systemd/system/resize-filesystem.service ${chroot_dir}/usr/lib/systemd/system/resize-filesystem.service
-chroot ${chroot_dir} /bin/bash -c "systemctl enable resize-filesystem"
 
 # Set cpu governor to performance
 cp ${overlay_dir}/usr/lib/systemd/system/cpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/cpu-governor-performance.service
@@ -280,7 +274,7 @@ mesa-utils libwidevinecdm libcanberra-pulse oem-config-gtk ubiquity-frontend-gtk
 ubiquity-slideshow-ubuntu language-pack-en-base
 
 # Remove cloud-init and landscape-common
-apt-get -y purge cloud-init landscape-common
+apt-get -y purge cloud-init landscape-common cryptsetup-initramfs
 
 # Chromium uses fixed paths for libv4l2.so
 ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
@@ -305,6 +299,7 @@ apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
 # Hack for GDM to restart on first HDMI hotplug
+mkdir -p ${chroot_dir}/usr/lib/scripts
 cp ${overlay_dir}/usr/lib/scripts/gdm-hack.sh ${chroot_dir}/usr/lib/scripts/gdm-hack.sh
 cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
 
