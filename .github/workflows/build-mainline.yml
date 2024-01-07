@@ -1,5 +1,5 @@
 name: Build Mainline
-run-name: Build with mainline Linux 6.7.0-rc4
+run-name: Build with mainline Linux 6.7.0
 
 on:
   workflow_dispatch:
@@ -45,7 +45,7 @@ jobs:
       - name: Upload kernel
         uses: actions/upload-artifact@master
         with:
-            name: linux-rockchip-mainline
+            name: linux-6.7.0
             path: ./build/linux-*.deb
             if-no-files-found: error
 
@@ -91,7 +91,7 @@ jobs:
       - name: Checkout kernel
         uses: actions/download-artifact@master
         with:
-            name: linux-rockchip-mainline
+            name: linux-6.7.0
             path: ./build/
 
       - name: Install dependencies
@@ -112,8 +112,8 @@ jobs:
       - name: Upload server image
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-mainline-6.7.0-rc4
-          path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-mainline-6.7.0-rc4.*
+          name: ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-mainline-6.7.0
+          path: ./images/ubuntu-22.04.3-preinstalled-server-arm64-${{ matrix.platform }}-mainline-6.7.0.*
           if-no-files-found: error
     
       - name: Clean cache
