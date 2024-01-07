@@ -57,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
-            name: linux-rockchip
+            name: linux-rockchip-5.10
             path: ./build/linux-*.deb
             if-no-files-found: error
 
@@ -110,7 +110,7 @@ jobs:
         uses: actions/download-artifact@v3
         if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
-            name: linux-rockchip
+            name: linux-rockchip-5.10
             path: ./build/
 
       - name: Install dependencies
