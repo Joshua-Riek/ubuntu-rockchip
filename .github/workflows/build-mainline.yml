@@ -43,7 +43,7 @@ jobs:
         run: sudo ./build.sh --board=orangepi-5 --mainline --kernel-only
 
       - name: Upload kernel
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v3
         with:
             name: linux-6.7.0
             path: ./build/linux-*.deb
@@ -89,7 +89,7 @@ jobs:
         run: git lfs fetch && git lfs checkout
 
       - name: Checkout kernel
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v3
         with:
             name: linux-6.7.0
             path: ./build/
