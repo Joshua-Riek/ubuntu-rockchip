@@ -11,13 +11,13 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
-if [[ -z ${KERNEL_CONFIG} ]]; then
-    echo "Error: KERNEL_CONFIG is not set"
+if [[ -z ${KERNEL_TARGET} ]]; then
+    echo "Error: KERNEL_TARGET is not set"
     exit 1
 fi
 
 # shellcheck source=/dev/null
-source ../config/kernels/"${KERNEL_CONFIG}"
+source ../config/kernels/"${KERNEL_TARGET}.conf"
 
 # Clone the kernel repo
 if ! git -C "${KERNEL_CLONE_DIR}" pull; then

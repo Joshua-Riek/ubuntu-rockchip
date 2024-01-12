@@ -69,8 +69,7 @@ for i in "$@"; do
             shift
             ;;
         -m|--mainline)
-            export MAINLINE=Y
-            export KERNEL_CONFIG=mainline.conf
+            export KERNEL_TARGET=mainline
             shift
             ;;
         -l|--launchpad)
@@ -93,18 +92,8 @@ for i in "$@"; do
     esac
 done
 
-if [[ ${MAINLINE} != "Y" ]]; then
-    export MAINLINE=N
-    export KERNEL_CONFIG=bsp.conf
-fi
-
-# Build only the Linux kernel then exit
-if [[ ${KERNEL_ONLY} == "Y" ]]; then
-    # Start logging the build process
-    mkdir -p build/logs && exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
-
-    eval "${DOCKER}" ./scripts/build-kernel.sh
-    exit 0
+if [[ "${KERNEL_TARGET}" != "mainline" ]]; then
+    export KERNEL_TARGET=bsp
 fi
 
 # No board param passed
