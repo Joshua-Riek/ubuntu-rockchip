@@ -104,8 +104,6 @@ mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
 # Package priority for ppa
 cp ${overlay_dir}/etc/apt/preferences.d/rockchip-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-ppa
-cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
-cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
 
 # Download and update packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
@@ -119,12 +117,6 @@ update-locale LANG="en_US.UTF-8"
 # Add the rockchip ppa
 apt-get -y update && apt-get -y install software-properties-common
 add-apt-repository -y ppa:jjriek/rockchip
-
-# Add mesa and rockchip multimedia ppa
-if [[ ${MAINLINE} != "Y" ]]; then
-    add-apt-repository -y ppa:liujianfeng1994/panfork-mesa
-    add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia
-fi
 
 # Download and update installed packages
 apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
@@ -181,30 +173,6 @@ cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
 mkdir -p ${chroot_dir}/etc/initramfs/post-update.d/
 cp ${overlay_dir}/etc/initramfs/post-update.d/zz-update-firmware ${chroot_dir}/etc/initramfs/post-update.d/zz-update-firmware
 
-# Realtek 8811CU/8821CU usb modeswitch support
-cp ${chroot_dir}/lib/udev/rules.d/40-usb_modeswitch.rules ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
-sed '/LABEL="modeswitch_rules_end"/d' -i ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
-cat >> ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules <<EOF
-# Realtek 8811CU/8821CU Wifi AC USB
-ATTR{idVendor}=="0bda", ATTR{idProduct}=="1a2b", RUN+="/usr/sbin/usb_modeswitch -K -v 0bda -p 1a2b"
-
-LABEL="modeswitch_rules_end"
-EOF
-
-# Add usb modeswitch to initrd this fixes a boot hang with 8811CU/8821CU
-cp ${overlay_dir}/usr/share/initramfs-tools/hooks/usb_modeswitch ${chroot_dir}/usr/share/initramfs-tools/hooks/usb_modeswitch
-
-# Set cpu governor to performance
-cp ${overlay_dir}/usr/lib/systemd/system/cpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/cpu-governor-performance.service
-chroot ${chroot_dir} /bin/bash -c "systemctl enable cpu-governor-performance"
-
-# Set gpu governor to performance
-cp ${overlay_dir}/usr/lib/systemd/system/gpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/gpu-governor-performance.service
-chroot ${chroot_dir} /bin/bash -c "systemctl enable gpu-governor-performance"
-
-# Add realtek bluetooth firmware to initrd 
-cp ${overlay_dir}/usr/share/initramfs-tools/hooks/rtl-bt ${chroot_dir}/usr/share/initramfs-tools/hooks/rtl-bt
-
 # Service to synchronise system clock to hardware RTC
 cp ${overlay_dir}/usr/lib/systemd/system/rtc-hym8563.service ${chroot_dir}/usr/lib/systemd/system/rtc-hym8563.service
 
@@ -249,13 +217,6 @@ mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-# Install rkaiq and rkisp
-cp -r ../packages/rkaiq/camera_engine_*_arm64.deb ${chroot_dir}/tmp
-chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkaiq_rk3588_1.0.3_arm64.deb"
-chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkaiq_rk3588_update_arm64.deb"
-chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkisp-v2.2.0_arm64.deb"
-rm -f ${chroot_dir}/tmp/camera_engine_*_arm64.deb
-
 # Download and update packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
 set -eE 
@@ -264,21 +225,14 @@ trap 'echo Error: in $0 on line $LINENO' ERR
 # Desktop packages
 apt-get -y install ubuntu-desktop dbus-x11 xterm pulseaudio pavucontrol qtwayland5 \
 gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-plugins-good mpv \
-gstreamer1.0-tools gstreamer1.0-rockchip1 chromium-browser mali-g610-firmware malirun \
-rockchip-multimedia-config librist4 librist-dev rist-tools dvb-tools ir-keytable \
-libdvbv5-0 libdvbv5-dev libdvbv5-doc libv4l-0 libv4l2rds0 libv4lconvert0 libv4l-dev \
-libv4l-rkmpp qv4l2 v4l-utils librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 \
-rockchip-mpp-demos librga2 librga-dev libegl-mesa0 libegl1-mesa-dev libgbm-dev \
-libgl1-mesa-dev libgles2-mesa-dev libglx-mesa0 mesa-common-dev mesa-vulkan-drivers \
-mesa-utils libwidevinecdm libcanberra-pulse oem-config-gtk ubiquity-frontend-gtk \
-ubiquity-slideshow-ubuntu language-pack-en-base
+gstreamer1.0-tools dvb-tools ir-keytable libdvbv5-0 libdvbv5-dev libdvbv5-doc libv4l-0 \
+libv4l2rds0 libv4lconvert0 libv4l-dev qv4l2 v4l-utils libegl-mesa0 libegl1-mesa-dev \
+libgbm-dev libgl1-mesa-dev libgles2-mesa-dev libglx-mesa0 mesa-common-dev mesa-vulkan-drivers \
+mesa-utils libcanberra-pulse oem-config-gtk ubiquity-frontend-gtk ubiquity-slideshow-ubuntu \
+language-pack-en-base
 
 # Remove cloud-init and landscape-common
 apt-get -y purge cloud-init landscape-common cryptsetup-initramfs
-
-# Chromium uses fixed paths for libv4l2.so
-ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
-[ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64
 
 # Create files/dirs Ubiquity requires
 mkdir -p /var/log/installer
@@ -298,17 +252,6 @@ fi
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
-# Hack for GDM to restart on first HDMI hotplug
-mkdir -p ${chroot_dir}/usr/lib/scripts
-cp ${overlay_dir}/usr/lib/scripts/gdm-hack.sh ${chroot_dir}/usr/lib/scripts/gdm-hack.sh
-cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
-
-# Config file for mpv
-cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
-
-# Use mpv as the default video player
-sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
-
 # Adjust hostname for desktop
 echo "localhost.localdomain" > ${chroot_dir}/etc/hostname
 
@@ -316,10 +259,6 @@ echo "localhost.localdomain" > ${chroot_dir}/etc/hostname
 sed -i 's/127.0.0.1 localhost/127.0.0.1\tlocalhost.localdomain\tlocalhost\n::1\t\tlocalhost6.localdomain6\tlocalhost6/g' ${chroot_dir}/etc/hosts
 sed -i 's/::1 ip6-localhost ip6-loopback/::1     localhost ip6-localhost ip6-loopback/g' ${chroot_dir}/etc/hosts
 sed -i "/ff00::0 ip6-mcastprefix\b/d" ${chroot_dir}/etc/hosts
-
-# Config file for xorg
-mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
-cp ${overlay_dir}/etc/X11/xorg.conf.d/20-modesetting.conf ${chroot_dir}/etc/X11/xorg.conf.d/20-modesetting.conf
 
 # Networking interfaces
 cp ${overlay_dir}/etc/NetworkManager/NetworkManager.conf ${chroot_dir}/etc/NetworkManager/NetworkManager.conf
@@ -332,25 +271,6 @@ rm -rf ${chroot_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/o
 
 # Enable wayland session
 cp ${overlay_dir}/etc/gdm3/custom.conf ${chroot_dir}/etc/gdm3/custom.conf
-
-# Set chromium inital prefrences
-mkdir -p ${chroot_dir}/usr/lib/chromium-browser
-cp ${overlay_dir}/usr/lib/chromium-browser/initial_preferences ${chroot_dir}/usr/lib/chromium-browser/initial_preferences
-
-# Set chromium default launch args
-mkdir -p ${chroot_dir}/usr/lib/chromium-browser
-cp ${overlay_dir}/etc/chromium-browser/default ${chroot_dir}/etc/chromium-browser/default
-
-# Set chromium as default browser
-chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium-browser 500"
-chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium-browser"
-sed -i 's/firefox-esr\.desktop/chromium-browser\.desktop/g;s/firefox\.desktop;//g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
-
-# Add chromium to favorites bar
-mkdir -p ${chroot_dir}/etc/dconf/db/local.d
-cp ${overlay_dir}/etc/dconf/db/local.d/00-favorite-apps ${chroot_dir}/etc/dconf/db/local.d/00-favorite-apps
-cp ${overlay_dir}/etc/dconf/profile/user ${chroot_dir}/etc/dconf/profile/user
-chroot ${chroot_dir} /bin/bash -c "dconf update"
 
 # Have plymouth use the framebuffer
 mkdir -p ${chroot_dir}/etc/initramfs-tools/conf-hooks.d
