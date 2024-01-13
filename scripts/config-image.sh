@@ -45,11 +45,11 @@ if [[ ${LAUNCHPAD} != "Y" ]]; then
 fi
 
 if [[ ${SERVER_ONLY} == "Y" ]]; then
-    target="server"
+    target="preinstalled-server"
 elif [[ ${DESKTOP_ONLY} == "Y" ]]; then
-    target="desktop"
+    target="preinstalled-desktop"
 else
-    target="server desktop"
+    target="preinstalled-server preinstalled-desktop"
 fi
 
 # These env vars can cause issues with chroot
@@ -72,7 +72,7 @@ for type in $target; do
     rm -rf ${chroot_dir}
     mkdir -p ${chroot_dir}
 
-    tar -xpJf ubuntu-22.04.3-preinstalled-${type}-arm64.rootfs.tar.xz -C ${chroot_dir}
+    tar -xpJf ubuntu-22.04.3-${type}-arm64.rootfs.tar.xz -C ${chroot_dir}
 
     # Mount the temporary API filesystems
     mkdir -p ${chroot_dir}/{proc,sys,run,dev,dev/pts}
@@ -112,7 +112,7 @@ for type in $target; do
         cp ${overlay_dir}/usr/lib/systemd/system/gpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/gpu-governor-performance.service
         chroot ${chroot_dir} /bin/bash -c "systemctl enable gpu-governor-performance"
 
-        if [[ $type == "desktop" ]]; then
+        if [[ $type == "preinstalled-desktop" ]]; then
             # Install rkaiq and rkisp
             cp -r ../packages/rkaiq/camera_engine_*_arm64.deb ${chroot_dir}/tmp
             chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkaiq_rk3588_1.0.3_arm64.deb"
@@ -205,7 +205,7 @@ for type in $target; do
     umount -lf ${chroot_dir}/* 2> /dev/null || true
 
     # Tar the entire rootfs
-    cd ${chroot_dir} && tar -cpf ../ubuntu-22.04.3-preinstalled-${type}-arm64-"${BOARD}".rootfs.tar . && cd .. && rm -rf ${chroot_dir}
-    ../scripts/build-image.sh ubuntu-22.04.3-preinstalled-${type}-arm64-"${BOARD}".rootfs.tar
-    rm -f ubuntu-22.04.3-preinstalled-${type}-arm64-"${BOARD}".rootfs.tar
+    cd ${chroot_dir} && tar -cpf ../ubuntu-22.04.3-${type}-arm64-"${BOARD}".rootfs.tar . && cd .. && rm -rf ${chroot_dir}
+    ../scripts/build-image.sh ubuntu-22.04.3-${type}-arm64-"${BOARD}".rootfs.tar
+    rm -f ubuntu-22.04.3-${type}-arm64-"${BOARD}".rootfs.tar
 done
