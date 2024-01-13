@@ -7,6 +7,7 @@ on:
 jobs:
   kernel:
     runs-on: ubuntu-latest
+    name: Build kernel 
 
     steps:
       - name: Get more disk space
@@ -38,11 +39,11 @@ jobs:
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
           python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
 
-      - name: Build kernel
+      - name: Build
         shell: bash
         run: sudo ./build.sh --board=orangepi-5 --mainline --kernel-only
 
-      - name: Upload kernel
+      - name: Upload
         uses: actions/upload-artifact@v3
         with:
             name: linux-6.7.0
@@ -51,12 +52,7 @@ jobs:
 
   rootfs:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        platform:
-            - server
-            - desktop
+    name: Build rootfs 
 
     steps:
       - name: Get more disk space
@@ -88,15 +84,15 @@ jobs:
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
           python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
 
-      - name: Build rootfs
+      - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --mainline --rootfs-only --${{ matrix.platform }}-only
+        run: sudo ./build.sh --board=orangepi-5 --mainline --rootfs-only --server-only
 
-      - name: Upload rootfs
+      - name: Upload
         uses: actions/upload-artifact@v3
         with:
-            name: ubuntu-22.04.3-preinstalled-${{ matrix.platform }}-arm64-rootfs
-            path: ./build/ubuntu-22.04.3-preinstalled-${{ matrix.platform }}-arm64.rootfs.tar.xz
+            name: ubuntu-22.04.3-preinstalled-server-arm64-rootfs
+            path: ./build/ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz
             if-no-files-found: error
 
   build:
