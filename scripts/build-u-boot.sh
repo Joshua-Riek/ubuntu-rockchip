@@ -25,7 +25,15 @@ if [ ! -d "${UBOOT_PACKAGE}" ]; then
 fi
 cd "${UBOOT_PACKAGE}"
 
+# Target package to build
+rules=${UBOOT_RULES_TARGET},package-${UBOOT_RULES_TARGET}
+if [[ -n ${UBOOT_RULES_TARGET_EXTRA} ]]; then
+    rules=${UBOOT_RULES_TARGET_EXTRA},${rules}
+fi
+
 # Compile u-boot into a deb package
-dpkg-buildpackage -a "$(cat debian/arch)" -d -b -nc -uc
+dpkg-source --before-build .
+dpkg-buildpackage -a "$(cat debian/arch)" -d -b -nc -uc --rules-target="${rules}"
+dpkg-source --after-build .
 
 rm -f ../*.buildinfo ../*.changes
