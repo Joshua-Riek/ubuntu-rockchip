@@ -55,7 +55,8 @@ jobs:
     strategy:
       matrix:
         platform:
-          - preinstalled-server
+            - server
+            - desktop
 
     steps:
       - name: Get more disk space
@@ -89,13 +90,13 @@ jobs:
 
       - name: Build rootfs
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --mainline --rootfs-only --server-only
+        run: sudo ./build.sh --board=orangepi-5 --mainline --rootfs-only --${{ matrix.platform }}-only
 
       - name: Upload rootfs
         uses: actions/upload-artifact@v3
         with:
-            name: ubuntu-22.04.3-preinstalled-server-arm64-rootfs
-            path: ./build/ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz
+            name: ubuntu-22.04.3-preinstalled-${{ matrix.platform }}-arm64-rootfs
+            path: ./build/ubuntu-22.04.3-preinstalled-${{ matrix.platform }}-arm64.rootfs.tar.xz
             if-no-files-found: error
 
   build:
