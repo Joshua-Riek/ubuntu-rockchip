@@ -18,6 +18,7 @@ Optional arguments:
   -d,  --docker          use docker to build
   -k,  --kernel-only     only compile the kernel
   -u,  --uboot-only      only compile uboot
+  -ro, --rootfs-only     only build rootfs
   -so, --server-only     only build server image
   -do, --desktop-only    only build desktop image
   -m,  --mainline        use mainline linux sources
@@ -58,6 +59,10 @@ for i in "$@"; do
             ;;
         -u|--uboot-only)
             export UBOOT_ONLY=Y
+            shift
+            ;;
+        -ro|--rootfs-only)
+            export ROOTFS_ONLY=Y
             shift
             ;;
         -do|--desktop-only)
@@ -137,6 +142,12 @@ fi
 # Build only U-Boot then exit
 if [[ ${UBOOT_ONLY} == "Y" ]]; then
     eval "${DOCKER}" ./scripts/build-u-boot.sh
+    exit 0
+fi
+
+# Build only the rootfs then exit
+if [[ ${ROOTFS_ONLY} == "Y" ]]; then
+    eval "${DOCKER}" ./scripts/build-rootfs.sh
     exit 0
 fi
 
