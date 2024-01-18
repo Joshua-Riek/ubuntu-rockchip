@@ -138,17 +138,6 @@ apt-get -y remove cryptsetup needrestart
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
 EOF
 
-# Swapfile
-cat << EOF | chroot ${chroot_dir} /bin/bash
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
-
-dd if=/dev/zero of=/tmp/swapfile bs=1024 count=2097152
-chmod 600 /tmp/swapfile
-mkswap /tmp/swapfile
-mv /tmp/swapfile /swapfile
-EOF
-
 # DNS
 cp ${overlay_dir}/etc/resolv.conf ${chroot_dir}/etc/resolv.conf
 
@@ -179,6 +168,13 @@ cp ${overlay_dir}/usr/lib/systemd/system/rtc-hym8563.service ${chroot_dir}/usr/l
 # Set term for serial tty
 mkdir -p ${chroot_dir}/lib/systemd/system/serial-getty@.service.d/
 cp ${overlay_dir}/usr/lib/systemd/system/serial-getty@.service.d/10-term.conf ${chroot_dir}/usr/lib/systemd/system/serial-getty@.service.d/10-term.conf
+
+# Create swapfile on boot
+mkdir -p ${chroot_dir}/usr/lib/systemd/system/swap.target.wants/
+cp ${overlay_dir}/usr/lib/systemd/system/mkswap.service ${chroot_dir}/usr/lib/systemd/system/mkswap.service
+cp ${overlay_dir}/usr/lib/systemd/system/swapfile.swap ${chroot_dir}/usr/lib/systemd/system/swapfile.swap        
+chroot ${chroot_dir} /bin/bash -c "ln -s ../mkswap.service /usr/lib/systemd/system/swap.target.wants/"
+chroot ${chroot_dir} /bin/bash -c "ln -s ../swapfile.swap /usr/lib/systemd/system/swap.target.wants/"
 
 # Fix 120 second timeout bug
 mkdir -p ${chroot_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/

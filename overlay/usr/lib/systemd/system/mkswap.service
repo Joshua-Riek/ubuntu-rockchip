@@ -1,0 +1,16 @@
+[Unit]
+Description=Create the default swapfile
+DefaultDependencies=no
+Requires=local-fs.target
+After=local-fs.target
+Before=swapfile.swap
+ConditionPathExists=!/swapfile
+
+[Service]
+Type=oneshot
+ExecStartPre=fallocate -l 1GiB /swapfile
+ExecStartPre=chmod 600 /swapfile
+ExecStart=mkswap /swapfile
+
+[Install]
+WantedBy=swap.target
