@@ -241,12 +241,10 @@ touch /var/log/syslog
 chown syslog:adm /var/log/syslog
 
 # Create the oem user account
-if [ -e "/usr/sbin/oem-config-prepare" ]; then
-    /usr/sbin/useradd -d /home/oem -G adm,sudo -m -N -u 29999 oem
+/usr/sbin/useradd -d /home/oem -G adm,sudo -m -N -u 29999 oem
 
-    /usr/sbin/oem-config-prepare --quiet
-    touch "/var/lib/oem-config/run"
-fi
+/usr/sbin/oem-config-prepare --quiet
+touch "/var/lib/oem-config/run"
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
