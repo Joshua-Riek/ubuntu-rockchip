@@ -1,0 +1,5 @@
+[Unit]
+Description=The default swapfile
+
+[Swap]
+What=/swapfile
