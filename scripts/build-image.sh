@@ -227,23 +227,6 @@ fi
 # Cloud init config for server image
 if [ -z "${img##*server*}" ]; then
     cp ../overlay/boot/firmware/{meta-data,user-data,network-config} ${mount_point}/system-boot
-    if [ "${BOARD}" == rock-5b ] || [ "${BOARD}" == indiedroid-nova ]; then
-        sed -i 's/eth0:/enP4p65s0:/g' ${mount_point}/system-boot/network-config
-    elif [ "${BOARD}" == armsom-w3 ] || [ "${BOARD}" == armsom-sige7 ]; then
-        sed -i 's/eth0:/enP4p65s0:/g' ${mount_point}/system-boot/network-config
-    elif [ "${BOARD}" == orangepi-5-plus ]; then
-        sed -i 's/eth0:/enP4p65s0:\n      dhcp4: true\n      optional: true\n    enP3p49s0:/g' ${mount_point}/system-boot/network-config
-    elif [ "${BOARD}" == nanopi-r6c ]; then
-        sed -i 's/eth0:/eth0:\n      dhcp4: true\n      optional: true\n    enP3p49s0:/g' ${mount_point}/system-boot/network-config
-    elif [ "${BOARD}" == nanopi-r6s ]; then
-        sed -i 's/eth0:/eth0:\n      dhcp4: true\n      optional: true\n    enP3p49s0:\n      dhcp4: true\n      optional: true\n    enP4p65s0:/g' ${mount_point}/system-boot/network-config
-    elif [ "${BOARD}" == nanopc-t6 ]; then
-        sed -i 's/eth0:/enP2p33s0:\n      dhcp4: true\n      optional: true\n    enP4p65s0:/g' ${mount_point}/system-boot/network-config
-    elif [ "${BOARD}" == mixtile-blade3 ]; then
-        sed -i 's/eth0:/enP2p35s0:\n      dhcp4: true\n      optional: true\n    enP2p36s0:/g' ${mount_point}/system-boot/network-config
-    elif [ "${BOARD}" == lubancat-4 ]; then
-        sed -i 's/eth0:/enP4p65s0:\n      dhcp4: true\n      optional: true\n    enP3p49s0:/g' ${mount_point}/system-boot/network-config
-    fi
 fi
 
 sync --file-system

@@ -18,9 +18,15 @@
 
 network:
   version: 2
-
   ethernets:
-    eth0:
+    zz-all-en:
+      match:
+        name: "en*"
+      dhcp4: true
+      optional: true
+    zz-all-eth:
+      match:
+        name: "eth*"
       dhcp4: true
       optional: true
 
