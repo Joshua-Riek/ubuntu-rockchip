@@ -1,3 +1,9 @@
+u-boot-turing-rk3588 (2024.01-1) jammy; urgency=medium
+
+  * Bump to 2024.01 release
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 19 Jan 2024 16:34:24 -0500
+
 u-boot-turing-rk3588 (2024.01~rc1-3) jammy; urgency=medium
 
   * Cleanup packging and add Mixtile Core 3588E patch
