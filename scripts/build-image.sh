@@ -92,7 +92,7 @@ mkdir -p ${mount_point}
 dd if=/dev/zero of="${disk}" count=4096 bs=512
 parted --script "${disk}" \
 mklabel gpt \
-mkpart primary fat16 16MiB 528MiB \
+mkpart primary fat32 16MiB 528MiB \
 mkpart primary ext4 528MiB 100%
 
 # Create partitions
@@ -205,14 +205,6 @@ overlay_prefix=${OVERLAY_PREFIX}
 overlays=
 EOF
 
-# Turing RK1 uses UART9 by default
-if [[ "${KERNEL_TARGET}" == "mainline" ]]; then
-    sed -i 's/swapaccount=1/irqchip.gicv3_pseudo_nmi=0/g' ${mount_point}/system-boot/ubuntuEnv.txt
-    [ "${BOARD}" == turing-rk1 ] && sed -i 's/console=ttyS2,1500000/console=ttyS0,115200/g' ${mount_point}/system-boot/ubuntuEnv.txt
-else
-    [ "${BOARD}" == turing-rk1 ] && sed -i 's/console=ttyS2,1500000/console=ttyS9,115200 console=ttyS2,1500000/g' ${mount_point}/system-boot/ubuntuEnv.txt
-fi
-
 # Copy the device trees, kernel, and initrd to the boot partition
 mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot/
 
@@ -228,6 +220,16 @@ fi
 if [ -z "${img##*server*}" ]; then
     cp ../overlay/boot/firmware/{meta-data,user-data,network-config} ${mount_point}/system-boot
 fi
+
+# Run build image hook to handle board specific changes
+if [[ $(type -t build_image_hook__"${BOARD}") == function ]]; then
+    build_image_hook__"${BOARD}"
+fi 
+
+# Run build image hook to handle kernel specific changes
+if [[ $(type -t build_image_hook__"${KERNEL_TARGET}") == function ]]; then
+    build_image_hook__"${KERNEL_TARGET}"
+fi 
 
 sync --file-system
 sync
