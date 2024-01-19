@@ -155,7 +155,6 @@ cat > ${mount_point}/writable/etc/fstab << EOF
 # <file system>     <mount point>  <type>  <options>   <dump>  <fsck>
 UUID=${boot_uuid^^} /boot/firmware vfat    defaults    0       2
 UUID=${root_uuid,,} /              ext4    defaults,x-systemd.growfs    0       1
-/swapfile           none           swap    sw          0       0
 EOF
 
 # Uboot script
