@@ -81,7 +81,7 @@ for type in $target; do
     mount -o bind /dev ${chroot_dir}/dev
     mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-    if [ "${KERNEL_TARGET}" == "bsp" ] && [ "${BOARD_NAME}" != "Radxa Zero 3" ]; then
+    if [ "${KERNEL_TARGET}" == "bsp" ] && [ "${OVERLAY_PREFIX}" != "rk3566" ]; then
         # Package priority for ppa
         cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
         cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
