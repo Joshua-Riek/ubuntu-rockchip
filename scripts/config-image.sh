@@ -81,13 +81,23 @@ for type in $target; do
     mount -o bind /dev ${chroot_dir}/dev
     mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-    if [ "${KERNEL_TARGET}" == "bsp" ] && [ "${OVERLAY_PREFIX}" != "rk3568" ]; then
-        # Package priority for ppa
-        cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
-        cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
+    if [ "${KERNEL_TARGET}" == "bsp" ]; then
+        if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
+            # Pin and add panfork mesa ppa
+            cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
+            chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/panfork-mesa"
 
-        # Add mesa and rockchip multimedia ppa
-        chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/panfork-mesa"
+            # Set cpu governor to performance
+            cp ${overlay_dir}/usr/lib/systemd/system/cpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/cpu-governor-performance.service
+            chroot ${chroot_dir} /bin/bash -c "systemctl enable cpu-governor-performance"
+
+            # Set gpu governor to performance
+            cp ${overlay_dir}/usr/lib/systemd/system/gpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/gpu-governor-performance.service
+            chroot ${chroot_dir} /bin/bash -c "systemctl enable gpu-governor-performance"
+        fi
+
+        # Pin and add rockchip multimedia ppa
+        cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
         chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia"
 
         # Download and update installed packages
@@ -104,32 +114,28 @@ for type in $target; do
         cp ${overlay_dir}/usr/share/initramfs-tools/hooks/usb_modeswitch ${chroot_dir}/usr/share/initramfs-tools/hooks/usb_modeswitch
         cp ${overlay_dir}/usr/share/initramfs-tools/hooks/rtl-bt ${chroot_dir}/usr/share/initramfs-tools/hooks/rtl-bt
 
-        # Set cpu governor to performance
-        cp ${overlay_dir}/usr/lib/systemd/system/cpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/cpu-governor-performance.service
-        chroot ${chroot_dir} /bin/bash -c "systemctl enable cpu-governor-performance"
-
-        # Set gpu governor to performance
-        cp ${overlay_dir}/usr/lib/systemd/system/gpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/gpu-governor-performance.service
-        chroot ${chroot_dir} /bin/bash -c "systemctl enable gpu-governor-performance"
-
         if [[ $type == "preinstalled-desktop" ]]; then
-            # Install rkaiq and rkisp
-            cp -r ../packages/rkaiq/camera_engine_*_arm64.deb ${chroot_dir}/tmp
-            chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkaiq_rk3588_1.0.3_arm64.deb"
-            chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkaiq_rk3588_update_arm64.deb"
-            chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkisp-v2.2.0_arm64.deb"
-            rm -f ${chroot_dir}/tmp/camera_engine_*_arm64.deb
-        
-            chroot ${chroot_dir} /bin/bash -c "apt-get -y install libwidevinecdm librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config gstreamer1.0-rockchip1 chromium-browser mali-g610-firmware malirun"
+            if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
+                # Install rkaiq and rkisp
+                cp -r ../packages/rkaiq/camera_engine_*_arm64.deb ${chroot_dir}/tmp
+                chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkaiq_rk3588_1.0.3_arm64.deb"
+                chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkaiq_rk3588_update_arm64.deb"
+                chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/camera_engine_rkisp-v2.2.0_arm64.deb"
+                rm -f ${chroot_dir}/tmp/camera_engine_*_arm64.deb
+
+                # Hack for GDM to restart on first HDMI hotplug
+                mkdir -p ${chroot_dir}/usr/lib/scripts
+                cp ${overlay_dir}/usr/lib/scripts/gdm-hack.sh ${chroot_dir}/usr/lib/scripts/gdm-hack.sh
+                cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
+
+                chroot ${chroot_dir} /bin/bash -c "apt-get -y install libwidevinecdm librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config gstreamer1.0-rockchip1 chromium-browser mali-g610-firmware malirun"
+            else
+                chroot ${chroot_dir} /bin/bash -c "apt-get -y install libwidevinecdm rockchip-multimedia-config chromium-browser"
+            fi
 
             # Chromium uses fixed paths for libv4l2.so
             chroot ${chroot_dir} /bin/bash -c "ln -rsf /usr/lib/*/libv4l2.so /usr/lib/"
             chroot ${chroot_dir} /bin/bash -c "[ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64"
-
-            # Hack for GDM to restart on first HDMI hotplug
-            mkdir -p ${chroot_dir}/usr/lib/scripts
-            cp ${overlay_dir}/usr/lib/scripts/gdm-hack.sh ${chroot_dir}/usr/lib/scripts/gdm-hack.sh
-            cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
 
             # Config file for mpv
             cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
