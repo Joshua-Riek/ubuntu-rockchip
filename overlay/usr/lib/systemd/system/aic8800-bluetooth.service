@@ -1,0 +1,11 @@
+[Unit]
+Description=Bluetooth AIC8800
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/lib/scripts/aic8800-bluetooth.sh
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
