@@ -29,6 +29,12 @@ network:
         name: "eth*"
       dhcp4: true
       optional: true
+  wifis:
+    zz-all-wl:
+      match:
+        name: "wl*"
+      dhcp4: true
+      optional: true
 
 #  wifis:
 #    wlan0:
