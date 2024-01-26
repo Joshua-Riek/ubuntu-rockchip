@@ -197,14 +197,10 @@ for type in $target; do
     # Clean package cache
     chroot ${chroot_dir} /bin/bash -c "apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean"
 
-    # Copy kernel and initrd for the boot partition
-    mkdir -p ${chroot_dir}/boot/firmware/
-    cp ${chroot_dir}/boot/initrd.img-* ${chroot_dir}/boot/firmware/initrd.img
-    cp ${chroot_dir}/boot/vmlinuz-* ${chroot_dir}/boot/firmware/vmlinuz
-
-    # Copy device trees and overlays for the boot partition
-    mkdir -p ${chroot_dir}/boot/firmware/dtbs/
-    cp -r ${chroot_dir}/usr/lib/linux-image-*/. ${chroot_dir}/boot/firmware/dtbs/
+    # Populate the boot firmware path
+	umount -lf ${chroot_dir}/sys
+	mkdir -p ${chroot_dir}/boot/firmware
+    chroot ${chroot_dir} /bin/bash -c "FK_FORCE=yes flash-kernel"
 
     # Umount temporary API filesystems
     umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
