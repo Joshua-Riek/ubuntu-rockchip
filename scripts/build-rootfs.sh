@@ -168,9 +168,6 @@ cp ${overlay_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg ${chroot_dir}/etc/clou
 # Default adduser config
 cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
 
-mkdir -p ${chroot_dir}/etc/initramfs/post-update.d/
-cp ${overlay_dir}/etc/initramfs/post-update.d/zz-update-firmware ${chroot_dir}/etc/initramfs/post-update.d/zz-update-firmware
-
 # Service to synchronise system clock to hardware RTC
 cp ${overlay_dir}/usr/lib/systemd/system/rtc-hym8563.service ${chroot_dir}/usr/lib/systemd/system/rtc-hym8563.service
 
