@@ -128,14 +128,23 @@ ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
 p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
 pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
-gcc libc6-dev bison libssl-dev flex fake-hwclock wireless-regdb psmisc \
-uuid-runtime rsync linux-firmware rockchip-firmware cloud-initramfs-growroot
+gcc libc6-dev bison libssl-dev flex fake-hwclock wireless-regdb psmisc rsync \
+uuid-runtime linux-firmware rockchip-firmware cloud-initramfs-growroot flash-kernel
 
 # Remove cryptsetup and needrestart
 apt-get -y remove cryptsetup needrestart
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
+EOF
+
+# Add flash kernel override
+cat << EOF >> ${chroot_dir}/etc/flash-kernel/db
+Machine: *
+Kernel-Flavors: any
+Method: pi
+Boot-Kernel-Path: /boot/firmware/vmlinuz
+Boot-Initrd-Path: /boot/firmware/initrd.img
 EOF
 
 # DNS
