@@ -239,6 +239,8 @@ language-pack-en-base
 # Remove cloud-init and landscape-common
 apt-get -y purge cloud-init landscape-common cryptsetup-initramfs
 
+rm -rf /boot/grub/
+
 # Create files/dirs Ubiquity requires
 mkdir -p /var/log/installer
 touch /var/log/installer/debug
