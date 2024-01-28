@@ -276,6 +276,9 @@ cp ${overlay_dir}/etc/gdm3/custom.conf ${chroot_dir}/etc/gdm3/custom.conf
 mkdir -p ${chroot_dir}/etc/initramfs-tools/conf-hooks.d
 cp ${overlay_dir}/etc/initramfs-tools/conf-hooks.d/plymouth ${chroot_dir}/etc/initramfs-tools/conf-hooks.d/plymouth
 
+# Disable apport bug reporting
+sed -i 's/enabled=1/enabled=0/g' ${chroot_dir}/etc/default/apport
+
 # Mouse lag/stutter (missed frames) in Wayland sessions
 # https://bugs.launchpad.net/ubuntu/+source/mutter/+bug/1982560
 echo "MUTTER_DEBUG_ENABLE_ATOMIC_KMS=0" >> ${chroot_dir}/etc/environment
