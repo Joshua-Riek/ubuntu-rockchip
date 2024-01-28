@@ -3,3 +3,4 @@
 0003-arm64-dts-rockchip-Fix-eMMC-Data-Strobe-PD-on-rk3588.patch
 0004-board-rockchip-Add-the-Mixtile-Core-3588E.patch
 0005-board-rockchip-Add-Xunlong-Orange-Pi-3B.patch
+0006-add-Radxa-zero-3w-support.patch
