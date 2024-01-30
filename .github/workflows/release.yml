@@ -15,35 +15,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: gh release create --draft v1.32 --title v1.32
+        run: gh release create --draft v1.33 --title v1.33
 
-  build:
-    permissions:
-        contents: write
-    needs: [release]
+  rootfs:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        platform:
-          - orangepi-5
-          - orangepi-5b
-          - orangepi-5-plus
-          - rock-5b
-          - rock-5a
-          - rock-5-itx
-          - radxa-cm5-io
-          - radxa-nx5-io
-          - nanopc-t6
-          - nanopi-r6c
-          - nanopi-r6s
-          - indiedroid-nova
-          - mixtile-blade3
-          - mixtile-core3588e
-          - lubancat-4
-          - turing-rk1
-          - roc-rk3588s-pc
-          - armsom-sige7
-          - armsom-w3
+    name: Build rootfs 
 
     steps:
       - name: Get more disk space
@@ -75,6 +51,83 @@ jobs:
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
           python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
 
+      - name: Build
+        shell: bash
+        run: sudo ./build.sh --board=orangepi-5 --rootfs-only
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+            name: ubuntu-22.04.3-preinstalled-arm64-rootfs
+            path: ./build/ubuntu-22.04.3-preinstalled-*-arm64.rootfs.tar.xz
+            if-no-files-found: error
+
+  build:
+    permissions:
+        contents: write
+    needs: [release, rootfs]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+          - orangepi-3b
+          - orangepi-5
+          - orangepi-5b
+          - orangepi-5-plus
+          - rock-5b
+          - rock-5a
+          - rock-5-itx
+          - radxa-cm5-io
+          - radxa-nx5-io
+          - radxa-zero3
+          - nanopc-t6
+          - nanopi-r6c
+          - nanopi-r6s
+          - indiedroid-nova
+          - mixtile-blade3
+          - mixtile-core3588e
+          - lubancat-4
+          - turing-rk1
+          - roc-rk3588s-pc
+          - armsom-sige7
+          - armsom-w3
+
+    steps:
+      - name: Get more disk space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 2048
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout LFS
+        shell: bash
+        run: git lfs fetch && git lfs checkout
+
+      - name: Checkout rootfs
+        uses: actions/download-artifact@v3
+        with:
+            name: ubuntu-22.04.3-preinstalled-arm64-rootfs
+            path: ./build/
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt-get update && sudo apt-get upgrade -y
+          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
+          qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
+          debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
+          udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
+          python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+
       - name: Build image
         shell: bash
         run: sudo ./build.sh -b ${{ matrix.platform }} --launchpad
@@ -82,7 +135,7 @@ jobs:
       - name: Upload release assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload v1.32 ./images/ubuntu-*-preinstalled-*-arm64-${{ matrix.platform }}.*
+        run: gh release upload v1.33 ./images/ubuntu-*-preinstalled-*-arm64-${{ matrix.platform }}.*
 
       - name: Clean cache
         shell: bash
