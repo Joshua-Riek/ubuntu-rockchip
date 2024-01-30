@@ -34,11 +34,13 @@ The supported devices are undergoing continuous development. As a result, you ma
 * [Orange Pi 5 Plus](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-plus.html)
 * [Orange Pi 5B](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5B.html)
 * [Orange Pi 5](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5.html)
+* [Orange Pi 3B](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-3B.html)
 * [Radxa CM5 IO](https://radxa.com/products/compute-module/cm5)
 * [Radxa NX5 IO](https://radxa.com/products/compute-module/nx5)
 * [Radxa ROCK 5 ITX](https://radxa.com/products)
 * [Radxa ROCK 5A](https://radxa.com/products/rock5/5a/)
 * [Radxa ROCK 5B](https://radxa.com/products/rock5/5b/)
+* [Radxa Zero 3](https://radxa.com/products/zeros/zero3w/)
 * [Turing RK1](https://turingpi.com/product/turing-rk1)
 
 ## Installation
