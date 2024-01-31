@@ -11,19 +11,27 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
-if [[ ${DESKTOP_ONLY} == "Y" ]]; then
-    if [[ -f ubuntu-22.04.3-preinstalled-desktop-arm64.rootfs.tar.xz ]]; then
-        exit 0
-    fi
-elif [[ ${SERVER_ONLY} == "Y" ]]; then
-    if [[ -f ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz ]]; then
-        exit 0
-    fi
-else
-    if [[ -f ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz && -f ubuntu-22.04.3-preinstalled-desktop-arm64.rootfs.tar.xz ]]; then
-        exit 0
-    fi
+if [[ -z ${RELEASE} ]]; then
+    echo "Error: RELEASE is not set"
+    exit 1
 fi
+
+if [[ -z ${RELASE_VERSION} ]]; then
+    echo "Error: RELASE_VERSION is not set"
+    exit 1
+fi
+
+if [[ -z ${PROJECT} ]]; then
+    echo "Error: PROJECT is not set"
+    exit 1
+fi
+
+if [[ -f "ubuntu-${RELASE_VERSION}-${PROJECT}-arm64.rootfs.tar.xz" ]]; then
+    exit 0
+fi
+
+# shellcheck source=/dev/null
+source ../config/projects/"${PROJECT}.sh"
 
 # These env vars can cause issues with chroot
 unset TMP
@@ -35,7 +43,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # Debootstrap options
 arch=arm64
-release=jammy
+release="${RELEASE}"
 mirror=http://ports.ubuntu.com/ubuntu-ports
 chroot_dir=rootfs
 overlay_dir=../overlay
@@ -47,7 +55,7 @@ rm -rf ${chroot_dir}
 mkdir -p ${chroot_dir}
 
 # Install the base system into a directory 
-debootstrap --arch ${arch} ${release} ${chroot_dir} ${mirror}
+debootstrap --arch "${arch}" "${release}" "${chroot_dir}" "${mirror}"
 
 # Use a more complete sources.list file 
 cat > ${chroot_dir}/etc/apt/sources.list << EOF
@@ -102,197 +110,29 @@ mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-# Package priority for ppa
-cp ${overlay_dir}/etc/apt/preferences.d/rockchip-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-ppa
-
-# Download and update packages
-cat << EOF | chroot ${chroot_dir} /bin/bash
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
-
 # Update localisation files
-locale-gen en_US.UTF-8
-update-locale LANG="en_US.UTF-8"
-
-# Add the rockchip ppa
-apt-get -y update && apt-get -y install software-properties-common
-add-apt-repository -y ppa:jjriek/rockchip
+chroot ${chroot_dir} locale-gen en_US.UTF-8
+chroot ${chroot_dir} update-locale LANG="en_US.UTF-8"
 
 # Download and update installed packages
-apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
+chroot ${chroot_dir} apt-get -y update
+chroot ${chroot_dir} apt-get -y upgrade 
+chroot ${chroot_dir} apt-get -y dist-upgrade
+chroot ${chroot_dir} apt-get -y install dctrl-tools
 
-# Download and install generic packages
-apt-get -y install dmidecode mtd-tools i2c-tools u-boot-tools cloud-init \
-bash-completion man-db manpages nano gnupg initramfs-tools mmc-utils rfkill \
-ubuntu-drivers-common ubuntu-server dosfstools mtools parted ntfs-3g zip atop \
-p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
-net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
-pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
-gcc libc6-dev bison libssl-dev flex fake-hwclock wireless-regdb psmisc rsync \
-uuid-runtime linux-firmware rockchip-firmware cloud-initramfs-growroot flash-kernel
-
-# Remove cryptsetup and needrestart
-apt-get -y remove cryptsetup needrestart
+# Run build rootfs hook to handle project specific changes
+if [[ $(type -t build_rootfs_hook__"${PROJECT}") == function ]]; then
+    build_rootfs_hook__"${PROJECT}"
+fi 
 
 # Clean package cache
-apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
-EOF
-
-# Add flash kernel override
-cat << EOF >> ${chroot_dir}/etc/flash-kernel/db
-Machine: *
-Kernel-Flavors: any
-Method: pi
-Boot-Kernel-Path: /boot/firmware/vmlinuz
-Boot-Initrd-Path: /boot/firmware/initrd.img
-EOF
-
-# DNS
-cp ${overlay_dir}/etc/resolv.conf ${chroot_dir}/etc/resolv.conf
-
-# Hostname
-cp ${overlay_dir}/etc/hostname ${chroot_dir}/etc/hostname
-
-# Hosts file
-cp ${overlay_dir}/etc/hosts ${chroot_dir}/etc/hosts
-
-# Serial console resize script
-cp ${overlay_dir}/etc/profile.d/resize.sh ${chroot_dir}/etc/profile.d/resize.sh
-
-# Enable rc-local
-cp ${overlay_dir}/etc/rc.local ${chroot_dir}/etc/rc.local
-
-# Cloud init config
-cp ${overlay_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg ${chroot_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg
-
-# Default adduser config
-cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
-
-# Service to synchronise system clock to hardware RTC
-cp ${overlay_dir}/usr/lib/systemd/system/rtc-hym8563.service ${chroot_dir}/usr/lib/systemd/system/rtc-hym8563.service
-
-# Set term for serial tty
-mkdir -p ${chroot_dir}/lib/systemd/system/serial-getty@.service.d/
-cp ${overlay_dir}/usr/lib/systemd/system/serial-getty@.service.d/10-term.conf ${chroot_dir}/usr/lib/systemd/system/serial-getty@.service.d/10-term.conf
-
-# Create swapfile on boot
-mkdir -p ${chroot_dir}/usr/lib/systemd/system/swap.target.wants/
-cp ${overlay_dir}/usr/lib/systemd/system/mkswap.service ${chroot_dir}/usr/lib/systemd/system/mkswap.service
-cp ${overlay_dir}/usr/lib/systemd/system/swapfile.swap ${chroot_dir}/usr/lib/systemd/system/swapfile.swap        
-chroot ${chroot_dir} /bin/bash -c "ln -s ../mkswap.service /usr/lib/systemd/system/swap.target.wants/"
-chroot ${chroot_dir} /bin/bash -c "ln -s ../swapfile.swap /usr/lib/systemd/system/swap.target.wants/"
-
-# Fix 120 second timeout bug
-mkdir -p ${chroot_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/
-cp ${overlay_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf ${chroot_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
-
-# Use gzip compression for the initrd
-cp ${overlay_dir}/etc/initramfs-tools/conf.d/compression.conf ${chroot_dir}/etc/initramfs-tools/conf.d/compression.conf
-
-# Disable terminal ads
-sed -i 's/ENABLED=1/ENABLED=0/g' ${chroot_dir}/etc/default/motd-news
-chroot ${chroot_dir} /bin/bash -c "pro config set apt_news=false"
-
-# Disable apport bug reporting
-sed -i 's/enabled=1/enabled=0/g' ${chroot_dir}/etc/default/apport
-
-# Remove release upgrade motd
-rm -f ${chroot_dir}/var/lib/ubuntu-release-upgrader/release-upgrade-available
-cp ${overlay_dir}/etc/update-manager/release-upgrades ${chroot_dir}/etc/update-manager/release-upgrades
-
-# Copy over the ubuntu rockchip install util
-cp ${overlay_dir}/usr/bin/ubuntu-rockchip-install ${chroot_dir}/usr/bin/ubuntu-rockchip-install
-
-# Let systemd create machine id on first boot
-rm -f ${chroot_dir}/var/lib/dbus/machine-id
-true > ${chroot_dir}/etc/machine-id 
+chroot ${chroot_dir} apt-get -y autoremove
+chroot ${chroot_dir} apt-get -y clean
+chroot ${chroot_dir} apt-get -y autoclean
 
 # Umount temporary API filesystems
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
 
 # Tar the entire rootfs
-[[ ${DESKTOP_ONLY} != "Y" ]] && cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf ../ubuntu-22.04.3-preinstalled-server-arm64.rootfs.tar.xz . && cd ..
-[[ ${SERVER_ONLY} == "Y" ]] && exit 0
-
-# Mount the temporary API filesystems
-mkdir -p ${chroot_dir}/{proc,sys,run,dev,dev/pts}
-mount -t proc /proc ${chroot_dir}/proc
-mount -t sysfs /sys ${chroot_dir}/sys
-mount -o bind /dev ${chroot_dir}/dev
-mount -o bind /dev/pts ${chroot_dir}/dev/pts
-
-# Download and update packages
-cat << EOF | chroot ${chroot_dir} /bin/bash
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
-
-# Desktop packages
-apt-get -y install ubuntu-desktop dbus-x11 xterm pulseaudio pavucontrol qtwayland5 \
-gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-plugins-good mpv \
-gstreamer1.0-tools dvb-tools ir-keytable libdvbv5-0 libdvbv5-dev libdvbv5-doc libv4l-0 \
-libv4l2rds0 libv4lconvert0 libv4l-dev qv4l2 v4l-utils libegl-mesa0 libegl1-mesa-dev \
-libgbm-dev libgl1-mesa-dev libgles2-mesa-dev libglx-mesa0 mesa-common-dev mesa-vulkan-drivers \
-mesa-utils libcanberra-pulse oem-config-gtk ubiquity-frontend-gtk ubiquity-slideshow-ubuntu \
-language-pack-en-base
-
-# Remove cloud-init and landscape-common
-apt-get -y purge cloud-init landscape-common cryptsetup-initramfs
-
-rm -rf /boot/grub/
-
-# Create files/dirs Ubiquity requires
-mkdir -p /var/log/installer
-touch /var/log/installer/debug
-touch /var/log/syslog
-chown syslog:adm /var/log/syslog
-
-# Create the oem user account
-/usr/sbin/useradd -d /home/oem -G adm,sudo -m -N -u 29999 oem
-
-/usr/sbin/oem-config-prepare --quiet
-touch "/var/lib/oem-config/run"
-
-# Clean package cache
-apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
-EOF
-
-# Adjust hostname for desktop
-echo "localhost.localdomain" > ${chroot_dir}/etc/hostname
-
-# Adjust hosts file for desktop
-sed -i 's/127.0.0.1 localhost/127.0.0.1\tlocalhost.localdomain\tlocalhost\n::1\t\tlocalhost6.localdomain6\tlocalhost6/g' ${chroot_dir}/etc/hosts
-sed -i 's/::1 ip6-localhost ip6-loopback/::1     localhost ip6-localhost ip6-loopback/g' ${chroot_dir}/etc/hosts
-sed -i "/ff00::0 ip6-mcastprefix\b/d" ${chroot_dir}/etc/hosts
-
-# Networking interfaces
-cp ${overlay_dir}/etc/NetworkManager/NetworkManager.conf ${chroot_dir}/etc/NetworkManager/NetworkManager.conf
-cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf
-cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/10-override-wifi-random-mac-disable.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/10-override-wifi-random-mac-disable.conf
-cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/20-override-wifi-powersave-disable.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/20-override-wifi-powersave-disable.conf
-
-# Ubuntu desktop uses a diffrent network manager, so remove this systemd override
-rm -rf ${chroot_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
-
-# Enable wayland session
-cp ${overlay_dir}/etc/gdm3/custom.conf ${chroot_dir}/etc/gdm3/custom.conf
-
-# Have plymouth use the framebuffer
-mkdir -p ${chroot_dir}/etc/initramfs-tools/conf-hooks.d
-cp ${overlay_dir}/etc/initramfs-tools/conf-hooks.d/plymouth ${chroot_dir}/etc/initramfs-tools/conf-hooks.d/plymouth
-
-# Mouse lag/stutter (missed frames) in Wayland sessions
-# https://bugs.launchpad.net/ubuntu/+source/mutter/+bug/1982560
-echo "MUTTER_DEBUG_ENABLE_ATOMIC_KMS=0" >> ${chroot_dir}/etc/environment
-echo "MUTTER_DEBUG_FORCE_KMS_MODE=simple" >> ${chroot_dir}/etc/environment
-echo "CLUTTER_PAINT=disable-dynamic-max-render-time" >> ${chroot_dir}/etc/environment
-
-# Update initramfs
-chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
-
-# Umount the temporary API filesystems
-umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
-umount -lf ${chroot_dir}/* 2> /dev/null || true
-
-# Tar the entire rootfs
-cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf ../ubuntu-22.04.3-preinstalled-desktop-arm64.rootfs.tar.xz . && cd ..
+cd ${chroot_dir} && XZ_OPT="-3 -T0" tar -cpJf "../ubuntu-${RELASE_VERSION}-${PROJECT}-arm64.rootfs.tar.xz" . && cd ..

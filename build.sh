@@ -7,10 +7,12 @@ cd "$(dirname -- "$(readlink -f -- "$0")")"
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi-5|orangepi-5b|orangepi-5-plus|armsom-w3|armsom-sige7|rock-5b|rock-5a|rock-5-itx|radxa-nx5-io|radxa-cm5-io|nanopc-t6|nanopi-r6c|nanopi-r6s|indiedroid-nova|mixtile-blade3|mixtile-core3588e|lubancat-4|turing-rk1|roc-rk3588s-pc]
+Usage: $0 --board=[orangepi-5] --release=[jammy|mantic] --project=[preinstalled-desktop|preinstalled-server]
 
 Required arguments:
   -b, --board=BOARD      target board 
+  -r, --release=RELEASE  ubuntu release
+  -p, --project=PROJECT  ubuntu project
 
 Optional arguments:
   -h,  --help            show this help message and exit
@@ -34,19 +36,35 @@ fi
 
 cd "$(dirname -- "$(readlink -f -- "$0")")"
 
-for i in "$@"; do
-    case $i in
+while [ "$#" -gt 0 ]; do
+    case "${1}" in
         -h|--help)
             usage
             exit 0
             ;;
         -b=*|--board=*)
-            export BOARD="${i#*=}"
+            export BOARD="${1#*=}"
             shift
             ;;
         -b|--board)
             export BOARD="${2}"
+            shift 2
+            ;;
+        -r=*|--release=*)
+            export RELEASE="${1#*=}"
             shift
+            ;;
+        -r|--release)
+            export RELEASE="${2}"
+            shift 2
+            ;;
+        -p=*|--project=*)
+            export PROJECT="${1#*=}"
+            shift
+            ;;
+        -p|--project)
+            export PROJECT="${2}"
+            shift 2
             ;;
         -d|--docker)
             DOCKER="docker run --privileged --network=host --rm -it -v \"$(pwd)\":/opt -e BOARD -e VENDOR -e LAUNCHPAD -e MAINLINE -e SERVER_ONLY -e DESKTOP_ONLY -e KERNEL_ONLY -e UBOOT_ONLY ubuntu-rockchip-build /bin/bash"
@@ -83,16 +101,18 @@ for i in "$@"; do
             ;;
         -c|--clean)
             export CLEAN=Y
+            shift
             ;;
         -v|--verbose)
             set -x
             shift
             ;;
         -*)
-            echo "Error: unknown argument \"$i\""
+            echo "Error: unknown argument \"${1}\""
             exit 1
             ;;
         *)
+            shift
             ;;
     esac
 done
@@ -101,8 +121,29 @@ if [[ "${KERNEL_TARGET}" != "mainline" ]]; then
     export KERNEL_TARGET=bsp
 fi
 
+if [ "${BOARD}" == "help" ]; then
+    for file in config/boards/*; do
+        basename "${file%.conf}"
+    done
+    exit 0
+fi
+
+if [ "${RELEASE}" == "help" ]; then
+    for file in config/releases/*; do
+        basename "${file%.sh}"
+    done
+    exit 0
+fi
+
+if [ "${PROJECT}" == "help" ]; then
+    for file in config/projects/*; do
+        basename "${file%.sh}"
+    done
+    exit 0
+fi
+
 # No board param passed
-if [[ -z ${BOARD} ]]; then
+if [ -z "${BOARD}" ] || [ -z "${RELEASE}" ] || [ -z "${PROJECT}" ]; then
     usage
     exit 1
 fi
@@ -117,18 +158,43 @@ if [[ ${CLEAN} == "Y" ]]; then
 fi
 
 # Read board configuration files
-for file in config/boards/*; do
-    if [ "${BOARD}" == "$(basename "${file%.conf}")" ]; then
-        # shellcheck source=/dev/null
-        set -o allexport && source "${file}" && set +o allexport
-    fi
-done
-
-# Exit with error if invalid board
-if [[ -z ${BOARD_NAME} ]]; then
+while :; do
+    for file in config/boards/*; do
+        if [ "${BOARD}" == "$(basename "${file%.conf}")" ]; then
+            # shellcheck source=/dev/null
+            set -o allexport && source "${file}" && set +o allexport
+            break 2
+        fi
+    done
     echo "Error: \"${BOARD}\" is an unsupported board"
     exit 1
-fi
+done
+
+# Read release configuration files
+while :; do
+    for file in config/releases/*; do
+        if [ "${RELEASE}" == "$(basename "${file%.sh}")" ]; then
+            # shellcheck source=/dev/null
+            source "${file}"
+            break 2
+        fi
+    done
+    echo "Error: \"${RELEASE}\" is an unsupported release"
+    exit 1
+done
+
+# Read project configuration files
+while :; do
+    for file in config/projects/*; do
+        if [ "${PROJECT}" == "$(basename "${file%.sh}")" ]; then
+            # shellcheck source=/dev/null
+            source "${file}"
+            break 2
+        fi
+    done
+    echo "Error: \"${PROJECT}\" is an unsupported project"
+    exit 1
+done
 
 # Start logging the build process
 mkdir -p build/logs && exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
