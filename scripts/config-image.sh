@@ -87,6 +87,11 @@ for type in $target; do
             cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
             chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/panfork-mesa"
 
+            cp -r ../packages/mali-g610-firmware/*.deb ${chroot_dir}/tmp
+            chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/mali-g610-firmware_1.0.2ubuntu1_all.deb"
+            chroot ${chroot_dir} /bin/bash -c "apt-mark hold mali-g610-firmware"
+            rm -f ${chroot_dir}/tmp/*.deb
+
             # Set cpu governor to performance
             cp ${overlay_dir}/usr/lib/systemd/system/cpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/cpu-governor-performance.service
             chroot ${chroot_dir} /bin/bash -c "systemctl enable cpu-governor-performance"
@@ -196,15 +201,6 @@ for type in $target; do
 
     # Clean package cache
     chroot ${chroot_dir} /bin/bash -c "apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean"
-
-    if [ "${KERNEL_TARGET}" == "bsp" ]; then
-        if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
-            cp -r ../packages/mali-g610-firmware/*.deb ${chroot_dir}/tmp
-            chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/mali-g610-firmware_1.0.2ubuntu1_all.deb"
-            chroot ${chroot_dir} /bin/bash -c "apt-mark hold mali-g610-firmware"
-            rm -f ${chroot_dir}/tmp/*.deb
-        fi
-    fi
 
     # Populate the boot firmware path
 	umount -lf ${chroot_dir}/sys
