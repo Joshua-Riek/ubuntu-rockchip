@@ -47,12 +47,12 @@ jobs:
           debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
-          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
       - name: Build
         shell: bash
         if: ${{ github.event.inputs.launchpad == 'false' }}
-        run: sudo ./build.sh --board=orangepi-5 --kernel-only
+        run: sudo ./build.sh --board=orangepi-5 --project=preinstalled-server --release=jammy --kernel-only
 
       - name: Upload
         uses: actions/upload-artifact@v3
@@ -65,7 +65,13 @@ jobs:
   rootfs:
     runs-on: ubuntu-latest
     name: Build rootfs 
-
+    strategy:
+        matrix:
+          project:
+            - preinstalled-desktop
+            - preinstalled-server
+          release:
+            - jammy
     steps:
       - name: Get more disk space
         uses: easimon/maximize-build-space@master
@@ -94,17 +100,17 @@ jobs:
           debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
-          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --rootfs-only
+        run: sudo ./build.sh --board=orangepi-5 --project=${{ matrix.project }} --release=${{ matrix.release }} --rootfs-only
 
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-            name: ubuntu-22.04.3-preinstalled-arm64-rootfs
-            path: ./build/ubuntu-22.04.3-preinstalled-*-arm64.rootfs.tar.xz
+            name: ubuntu-${{ matrix.release }}-${{ matrix.project }}-arm64-rootfs
+            path: ./build/ubuntu-*-${{ matrix.project }}-arm64.rootfs.tar.xz
             if-no-files-found: error
 
   build:
@@ -114,7 +120,7 @@ jobs:
 
     strategy:
       matrix:
-        platform:
+        board:
           - orangepi-3b
           - orangepi-5
           - orangepi-5b
@@ -135,6 +141,11 @@ jobs:
           - turing-rk1
           - armsom-sige7
           - armsom-w3
+        project:
+          - preinstalled-desktop
+          - preinstalled-server
+        release:
+          - jammy
 
     steps:
       - name: Get more disk space
@@ -165,7 +176,7 @@ jobs:
       - name: Checkout rootfs
         uses: actions/download-artifact@v3
         with:
-            name: ubuntu-22.04.3-preinstalled-arm64-rootfs
+            name: ubuntu-${{ matrix.release }}-${{ matrix.project }}-arm64-rootfs
             path: ./build/
 
       - name: Install dependencies
@@ -177,7 +188,7 @@ jobs:
           debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
-          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
       - name: Build
         shell: bash
@@ -186,13 +197,13 @@ jobs:
             if [ "${{ inputs.launchpad }}" == true ]; then
                 args="--launchpad"
             fi
-            sudo ./build.sh -b ${{ matrix.platform }} $args
+            sudo ./build.sh --board=${{ matrix.board }} --project=${{ matrix.project }} --release=${{ matrix.release }}
 
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-22.04.3-preinstalled-arm64-${{ matrix.platform }}
-          path: ./images/ubuntu-22.04.3-preinstalled-*-arm64-${{ matrix.platform }}.*
+          name: ubuntu-22.04.3-${{ matrix.project }}-arm64-${{ matrix.board }}
+          path: ./images/ubuntu-*-${{ matrix.project }}-arm64-${{ matrix.board }}.*
           if-no-files-found: error
 
       - name: Clean cache
