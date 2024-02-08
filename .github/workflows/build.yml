@@ -1,5 +1,5 @@
 name: Build
-run-name: Build with Rockchip Linux 6.1.43
+run-name: Build with Rockchip Linux 5.10.160
 
 on:
   workflow_dispatch:
