@@ -7,7 +7,7 @@ cd "$(dirname -- "$(readlink -f -- "$0")")"
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi-5] --release=[jammy|mantic] --project=[preinstalled-desktop|preinstalled-server]
+Usage: $0 --board=[orangepi-5] --project=[preinstalled-desktop] --release=[jammy]
 
 Required arguments:
   -b, --board=BOARD      target board 
@@ -128,6 +128,20 @@ if [ "${BOARD}" == "help" ]; then
     exit 0
 fi
 
+if [ -n "${BOARD}" ]; then
+    while :; do
+        for file in config/boards/*; do
+            if [ "${BOARD}" == "$(basename "${file%.conf}")" ]; then
+                # shellcheck source=/dev/null
+                set -o allexport && source "${file}" && set +o allexport
+                break 2
+            fi
+        done
+        echo "Error: \"${BOARD}\" is an unsupported board"
+        exit 1
+    done
+fi
+
 if [ "${RELEASE}" == "help" ]; then
     for file in config/releases/*; do
         basename "${file%.sh}"
@@ -135,11 +149,39 @@ if [ "${RELEASE}" == "help" ]; then
     exit 0
 fi
 
+if [ -n "${RELEASE}" ]; then
+    while :; do
+        for file in config/releases/*; do
+            if [ "${RELEASE}" == "$(basename "${file%.sh}")" ]; then
+                # shellcheck source=/dev/null
+                source "${file}"
+                break 2
+            fi
+        done
+        echo "Error: \"${RELEASE}\" is an unsupported release"
+        exit 1
+    done
+fi
+
 if [ "${PROJECT}" == "help" ]; then
     for file in config/projects/*; do
         basename "${file%.sh}"
     done
     exit 0
+fi
+
+if [ -n "${PROJECT}" ]; then
+    while :; do
+        for file in config/projects/*; do
+            if [ "${PROJECT}" == "$(basename "${file%.sh}")" ]; then
+                # shellcheck source=/dev/null
+                source "${file}"
+                break 2
+            fi
+        done
+        echo "Error: \"${PROJECT}\" is an unsupported project"
+        exit 1
+    done
 fi
 
 # No board param passed
@@ -156,45 +198,6 @@ if [[ ${CLEAN} == "Y" ]]; then
     fi
     rm -rf build
 fi
-
-# Read board configuration files
-while :; do
-    for file in config/boards/*; do
-        if [ "${BOARD}" == "$(basename "${file%.conf}")" ]; then
-            # shellcheck source=/dev/null
-            set -o allexport && source "${file}" && set +o allexport
-            break 2
-        fi
-    done
-    echo "Error: \"${BOARD}\" is an unsupported board"
-    exit 1
-done
-
-# Read release configuration files
-while :; do
-    for file in config/releases/*; do
-        if [ "${RELEASE}" == "$(basename "${file%.sh}")" ]; then
-            # shellcheck source=/dev/null
-            source "${file}"
-            break 2
-        fi
-    done
-    echo "Error: \"${RELEASE}\" is an unsupported release"
-    exit 1
-done
-
-# Read project configuration files
-while :; do
-    for file in config/projects/*; do
-        if [ "${PROJECT}" == "$(basename "${file%.sh}")" ]; then
-            # shellcheck source=/dev/null
-            source "${file}"
-            break 2
-        fi
-    done
-    echo "Error: \"${PROJECT}\" is an unsupported project"
-    exit 1
-done
 
 # Start logging the build process
 mkdir -p build/logs && exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
