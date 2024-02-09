@@ -55,7 +55,7 @@ jobs:
         run: sudo ./build.sh --board=orangepi-5 --project=preinstalled-server --release=jammy --kernel-only
 
       - name: Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.3.1
         if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
             name: linux-rockchip-5.10
@@ -107,7 +107,7 @@ jobs:
         run: sudo ./build.sh --board=orangepi-5 --project=${{ matrix.project }} --release=${{ matrix.release }} --rootfs-only
 
       - name: Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.3.1
         with:
             name: ubuntu-${{ matrix.release }}-${{ matrix.project }}-arm64-rootfs
             path: ./build/ubuntu-*-${{ matrix.project }}-arm64.rootfs.tar.xz
@@ -167,14 +167,14 @@ jobs:
         run: git lfs fetch && git lfs checkout
 
       - name: Checkout kernel
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.2
         if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
             name: linux-rockchip-5.10
             path: ./build/
 
       - name: Checkout rootfs
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.2
         with:
             name: ubuntu-${{ matrix.release }}-${{ matrix.project }}-arm64-rootfs
             path: ./build/
@@ -200,7 +200,7 @@ jobs:
             sudo ./build.sh --board=${{ matrix.board }} --project=${{ matrix.project }} --release=${{ matrix.release }}
 
       - name: Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.3.1
         with:
           name: ubuntu-22.04.3-${{ matrix.project }}-arm64-${{ matrix.board }}
           path: ./images/ubuntu-*-${{ matrix.project }}-arm64-${{ matrix.board }}.*
