@@ -1,3 +1,9 @@
+u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-8) jammy; urgency=medium
+
+  * Fix gcc 13 compile error
+
+ -- Joshua Riek <jjriek@verizon.net>  Mon, 12 Feb 2024 10:09:46 -0500
+
 u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-7) jammy; urgency=medium
 
   * Packaging cleanup
