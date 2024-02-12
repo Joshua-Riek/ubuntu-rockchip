@@ -1,3 +1,9 @@
+u-boot-radxa-rk3588 (2017.09+20240128.git722a6ab0-2) jammy; urgency=medium
+
+  * Fix gcc 13 compile error
+
+ -- Joshua Riek <jjriek@verizon.net>  Sun, 11 Feb 2024 20:51:36 -0500
+
 u-boot-radxa-rk3588 (2017.09+20240128.git722a6ab0-1) jammy; urgency=medium
 
   * arm: dts: add radxa e25 support
