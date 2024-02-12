@@ -1,3 +1,9 @@
+u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-8) jammy; urgency=medium
+
+  * Fix gcc 13 compile error
+
+ -- Joshua Riek <jjriek@verizon.net>  Mon, 12 Feb 2024 10:11:04 -0500
+
 u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-7) jammy; urgency=medium
 
   * Remove emmc skip patch
