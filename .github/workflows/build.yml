@@ -50,7 +50,7 @@ jobs:
       - name: Build
         shell: bash
         if: ${{ github.event.inputs.launchpad == 'false' }}
-        run: sudo ./build.sh --board=orangepi-5 --project=preinstalled-server --release=jammy --kernel-only
+        run: sudo ./build.sh --board=orangepi-5 --project=preinstalled-server --release=jammy --kernel=bsp --kernel-only
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
@@ -101,7 +101,7 @@ jobs:
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --project=${{ matrix.project }} --release=${{ matrix.release }} --rootfs-only
+        run: sudo ./build.sh --board=orangepi-5 --project=${{ matrix.project }} --release=${{ matrix.release }} --kernel=bsp --rootfs-only
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
@@ -193,7 +193,7 @@ jobs:
             if [ "${{ inputs.launchpad }}" == true ]; then
                 args="--launchpad"
             fi
-            sudo ./build.sh --board=${{ matrix.board }} --project=${{ matrix.project }} --release=${{ matrix.release }}
+            sudo ./build.sh --board=${{ matrix.board }} --project=${{ matrix.project }} --kernel=bsp --release=${{ matrix.release }}
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1

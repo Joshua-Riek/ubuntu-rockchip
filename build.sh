@@ -7,19 +7,20 @@ cd "$(dirname -- "$(readlink -f -- "$0")")"
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi-5] --project=[preinstalled-desktop] --release=[jammy]
+Usage: $0 --board=[orangepi-5] --project=[preinstalled-desktop] --release=[jammy] --kernel=[bsp]
 
 Required arguments:
   -b, --board=BOARD      target board 
   -r, --release=RELEASE  ubuntu release
   -p, --project=PROJECT  ubuntu project
+  -k, --kernel=KERNEL    kernel target
 
 Optional arguments:
   -h,  --help            show this help message and exit
   -c,  --clean           clean the build directory
   -d,  --docker          use docker to build
-  -k,  --kernel-only     only compile the kernel
-  -u,  --uboot-only      only compile uboot
+  -ko,  --kernel-only    only compile the kernel
+  -uo,  --uboot-only     only compile uboot
   -ro, --rootfs-only     only build rootfs
   -so, --server-only     only build server image
   -do, --desktop-only    only build desktop image
@@ -66,16 +67,24 @@ while [ "$#" -gt 0 ]; do
             export PROJECT="${2}"
             shift 2
             ;;
+        -k=*|--kernel=*)
+            export KERNEL_TARGET="${1#*=}"
+            shift
+            ;;
+        -k|--kernel)
+            export KERNEL_TARGET="${2}"
+            shift 2
+            ;;
         -d|--docker)
             DOCKER="docker run --privileged --network=host --rm -it -v \"$(pwd)\":/opt -e BOARD -e VENDOR -e LAUNCHPAD -e MAINLINE -e SERVER_ONLY -e DESKTOP_ONLY -e KERNEL_ONLY -e UBOOT_ONLY ubuntu-rockchip-build /bin/bash"
             docker build -t ubuntu-rockchip-build docker
             shift
             ;;
-        -k|--kernel-only)
+        -ko|--kernel-only)
             export KERNEL_ONLY=Y
             shift
             ;;
-        -u|--uboot-only)
+        -uo|--uboot-only)
             export UBOOT_ONLY=Y
             shift
             ;;
@@ -89,10 +98,6 @@ while [ "$#" -gt 0 ]; do
             ;;
         -so|--server-only)
             export SERVER_ONLY=Y
-            shift
-            ;;
-        -m|--mainline)
-            export KERNEL_TARGET=mainline
             shift
             ;;
         -l|--launchpad)
@@ -116,10 +121,6 @@ while [ "$#" -gt 0 ]; do
             ;;
     esac
 done
-
-if [[ "${KERNEL_TARGET}" != "mainline" ]]; then
-    export KERNEL_TARGET=bsp
-fi
 
 if [ "${BOARD}" == "help" ]; then
     for file in config/boards/*; do
@@ -184,8 +185,29 @@ if [ -n "${PROJECT}" ]; then
     done
 fi
 
+if [ "${KERNEL_TARGET}" == "help" ]; then
+    for file in config/kernels/*; do
+        basename "${file%.conf}"
+    done
+    exit 0
+fi
+
+if [ -n "${KERNEL_TARGET}" ]; then
+    while :; do
+        for file in config/kernels/*; do
+            if [ "${KERNEL_TARGET}" == "$(basename "${file%.conf}")" ]; then
+                # shellcheck source=/dev/null
+                source "${file}"
+                break 2
+            fi
+        done
+        echo "Error: \"${KERNEL_TARGET}\" is an unsupported kernel"
+        exit 1
+    done
+fi
+
 # No board param passed
-if [ -z "${BOARD}" ] || [ -z "${RELEASE}" ] || [ -z "${PROJECT}" ]; then
+if [ -z "${BOARD}" ] || [ -z "${RELEASE}" ] || [ -z "${PROJECT}" ] || [ -z "${KERNEL_TARGET}" ]; then
     usage
     exit 1
 fi
