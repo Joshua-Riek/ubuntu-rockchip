@@ -1,5 +1,4 @@
 name: Build
-run-name: Build with Rockchip Linux 5.10.160
 
 on:
   workflow_dispatch:
@@ -9,6 +8,13 @@ on:
         required: true
         default: false
         type: boolean
+      kernel:
+        type: choice
+        description: Kernel
+        options: 
+          - rockchip-5.10
+          - rockchip-6.1
+run-name: Build with Rockchip Linux 5.10.160
 
 jobs:
   kernel:
@@ -50,13 +56,13 @@ jobs:
       - name: Build
         shell: bash
         if: ${{ github.event.inputs.launchpad == 'false' }}
-        run: sudo ./build.sh --board=orangepi-5 --project=preinstalled-server --release=jammy --kernel=bsp --kernel-only
+        run: sudo ./build.sh --board=orangepi-5 --project=preinstalled-server --release=jammy --kernel=${{ github.event.inputs.kernel }} --kernel-only
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
         if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
-            name: linux-rockchip-5.10
+            name: linux-rockchip
             path: ./build/linux-*.deb
             if-no-files-found: error
 
@@ -101,7 +107,7 @@ jobs:
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --project=${{ matrix.project }} --release=${{ matrix.release }} --kernel=bsp --rootfs-only
+        run: sudo ./build.sh --board=orangepi-5 --project=${{ matrix.project }} --release=${{ matrix.release }} --kernel=${{ github.event.inputs.kernel }} --rootfs-only
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
@@ -166,7 +172,7 @@ jobs:
         uses: actions/download-artifact@v4.1.2
         if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
-            name: linux-rockchip-5.10
+            name: linux-rockchip
             path: ./build/
 
       - name: Checkout rootfs
@@ -193,7 +199,7 @@ jobs:
             if [ "${{ inputs.launchpad }}" == true ]; then
                 args="--launchpad"
             fi
-            sudo ./build.sh --board=${{ matrix.board }} --project=${{ matrix.project }} --kernel=bsp --release=${{ matrix.release }}
+            sudo ./build.sh --board=${{ matrix.board }} --project=${{ matrix.project }} --kernel=${{ github.event.inputs.kernel }} --release=${{ matrix.release }}
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
