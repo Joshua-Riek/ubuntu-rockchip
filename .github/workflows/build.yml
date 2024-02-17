@@ -14,7 +14,8 @@ on:
         options: 
           - rockchip-5.10
           - rockchip-6.1
-run-name: Build with Rockchip Linux 5.10.160
+
+run-name: Build with ${{ github.event.inputs.kernel }}
 
 jobs:
   kernel:
