@@ -2,7 +2,7 @@
 
 package_list=(
     i2c-tools u-boot-tools mmc-utils flash-kernel wpasupplicant linux-firmware psmisc wireless-regdb
-    cloud-init landscape-common cloud-initramfs-growroot
+    cloud-init landscape-common cloud-initramfs-growroot openssh-server
 )
 
 package_removal_list=(
