@@ -194,55 +194,7 @@ load ${devtype} ${devnum}:${distro_bootpart} ${kernel_addr_r} /vmlinuz
 load ${devtype} ${devnum}:${distro_bootpart} ${ramdisk_addr_r} /initrd.img
 
 booti ${kernel_addr_r} ${ramdisk_addr_r}:${filesize} ${fdt_addr_r}
-
-
-
-if load ${devtype} ${devnum}:${distro_bootpart} ${fdt_addr_r} ${fdtfile}; then
-    fdt addr ${fdt_addr_r}
-    fdt resize 0x10000
-
-    for overlay_file in "${overlays}"; do
-        for file in "${overlay_file}.dtbo ${overlay_file}"; do
-            if test -e ${devtype} ${devnum}:${distro_bootpart} /overlays/${file}; then
-                load ${devtype} ${devnum}:${distro_bootpart} ${fdtoverlay_addr_r} /overlays/${file}
-                echo "Applying device tree overlay: /overlays/${file}"
-                fdt apply ${fdtoverlay_addr_r} || setenv overlay_error "true"
-            fi
-        done
-    done
-    if test "${overlay_error}" = "true"; then
-        echo "Error applying device tree overlays, restoring original device tree"
-        load ${devtype} ${devnum}:${distro_bootpart} ${fdt_addr_r} ${fdtfile}
-    fi
-
-    # Store the gzip header (1f 8b) in the kernel area for comparison to the
-    # header of the image we load. Load vmlinuz into the portion of memory for 
-    # the RAM disk (because we want to uncompress to the kernel area if it's
-    # compressed) and compare the word at the start
-    mw.w ${kernel_addr_r} 0x8b1f  # little endian
-    if load ${devtype} ${devnum}:${distro_bootpart} ${ramdisk_addr_r} vmlinuz; then
-        kernel_size=${filesize}
-        if cmp.w ${kernel_addr_r} ${ramdisk_addr_r} 1; then
-            # gzip compressed image (NOTE: *not* a self-extracting gzip compressed
-            # kernel, just a kernel image that has been gzip'd)
-            echo "Decompressing kernel..."
-            unzip ${ramdisk_addr_r} ${kernel_addr_r}
-            setenv kernel_size ${filesize}
-        else
-            # Possibly self-extracting or uncompressed; copy data into the kernel area
-            echo "Copying kernel..."
-            cp.b ${ramdisk_addr_r} ${kernel_addr_r} ${kernel_size}
-        fi
-
-        if load ${devtype} ${devnum}:${distro_bootpart} ${ramdisk_addr_r} initrd.img then;
-            echo "Booting Ubuntu from ${devtype} ${devnum}:${partition}..."
-            booti ${kernel_addr_r} ${ramdisk_addr_r}:${filesize} ${fdt_addr_r}
-        fi
-    fi
-fi
 EOF
-
-
 mkimage -A arm64 -O linux -T script -C none -n "Boot Script" -d ${mount_point}/system-boot/boot.cmd ${mount_point}/system-boot/boot.scr
 
 # Uboot env
