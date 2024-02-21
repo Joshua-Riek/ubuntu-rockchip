@@ -17,7 +17,7 @@ function build_rootfs_hook__preinstalled-desktop() {
 
     # Query list of default ubuntu packages
     for task in minimal standard ubuntu-desktop; do
-        for package in $(chroot "${chroot_dir}" apt-cache dumpavail | grep-dctrl -nsPackage \( -XFArchitecture arm64 -o -XFArchitecture all \) -a -wFTask "${task}"); do
+        for package in $(chroot "${chroot_dir}" apt-cache dumpavail | /usr/bin/grep-dctrl -nsPackage \( -XFArchitecture arm64 -o -XFArchitecture all \) -a -wFTask "${task}"); do
             package_list+=("${package}")
         done
     done
