@@ -3,7 +3,7 @@
 package_list=(
     oem-config-gtk ubiquity-frontend-gtk ubiquity-slideshow-ubuntu language-pack-en-base mpv dbus-x11
     i2c-tools u-boot-tools mmc-utils flash-kernel wpasupplicant linux-firmware psmisc wireless-regdb
-    cloud-initramfs-growroot openssh-server htop lm-sensors wireless-tools bluez
+    cloud-initramfs-growroot openssh-server htop lm-sensors wireless-tools bluez net-tools
 )
 
 package_removal_list=(
