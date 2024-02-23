@@ -120,6 +120,8 @@ chroot ${chroot_dir} apt-get -y upgrade
 chroot ${chroot_dir} apt-get -y dist-upgrade
 chroot ${chroot_dir} apt-get -y install dctrl-tools
 
+cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
+
 # Run build rootfs hook to handle project specific changes
 if [[ $(type -t build_rootfs_hook__"${PROJECT}") == function ]]; then
     build_rootfs_hook__"${PROJECT}"
