@@ -5,3 +5,4 @@
 0005-give-SD-higher-boot-priority-than-NVME.patch
 0006-board-rockchip-Add-the-Mixtile-Blade-3.patch
 0007-fix-gcc13-compile-error.patch
+0008-fix-noble-compile-error.patch
