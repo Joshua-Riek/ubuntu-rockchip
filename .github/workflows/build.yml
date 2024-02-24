@@ -15,7 +15,7 @@ on:
           - rockchip-5.10
           - rockchip-6.1
 
-run-name: Build with ${{ github.event.inputs.kernel }}
+run-name: Build with ${{ github.event.inputs.kernel == 'rockchip-5.10' && 'Rockchip Linux 5.10' || github.event.inputs.kernel == 'rockchip-6.1' && 'Rockchip Linux 6.1' }}
 
 jobs:
   kernel:
