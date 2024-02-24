@@ -14,8 +14,14 @@ on:
         options: 
           - rockchip-5.10
           - rockchip-6.1
+      release:
+        type: choice
+        description: Release
+        options: 
+          - jammy
+          - noble
 
-run-name: Build with ${{ github.event.inputs.kernel == 'rockchip-5.10' && 'Rockchip Linux 5.10' || github.event.inputs.kernel == 'rockchip-6.1' && 'Rockchip Linux 6.1' }}
+run-name: Build Ubuntu ${{ github.event.inputs.release == 'jammy' && '22.04' || github.event.inputs.release == 'noble' && '24.04' }} with ${{ github.event.inputs.kernel == 'rockchip-5.10' && 'Rockchip Linux 5.10' || github.event.inputs.kernel == 'rockchip-6.1' && 'Rockchip Linux 6.1' }}
 
 jobs:
   kernel:
@@ -57,7 +63,7 @@ jobs:
       - name: Build
         shell: bash
         if: ${{ github.event.inputs.launchpad == 'false' }}
-        run: sudo ./build.sh --board=orangepi-5 --project=preinstalled-server --release=jammy --kernel=${{ github.event.inputs.kernel }} --kernel-only
+        run: sudo ./build.sh --board=orangepi-5 --project=preinstalled-server --release=${{ github.event.inputs.release }} --kernel=${{ github.event.inputs.kernel }} --kernel-only
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
@@ -75,8 +81,6 @@ jobs:
           project:
             - preinstalled-desktop
             - preinstalled-server
-          release:
-            - jammy
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
@@ -108,12 +112,12 @@ jobs:
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --project=${{ matrix.project }} --release=${{ matrix.release }} --kernel=${{ github.event.inputs.kernel }} --rootfs-only
+        run: sudo ./build.sh --board=orangepi-5 --project=${{ matrix.project }} --release=${{ github.event.inputs.release }} --kernel=${{ github.event.inputs.kernel }} --rootfs-only
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
         with:
-            name: ubuntu-${{ matrix.release }}-${{ matrix.project }}-arm64-rootfs
+            name: ubuntu-${{ github.event.inputs.release }}-${{ matrix.project }}-arm64-rootfs
             path: ./build/ubuntu-*-${{ matrix.project }}-arm64.rootfs.tar.xz
             if-no-files-found: error
 
@@ -148,8 +152,6 @@ jobs:
         project:
           - preinstalled-desktop
           - preinstalled-server
-        release:
-          - jammy
 
     steps:
       - name: Get more disk space
@@ -179,7 +181,7 @@ jobs:
       - name: Checkout rootfs
         uses: actions/download-artifact@v4.1.2
         with:
-            name: ubuntu-${{ matrix.release }}-${{ matrix.project }}-arm64-rootfs
+            name: ubuntu-${{ github.event.inputs.release }}-${{ matrix.project }}-arm64-rootfs
             path: ./build/
 
       - name: Install dependencies
@@ -200,12 +202,12 @@ jobs:
             if [ "${{ inputs.launchpad }}" == true ]; then
                 args="--launchpad"
             fi
-            sudo ./build.sh --board=${{ matrix.board }} --project=${{ matrix.project }} --kernel=${{ github.event.inputs.kernel }} --release=${{ matrix.release }}
+            sudo ./build.sh --board=${{ matrix.board }} --project=${{ matrix.project }} --kernel=${{ github.event.inputs.kernel }} --release=${{ github.event.inputs.release }}
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
         with:
-          name: ubuntu-22.04.3-${{ matrix.project }}-arm64-${{ matrix.board }}
+          name: ubuntu-${{ github.event.inputs.release == 'jammy' && '22.04.3' || github.event.inputs.release == 'noble' && '24.04.0' }}-${{ matrix.project }}-arm64-${{ matrix.board }}
           path: ./images/ubuntu-*-${{ matrix.project }}-arm64-${{ matrix.board }}.*
           if-no-files-found: error
 
