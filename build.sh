@@ -7,17 +7,20 @@ cd "$(dirname -- "$(readlink -f -- "$0")")"
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi-5|orangepi-5b|orangepi-5-plus|armsom-w3|armsom-sige7|rock-5b|rock-5a|rock-5-itx|radxa-nx5-io|radxa-cm5-io|nanopc-t6|nanopi-r6c|nanopi-r6s|indiedroid-nova|mixtile-blade3|mixtile-core3588e|lubancat-4|turing-rk1|roc-rk3588s-pc]
+Usage: $0 --board=[orangepi-5] --project=[preinstalled-desktop] --release=[jammy] --kernel=[bsp]
 
 Required arguments:
   -b, --board=BOARD      target board 
+  -r, --release=RELEASE  ubuntu release
+  -p, --project=PROJECT  ubuntu project
+  -k, --kernel=KERNEL    kernel target
 
 Optional arguments:
   -h,  --help            show this help message and exit
   -c,  --clean           clean the build directory
   -d,  --docker          use docker to build
-  -k,  --kernel-only     only compile the kernel
-  -u,  --uboot-only      only compile uboot
+  -ko,  --kernel-only    only compile the kernel
+  -uo,  --uboot-only     only compile uboot
   -ro, --rootfs-only     only build rootfs
   -so, --server-only     only build server image
   -do, --desktop-only    only build desktop image
@@ -34,30 +37,54 @@ fi
 
 cd "$(dirname -- "$(readlink -f -- "$0")")"
 
-for i in "$@"; do
-    case $i in
+while [ "$#" -gt 0 ]; do
+    case "${1}" in
         -h|--help)
             usage
             exit 0
             ;;
         -b=*|--board=*)
-            export BOARD="${i#*=}"
+            export BOARD="${1#*=}"
             shift
             ;;
         -b|--board)
             export BOARD="${2}"
+            shift 2
+            ;;
+        -r=*|--release=*)
+            export RELEASE="${1#*=}"
             shift
+            ;;
+        -r|--release)
+            export RELEASE="${2}"
+            shift 2
+            ;;
+        -p=*|--project=*)
+            export PROJECT="${1#*=}"
+            shift
+            ;;
+        -p|--project)
+            export PROJECT="${2}"
+            shift 2
+            ;;
+        -k=*|--kernel=*)
+            export KERNEL_TARGET="${1#*=}"
+            shift
+            ;;
+        -k|--kernel)
+            export KERNEL_TARGET="${2}"
+            shift 2
             ;;
         -d|--docker)
             DOCKER="docker run --privileged --network=host --rm -it -v \"$(pwd)\":/opt -e BOARD -e VENDOR -e LAUNCHPAD -e MAINLINE -e SERVER_ONLY -e DESKTOP_ONLY -e KERNEL_ONLY -e UBOOT_ONLY ubuntu-rockchip-build /bin/bash"
             docker build -t ubuntu-rockchip-build docker
             shift
             ;;
-        -k|--kernel-only)
+        -ko|--kernel-only)
             export KERNEL_ONLY=Y
             shift
             ;;
-        -u|--uboot-only)
+        -uo|--uboot-only)
             export UBOOT_ONLY=Y
             shift
             ;;
@@ -73,36 +100,72 @@ for i in "$@"; do
             export SERVER_ONLY=Y
             shift
             ;;
-        -m|--mainline)
-            export KERNEL_TARGET=mainline
-            shift
-            ;;
         -l|--launchpad)
             export LAUNCHPAD=Y
             shift
             ;;
         -c|--clean)
             export CLEAN=Y
+            shift
             ;;
         -v|--verbose)
             set -x
             shift
             ;;
         -*)
-            echo "Error: unknown argument \"$i\""
+            echo "Error: unknown argument \"${1}\""
             exit 1
             ;;
         *)
+            shift
             ;;
     esac
 done
 
-if [[ "${KERNEL_TARGET}" != "mainline" ]]; then
-    export KERNEL_TARGET=bsp
+if [ "${BOARD}" == "help" ]; then
+    for file in config/boards/*; do
+        basename "${file%.conf}"
+    done
+    exit 0
+fi
+
+if [ -n "${BOARD}" ]; then
+    while :; do
+        for file in config/boards/*; do
+            if [ "${BOARD}" == "$(basename "${file%.conf}")" ]; then
+                # shellcheck source=/dev/null
+                set -o allexport && source "${file}" && set +o allexport
+                break 2
+            fi
+        done
+        echo "Error: \"${BOARD}\" is an unsupported board"
+        exit 1
+    done
+fi
+
+if [ "${KERNEL_TARGET}" == "help" ]; then
+    for file in config/kernels/*; do
+        basename "${file%.conf}"
+    done
+    exit 0
+fi
+
+if [ -n "${KERNEL_TARGET}" ]; then
+    while :; do
+        for file in config/kernels/*; do
+            if [ "${KERNEL_TARGET}" == "$(basename "${file%.conf}")" ]; then
+                # shellcheck source=/dev/null
+                source "${file}"
+                break 2
+            fi
+        done
+        echo "Error: \"${KERNEL_TARGET}\" is an unsupported kernel"
+        exit 1
+    done
 fi
 
 # No board param passed
-if [[ -z ${BOARD} ]]; then
+if [ -z "${BOARD}" ] || [ -z "${KERNEL_TARGET}" ]; then
     usage
     exit 1
 fi
@@ -114,20 +177,6 @@ if [[ ${CLEAN} == "Y" ]]; then
         umount -lf build/rootfs/* 2> /dev/null || true
     fi
     rm -rf build
-fi
-
-# Read board configuration files
-for file in config/boards/*; do
-    if [ "${BOARD}" == "$(basename "${file%.conf}")" ]; then
-        # shellcheck source=/dev/null
-        set -o allexport && source "${file}" && set +o allexport
-    fi
-done
-
-# Exit with error if invalid board
-if [[ -z ${BOARD_NAME} ]]; then
-    echo "Error: \"${BOARD}\" is an unsupported board"
-    exit 1
 fi
 
 # Start logging the build process
