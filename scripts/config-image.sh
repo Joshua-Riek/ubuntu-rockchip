@@ -81,7 +81,7 @@ for type in $target; do
     mount -o bind /dev ${chroot_dir}/dev
     mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-    if [ "${KERNEL_TARGET}" == "bsp" ]; then
+    if [ "${KERNEL_TARGET}" == "rockchip-5.10" ]; then
         if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
             # Pin and add panfork mesa ppa
             cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa

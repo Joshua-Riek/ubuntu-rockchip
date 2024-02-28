@@ -1,5 +1,4 @@
 name: Build
-run-name: Build with Rockchip Linux 5.10.160
 
 on:
   workflow_dispatch:
@@ -9,6 +8,19 @@ on:
         required: true
         default: false
         type: boolean
+      kernel:
+        type: choice
+        description: Kernel
+        options: 
+          - rockchip-5.10
+          - rockchip-6.1
+      release:
+        type: choice
+        description: Release
+        options: 
+          - jammy
+
+run-name: Build Ubuntu ${{ github.event.inputs.release == 'jammy' && '22.04' || github.event.inputs.release == 'noble' && '24.04' }} with ${{ github.event.inputs.kernel == 'rockchip-5.10' && 'Rockchip Linux 5.10' || github.event.inputs.kernel == 'rockchip-6.1' && 'Rockchip Linux 6.1' }}
 
 jobs:
   kernel:
@@ -17,16 +29,14 @@ jobs:
 
     steps:
       - name: Get more disk space
-        uses: easimon/maximize-build-space@master
-        if: ${{ github.event.inputs.launchpad == 'false' }}
+        uses: jlumbroso/free-disk-space@main
         with:
-          root-reserve-mb: 2048
-          swap-size-mb: 1024
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-          remove-codeql: 'true'
-          remove-docker-images: 'true'
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
 
       - name: Checkout code
         if: ${{ github.event.inputs.launchpad == 'false' }}
@@ -47,36 +57,39 @@ jobs:
           debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
-          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
       - name: Build
         shell: bash
         if: ${{ github.event.inputs.launchpad == 'false' }}
-        run: sudo ./build.sh --board=orangepi-5 --kernel-only
+        run: sudo ./build.sh --board=orangepi-5 --project=preinstalled-server --kernel=${{ github.event.inputs.kernel }} --kernel-only
 
       - name: Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.3.1
         if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
-            name: linux-rockchip-5.10
+            name: linux-rockchip
             path: ./build/linux-*.deb
             if-no-files-found: error
 
   rootfs:
     runs-on: ubuntu-latest
     name: Build rootfs 
-
+    strategy:
+        matrix:
+          project:
+            - preinstalled-desktop
+            - preinstalled-server
     steps:
       - name: Get more disk space
-        uses: easimon/maximize-build-space@master
+        uses: jlumbroso/free-disk-space@main
         with:
-          root-reserve-mb: 2048
-          swap-size-mb: 1024
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-          remove-codeql: 'true'
-          remove-docker-images: 'true'
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -94,17 +107,17 @@ jobs:
           debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
-          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --rootfs-only
+        run: sudo ./build.sh --board=orangepi-5 ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.kernel }} --rootfs-only
 
       - name: Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.3.1
         with:
-            name: ubuntu-22.04.3-preinstalled-arm64-rootfs
-            path: ./build/ubuntu-22.04.3-preinstalled-*-arm64.rootfs.tar.xz
+            name: ubuntu-${{ github.event.inputs.release }}-${{ matrix.project }}-arm64-rootfs
+            path: ./build/ubuntu-*-${{ matrix.project }}-arm64.rootfs.tar.xz
             if-no-files-found: error
 
   build:
@@ -114,7 +127,7 @@ jobs:
 
     strategy:
       matrix:
-        platform:
+        board:
           - orangepi-3b
           - orangepi-5
           - orangepi-5b
@@ -135,18 +148,20 @@ jobs:
           - turing-rk1
           - armsom-sige7
           - armsom-w3
+        project:
+          - preinstalled-desktop
+          - preinstalled-server
 
     steps:
       - name: Get more disk space
-        uses: easimon/maximize-build-space@master
+        uses: jlumbroso/free-disk-space@main
         with:
-          root-reserve-mb: 2048
-          swap-size-mb: 1024
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-          remove-codeql: 'true'
-          remove-docker-images: 'true'
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -156,16 +171,16 @@ jobs:
         run: git lfs fetch && git lfs checkout
 
       - name: Checkout kernel
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.2
         if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
-            name: linux-rockchip-5.10
+            name: linux-rockchip
             path: ./build/
 
       - name: Checkout rootfs
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.2
         with:
-            name: ubuntu-22.04.3-preinstalled-arm64-rootfs
+            name: ubuntu-${{ github.event.inputs.release }}-${{ matrix.project }}-arm64-rootfs
             path: ./build/
 
       - name: Install dependencies
@@ -177,7 +192,7 @@ jobs:
           debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
-          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
       - name: Build
         shell: bash
@@ -186,13 +201,13 @@ jobs:
             if [ "${{ inputs.launchpad }}" == true ]; then
                 args="--launchpad"
             fi
-            sudo ./build.sh -b ${{ matrix.platform }} $args
+            sudo ./build.sh --board=${{ matrix.board }} --project=${{ matrix.project }} --kernel=${{ github.event.inputs.kernel }}
 
       - name: Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.3.1
         with:
-          name: ubuntu-22.04.3-preinstalled-arm64-${{ matrix.platform }}
-          path: ./images/ubuntu-22.04.3-preinstalled-*-arm64-${{ matrix.platform }}.*
+          name: ubuntu-${{ github.event.inputs.release == 'jammy' && '22.04.3' || github.event.inputs.release == 'noble' && '24.04.0' }}-${{ matrix.project }}-arm64-${{ matrix.board }}
+          path: ./images/ubuntu-*-${{ matrix.project }}-arm64-${{ matrix.board }}.*
           if-no-files-found: error
 
       - name: Clean cache
