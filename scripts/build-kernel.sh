@@ -43,8 +43,8 @@ else
     # Compile the kernel into a deb package
     make bindeb-pkg \
     KBUILD_IMAGE="arch/arm64/boot/Image" \
-    KDEB_PKGVERSION="$(make kernelversion)-1" \
-    KERNELRELEASE="$(make kernelversion)" \
+    KDEB_PKGVERSION="$(make kernelversion)-rockchip-1" \
+    KERNELRELEASE="$(make kernelversion)-rockchip" \
     CROSS_COMPILE=aarch64-linux-gnu- \
     ARCH=arm64 \
     -j "$(nproc)"
