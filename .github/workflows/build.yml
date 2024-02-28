@@ -201,7 +201,7 @@ jobs:
             if [ "${{ inputs.launchpad }}" == true ]; then
                 args="--launchpad"
             fi
-            sudo ./build.sh --board=${{ matrix.board }} --project=${{ matrix.project }} --kernel=${{ github.event.inputs.kernel }}
+            sudo ./build.sh --board=${{ matrix.board }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.kernel }}
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
