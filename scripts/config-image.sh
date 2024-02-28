@@ -81,7 +81,7 @@ for type in $target; do
     mount -o bind /dev ${chroot_dir}/dev
     mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-    if [ "${KERNEL_TARGET}" == "rockchip-5.10" ]; then
+    if [ "${KERNEL_TARGET}" == "rockchip-5.10" ] || [ "${KERNEL_TARGET}" == "rockchip-6.1" ]; then
         if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
             # Pin and add panfork mesa ppa
             cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
@@ -98,6 +98,7 @@ for type in $target; do
 
         # Pin and add rockchip multimedia ppa
         cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
+        chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/rockchip-multimedia"
         chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia"
 
         # Download and update installed packages
