@@ -129,7 +129,8 @@ p7zip-full htop iotop pciutils lshw lsof landscape-common exfat-fuse hwinfo \
 net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
 pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
 gcc libc6-dev bison libssl-dev flex fake-hwclock wireless-regdb psmisc rsync \
-uuid-runtime linux-firmware rockchip-firmware cloud-initramfs-growroot flash-kernel
+uuid-runtime linux-firmware rockchip-firmware cloud-initramfs-growroot flash-kernel \
+avahi-daemon
 
 # Remove cryptsetup and needrestart
 apt-get -y remove cryptsetup needrestart
