@@ -1,7 +1,3 @@
 Package: *
 Pin: release o=LP-PPA-liujianfeng1994-rockchip-multimedia
 Pin-Priority: 1001
-
-Package: *
-Pin: release o=LP-PPA-jjriek-rockchip-multimedia
-Pin-Priority: 2002
