@@ -24,13 +24,13 @@ fi
 # shellcheck source=/dev/null
 source ../config/kernels/"${KERNEL_TARGET}.conf"
 
-if [[ -z ${PROJECT} ]]; then
-    echo "Error: PROJECT is not set"
+if [[ -z ${RELEASE} ]]; then
+    echo "Error: RELEASE is not set"
     exit 1
 fi
 
 # shellcheck source=/dev/null
-source ../config/projects/"${PROJECT}.sh"
+source ../config/releases/"${RELEASE}.sh"
 
 if [[ ${LAUNCHPAD} != "Y" ]]; then
     uboot_package="$(basename "$(find u-boot-"${BOARD}"_*.deb | sort | tail -n1)")"
