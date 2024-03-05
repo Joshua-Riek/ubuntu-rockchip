@@ -24,6 +24,14 @@ fi
 # shellcheck source=/dev/null
 source ../config/kernels/"${KERNEL_TARGET}.conf"
 
+if [[ -z ${PROJECT} ]]; then
+    echo "Error: PROJECT is not set"
+    exit 1
+fi
+
+# shellcheck source=/dev/null
+source ../config/projects/"${PROJECT}.sh"
+
 if [[ ${LAUNCHPAD} != "Y" ]]; then
     uboot_package="$(basename "$(find u-boot-"${BOARD}"_*.deb | sort | tail -n1)")"
     if [ ! -e "$uboot_package" ]; then
@@ -72,7 +80,7 @@ for type in $target; do
     rm -rf ${chroot_dir}
     mkdir -p ${chroot_dir}
 
-    tar -xpJf ubuntu-22.04.3-${type}-arm64.rootfs.tar.xz -C ${chroot_dir}
+    tar -xpJf ubuntu-${RELASE_VERSION}-${type}-arm64.rootfs.tar.xz -C ${chroot_dir}
 
     # Mount the temporary API filesystems
     mkdir -p ${chroot_dir}/{proc,sys,run,dev,dev/pts}
@@ -207,7 +215,7 @@ for type in $target; do
     umount -lf ${chroot_dir}/* 2> /dev/null || true
 
     # Tar the entire rootfs
-    cd ${chroot_dir} && tar -cpf ../ubuntu-22.04.3-${type}-arm64-"${BOARD}".rootfs.tar . && cd .. && rm -rf ${chroot_dir}
-    ../scripts/build-image.sh ubuntu-22.04.3-${type}-arm64-"${BOARD}".rootfs.tar
-    rm -f ubuntu-22.04.3-${type}-arm64-"${BOARD}".rootfs.tar
+    cd ${chroot_dir} && tar -cpf ../ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar . && cd .. && rm -rf ${chroot_dir}
+    ../scripts/build-image.sh ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar
+    rm -f ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar
 done
