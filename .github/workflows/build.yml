@@ -18,7 +18,8 @@ on:
         type: choice
         description: Release
         options: 
-          - jammy
+            - jammy
+            - noble
 
 run-name: Build Ubuntu ${{ github.event.inputs.release == 'jammy' && '22.04' || github.event.inputs.release == 'noble' && '24.04' }} with ${{ github.event.inputs.kernel == 'rockchip-5.10' && 'Rockchip Linux 5.10' || github.event.inputs.kernel == 'rockchip-6.1' && 'Rockchip Linux 6.1' }}
 
@@ -62,9 +63,9 @@ jobs:
       - name: Build
         shell: bash
         if: ${{ github.event.inputs.launchpad == 'false' }}
-        run: sudo ./build.sh --board=orangepi-5 --project=preinstalled-server --kernel=${{ github.event.inputs.kernel }} --kernel-only
+        run: sudo ./build.sh --board=orangepi-5 --release=${{ github.event.inputs.release }} --project=preinstalled-server --kernel=${{ github.event.inputs.kernel }} --kernel-only
 
-      - name: Upload
+      - name: Upload3
         uses: actions/upload-artifact@v4.3.1
         if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
@@ -111,7 +112,7 @@ jobs:
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.kernel }} --rootfs-only
+        run: sudo ./build.sh --board=orangepi-5 --release=${{ github.event.inputs.release }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.kernel }} --rootfs-only
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
@@ -201,7 +202,7 @@ jobs:
             if [ "${{ inputs.launchpad }}" == true ]; then
                 args="--launchpad"
             fi
-            sudo ./build.sh --board=${{ matrix.board }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.kernel }}
+            sudo ./build.sh --board=${{ matrix.board }} --release=${{ github.event.inputs.release }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.kernel }}
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
