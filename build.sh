@@ -165,23 +165,23 @@ if [ -n "${KERNEL_TARGET}" ]; then
 fi
 
 
-if [ "${PROJECT}" == "help" ]; then
-    for file in config/kernels/*; do
+if [ "${RELEASE}" == "help" ]; then
+    for file in config/release/*; do
         basename "${file%.conf}"
     done
     exit 0
 fi
 
-if [ -n "${PROJECT}" ]; then
+if [ -n "${RELEASE}" ]; then
     while :; do
         for file in config/releases/*; do
-            if [ "${PROJECT}" == "$(basename "${file%.conf}")" ]; then
+            if [ "${RELEASE}" == "$(basename "${file%.conf}")" ]; then
                 # shellcheck source=/dev/null
                 source "${file}"
                 break 2
             fi
         done
-        echo "Error: \"${PROJECT}\" is an unsupported project"
+        echo "Error: \"${RELEASE}\" is an unsupported release"
         exit 1
     done
 fi

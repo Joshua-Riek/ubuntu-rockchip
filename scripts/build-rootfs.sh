@@ -11,13 +11,13 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
-if [[ -z ${PROJECT} ]]; then
-    echo "Error: PROJECT is not set"
+if [[ -z ${RELEASE} ]]; then
+    echo "Error: RELEASE is not set"
     exit 1
 fi
 
 # shellcheck source=/dev/null
-source ../config/projects/"${PROJECT}.sh"
+source ../config/releases/"${RELEASE}.sh"
 
 if [[ ${DESKTOP_ONLY} == "Y" ]]; then
     if [[ -f ubuntu-${RELASE_VERSION}-preinstalled-desktop-arm64.rootfs.tar.xz ]]; then
@@ -43,7 +43,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # Debootstrap options
 arch=arm64
-release=${PROJECT}
+release=${RELEASE}
 mirror=http://ports.ubuntu.com/ubuntu-ports
 chroot_dir=rootfs
 overlay_dir=../overlay
