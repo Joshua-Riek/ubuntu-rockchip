@@ -100,7 +100,7 @@ for type in $target; do
             else
 cat > ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa << EOF
 Package: *
-Pin: release o=LP-PPA-jjrie-noble
+Pin: release o=LP-PPA-jjriek-noble
 Pin-Priority: 1001
 
 Package: *
