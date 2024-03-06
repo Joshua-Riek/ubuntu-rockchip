@@ -141,7 +141,7 @@ uuid-runtime linux-firmware rockchip-firmware cloud-initramfs-growroot flash-ker
 avahi-daemon
 
 # Remove cryptsetup and needrestart
-apt-get -y remove cryptsetup needrestart
+apt-get -y remove cryptsetup needrestart snapd fwupd
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
@@ -246,7 +246,7 @@ mesa-utils libcanberra-pulse oem-config-gtk ubiquity-frontend-gtk ubiquity-slide
 language-pack-en-base
 
 # Remove cloud-init and landscape-common
-apt-get -y purge cloud-init landscape-common cryptsetup-initramfs
+apt-get -y purge cloud-init landscape-common cryptsetup-initramfs snapd firefox fwupd
 
 rm -rf /boot/grub/
 
@@ -274,14 +274,16 @@ sed -i 's/127.0.0.1 localhost/127.0.0.1\tlocalhost.localdomain\tlocalhost\n::1\t
 sed -i 's/::1 ip6-localhost ip6-loopback/::1     localhost ip6-localhost ip6-loopback/g' ${chroot_dir}/etc/hosts
 sed -i "/ff00::0 ip6-mcastprefix\b/d" ${chroot_dir}/etc/hosts
 
-# Networking interfaces
-cp ${overlay_dir}/etc/NetworkManager/NetworkManager.conf ${chroot_dir}/etc/NetworkManager/NetworkManager.conf
-cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf
-cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/10-override-wifi-random-mac-disable.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/10-override-wifi-random-mac-disable.conf
-cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/20-override-wifi-powersave-disable.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/20-override-wifi-powersave-disable.conf
+if [[ ${RELEASE} == "jammy" ]]; then
+    # Networking interfaces
+    cp ${overlay_dir}/etc/NetworkManager/NetworkManager.conf ${chroot_dir}/etc/NetworkManager/NetworkManager.conf
+    cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf
+    cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/10-override-wifi-random-mac-disable.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/10-override-wifi-random-mac-disable.conf
+    cp ${overlay_dir}/usr/lib/NetworkManager/conf.d/20-override-wifi-powersave-disable.conf ${chroot_dir}/usr/lib/NetworkManager/conf.d/20-override-wifi-powersave-disable.conf
 
-# Ubuntu desktop uses a diffrent network manager, so remove this systemd override
-rm -rf ${chroot_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
+    # Ubuntu desktop uses a diffrent network manager, so remove this systemd override
+    rm -rf ${chroot_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
+fi
 
 # Enable wayland session
 cp ${overlay_dir}/etc/gdm3/custom.conf ${chroot_dir}/etc/gdm3/custom.conf
