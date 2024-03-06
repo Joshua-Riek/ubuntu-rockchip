@@ -91,9 +91,25 @@ for type in $target; do
 
     if [ "${KERNEL_TARGET}" == "rockchip-5.10" ] || [ "${KERNEL_TARGET}" == "rockchip-6.1" ]; then
         if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
-            # Pin and add panfork mesa ppa
-            cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
-            chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/panfork-mesa"
+            if [[ ${RELEASE} == "jammy" ]]; then
+                cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
+                chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia"
+
+                cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
+                chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/panfork-mesa"
+            else
+cat > ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa << EOF
+Package: *
+Pin: release o=LP-PPA-jjriek-rockchip-noble
+Pin-Priority: 1001
+
+Package: *
+Pin: release o=LP-PPA-jjriek-panfork-mesa
+Pin-Priority: 1001
+EOF
+                chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/panfork-mesa"  
+                chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/noble"  
+            fi
 
             # Set cpu governor to performance
             cp ${overlay_dir}/usr/lib/systemd/system/cpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/cpu-governor-performance.service
@@ -104,12 +120,8 @@ for type in $target; do
             chroot ${chroot_dir} /bin/bash -c "systemctl enable gpu-governor-performance"
         fi
 
-        # Pin and add rockchip multimedia ppa
-        cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
-        chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia"
-
         # Download and update installed packages
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade"
+        chroot ${chroot_dir} /bin/bash -c "apt-get -y update && apt-get --allow-downgrades -y upgrade && apt-get --allow-downgrades -y dist-upgrade"
 
         # Realtek 8811CU/8821CU usb modeswitch support
         cp ${chroot_dir}/lib/udev/rules.d/40-usb_modeswitch.rules ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
@@ -136,10 +148,14 @@ for type in $target; do
                 cp ${overlay_dir}/usr/lib/scripts/gdm-hack.sh ${chroot_dir}/usr/lib/scripts/gdm-hack.sh
                 cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
 
-                chroot ${chroot_dir} /bin/bash -c "apt-get -y install libwidevinecdm librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config gstreamer1.0-rockchip1 chromium-browser mali-g610-firmware malirun"
-            else
-                chroot ${chroot_dir} /bin/bash -c "apt-get -y install libwidevinecdm rockchip-multimedia-config chromium-browser"
+                if [[ ${RELEASE} == "jammy" ]]; then
+
+                    chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install libwidevinecdm librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config gstreamer1.0-rockchip1 chromium-browser mali-g610-firmware malirun"
+                else
+                    chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config chromium-browser mali-g610-firmware malirun"
+                fi
             fi
+            set +e
 
             # Chromium uses fixed paths for libv4l2.so
             chroot ${chroot_dir} /bin/bash -c "ln -rsf /usr/lib/*/libv4l2.so /usr/lib/"
@@ -173,6 +189,7 @@ for type in $target; do
             cp ${overlay_dir}/etc/dconf/db/local.d/00-favorite-apps ${chroot_dir}/etc/dconf/db/local.d/00-favorite-apps
             cp ${overlay_dir}/etc/dconf/profile/user ${chroot_dir}/etc/dconf/profile/user
             chroot ${chroot_dir} /bin/bash -c "dconf update"
+            set -e
         fi
     fi
 
