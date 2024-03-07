@@ -100,7 +100,7 @@ for type in $target; do
             else
 cat > ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa << EOF
 Package: *
-Pin: release o=LP-PPA-jjriek-noble
+Pin: release o=LP-PPA-jjriek-rockchip-multimedia
 Pin-Priority: 1001
 
 Package: *
@@ -108,7 +108,7 @@ Pin: release o=LP-PPA-jjriek-panfork-mesa
 Pin-Priority: 1001
 EOF
                 chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/panfork-mesa"  
-                chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/noble"  
+                chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/rockchip-multimedia"  
             fi
 
             # Set cpu governor to performance
