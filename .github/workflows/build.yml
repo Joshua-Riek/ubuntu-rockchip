@@ -81,6 +81,9 @@ jobs:
           project:
             - preinstalled-desktop
             - preinstalled-server
+          release:
+          - ${{ github.event.inputs.release }}
+
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
@@ -152,7 +155,9 @@ jobs:
         project:
           - preinstalled-desktop
           - preinstalled-server
-
+        release:
+          - ${{ github.event.inputs.release }}
+  
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
