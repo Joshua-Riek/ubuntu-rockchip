@@ -208,7 +208,7 @@ sed -i 's/enabled=1/enabled=0/g' ${chroot_dir}/etc/default/apport
 
 # Remove release upgrade motd
 rm -f ${chroot_dir}/var/lib/ubuntu-release-upgrader/release-upgrade-available
-cp ${overlay_dir}/etc/update-manager/release-upgrades ${chroot_dir}/etc/update-manager/release-upgrades
+sed -i 's/Prompt=.*/Prompt=never/g' ${chroot_dir}/etc/update-manager/release-upgrades
 
 # Copy over the ubuntu rockchip install util
 cp ${overlay_dir}/usr/bin/ubuntu-rockchip-install ${chroot_dir}/usr/bin/ubuntu-rockchip-install
