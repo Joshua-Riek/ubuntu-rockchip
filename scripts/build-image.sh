@@ -76,7 +76,7 @@ truncate -s "$(( size + 1024 + 512 ))M" "${img}"
 
 # Create loop device for disk image
 loop="$(losetup -f)"
-losetup "${loop}" "${img}"
+losetup -P "${loop}" "${img}"
 disk="${loop}"
 
 # Cleanup loopdev on early exit
