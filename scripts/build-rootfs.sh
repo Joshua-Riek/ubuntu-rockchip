@@ -217,6 +217,11 @@ cp ${overlay_dir}/usr/bin/ubuntu-rockchip-install ${chroot_dir}/usr/bin/ubuntu-r
 rm -f ${chroot_dir}/var/lib/dbus/machine-id
 true > ${chroot_dir}/etc/machine-id 
 
+if [[ ${RELEASE} == "noble" ]]; then
+    echo "options rfkill master_switch_mode=2" > /etc/modprobe.d/rfkill.conf
+    echo "options rfkill default_state=1" >> /etc/modprobe.d/rfkill.conf
+fi
+
 # Umount temporary API filesystems
 umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
 umount -lf ${chroot_dir}/* 2> /dev/null || true
