@@ -209,8 +209,11 @@ EOF
 
     # Install the kernel
     if [[ ${LAUNCHPAD}  == "Y" ]]; then
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-rockchip-5.10"
-        chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.160-rockchip"
+        if [[ ${RELEASE} == "jammy" ]]; then
+            chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.160-rockchip"
+        else
+            chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-rockchip"
+        fi
     else
         cp "${linux_image_package}" "${linux_headers_package}" ${chroot_dir}/tmp/
         chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/{${linux_image_package},${linux_headers_package}} && rm -rf /tmp/*"
