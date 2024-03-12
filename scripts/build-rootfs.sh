@@ -218,8 +218,8 @@ rm -f ${chroot_dir}/var/lib/dbus/machine-id
 true > ${chroot_dir}/etc/machine-id 
 
 if [[ ${RELEASE} == "noble" ]]; then
-    echo "options rfkill master_switch_mode=2" > /etc/modprobe.d/rfkill.conf
-    echo "options rfkill default_state=1" >> /etc/modprobe.d/rfkill.conf
+    echo "options rfkill master_switch_mode=2" > ${chroot_dir}/etc/modprobe.d/rfkill.conf
+    echo "options rfkill default_state=1" >> ${chroot_dir}/etc/modprobe.d/rfkill.conf
 fi
 
 # Umount temporary API filesystems
