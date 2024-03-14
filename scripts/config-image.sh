@@ -164,9 +164,6 @@ EOF
             # Config file for mpv
             cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 
-            # Use mpv as the default video player
-            sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
-
             # Config file for xorg
             mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
             cp ${overlay_dir}/etc/X11/xorg.conf.d/20-modesetting.conf ${chroot_dir}/etc/X11/xorg.conf.d/20-modesetting.conf
@@ -182,14 +179,22 @@ EOF
             # Set chromium as default browser
             chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium-browser 500"
             chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium-browser"
-            sed -i 's/firefox-esr\.desktop/chromium-browser\.desktop/g;s/firefox\.desktop;//g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
 
             # Add chromium to favorites bar
             mkdir -p ${chroot_dir}/etc/dconf/db/local.d
             cp ${overlay_dir}/etc/dconf/db/local.d/00-favorite-apps ${chroot_dir}/etc/dconf/db/local.d/00-favorite-apps
             cp ${overlay_dir}/etc/dconf/profile/user ${chroot_dir}/etc/dconf/profile/user
             chroot ${chroot_dir} /bin/bash -c "dconf update"
-            set -e
+
+            if [[ ${RELEASE} == "jammy" ]]; then
+                # Use mpv as the default video player
+                sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
+
+                # Set chromium as default browser
+                sed -i 's/firefox-esr\.desktop/chromium-browser\.desktop/g;s/firefox\.desktop;//g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
+            else
+                cp ${overlay_dir}/usr/share/applications/mimeapps.list ${chroot_dir}/usr/share/applications/mimeapps.list
+            fi
         fi
     fi
 
