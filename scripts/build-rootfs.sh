@@ -111,7 +111,23 @@ mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
 # Package priority for ppa
-cp ${overlay_dir}/etc/apt/preferences.d/rockchip-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-ppa
+if [[ ${RELEASE} == "jammy" ]]; then
+    cat > ${chroot_dir}/etc/apt/preferences.d/rockchip-ppa << EOF
+Package: *
+Pin: release o=LP-PPA-jjriek-rockchip
+Pin-Priority: 1001
+
+Package: flash-kernel
+Pin: release o=LP-PPA-jjriek-rockchip
+Pin-Priority: 1
+EOF
+else
+    cat > ${chroot_dir}/etc/apt/preferences.d/rockchip-ppa << EOF
+Package: *
+Pin: release o=LP-PPA-jjriek-rockchip
+Pin-Priority: 1001
+EOF
+fi
 
 # Download and update packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
@@ -145,15 +161,6 @@ apt-get -y remove cryptsetup needrestart snapd fwupd
 
 # Clean package cache
 apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean
-EOF
-
-# Add flash kernel override
-cat << EOF >> ${chroot_dir}/etc/flash-kernel/db
-Machine: *
-Kernel-Flavors: any
-Method: pi
-Boot-Kernel-Path: /boot/firmware/vmlinuz
-Boot-Initrd-Path: /boot/firmware/initrd.img
 EOF
 
 # DNS
