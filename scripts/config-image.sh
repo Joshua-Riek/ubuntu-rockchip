@@ -178,6 +178,7 @@ EOF
 
             # Set chromium default launch args
             mkdir -p ${chroot_dir}/usr/lib/chromium-browser
+            mkdir -p ${chroot_dir}/etc/chromium-browser
             cp ${overlay_dir}/etc/chromium-browser/default ${chroot_dir}/etc/chromium-browser/default
 
             # Set chromium as default browser
