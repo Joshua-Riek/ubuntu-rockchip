@@ -89,6 +89,11 @@ for type in $target; do
     mount -o bind /dev ${chroot_dir}/dev
     mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
+    if [[ ${RELEASE} == "noble" ]]; then
+        chroot ${chroot_dir} /bin/bash -c "apt-get -y purge flash-kernel"
+        chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-menu"
+    fi
+
     if [ "${KERNEL_TARGET}" == "rockchip-5.10" ] || [ "${KERNEL_TARGET}" == "rockchip-6.1" ]; then
         if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
             if [[ ${RELEASE} == "jammy" ]]; then
@@ -155,7 +160,6 @@ EOF
                     chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config chromium-browser mali-g610-firmware malirun"
                 fi
             fi
-            set +e
 
             # Chromium uses fixed paths for libv4l2.so
             chroot ${chroot_dir} /bin/bash -c "ln -rsf /usr/lib/*/libv4l2.so /usr/lib/"
@@ -215,6 +219,7 @@ EOF
     # Install the kernel
     if [[ ${LAUNCHPAD}  == "Y" ]]; then
         if [[ ${RELEASE} == "jammy" ]]; then
+            chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-rockchip-5.10"
             chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.160-rockchip"
         else
             chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-rockchip"
@@ -231,9 +236,11 @@ EOF
     chroot ${chroot_dir} /bin/bash -c "apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean"
 
     # Populate the boot firmware path
-	umount -lf ${chroot_dir}/sys
-	mkdir -p ${chroot_dir}/boot/firmware
-    chroot ${chroot_dir} /bin/bash -c "FK_FORCE=yes flash-kernel"
+    if [[ ${RELEASE} == "jammy" ]]; then
+        umount -lf ${chroot_dir}/sys
+        mkdir -p ${chroot_dir}/boot/firmware
+        chroot ${chroot_dir} /bin/bash -c "FK_FORCE=yes flash-kernel"
+    fi
 
     # Umount temporary API filesystems
     umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
@@ -241,6 +248,11 @@ EOF
 
     # Tar the entire rootfs
     cd ${chroot_dir} && tar -cpf ../ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar . && cd .. && rm -rf ${chroot_dir}
-    ../scripts/build-image.sh ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar
+    if [[ ${RELEASE} == "jammy" ]]; then
+        ../scripts/build-image.sh ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar
+    else
+        ../scripts/build-image-noble.sh ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar
+    fi
+
     rm -f ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar
 done
