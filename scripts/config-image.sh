@@ -103,17 +103,11 @@ for type in $target; do
                 cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
                 chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/panfork-mesa"
             else
-cat > ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa << EOF
-Package: *
-Pin: release o=LP-PPA-jjriek-rockchip-multimedia
-Pin-Priority: 1001
-
-Package: *
-Pin: release o=LP-PPA-jjriek-panfork-mesa
-Pin-Priority: 1001
-EOF
-                chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/panfork-mesa"  
+                cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/jjriek-rockchip-multimedia-ppa
                 chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/rockchip-multimedia"  
+
+                cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/jjriek-panfork-mesa-ppa
+                chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/panfork-mesa"  
             fi
 
             # Set cpu governor to performance
@@ -154,7 +148,6 @@ EOF
                 cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
 
                 if [[ ${RELEASE} == "jammy" ]]; then
-
                     chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install libwidevinecdm librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config gstreamer1.0-rockchip1 chromium-browser mali-g610-firmware malirun"
                 else
                     chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config chromium-browser mali-g610-firmware malirun"
@@ -181,10 +174,6 @@ EOF
             mkdir -p ${chroot_dir}/etc/chromium-browser
             cp ${overlay_dir}/etc/chromium-browser/default ${chroot_dir}/etc/chromium-browser/default
 
-            # Set chromium as default browser
-            #chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium-browser 500"
-            #chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium-browser"
-
             # Add chromium to favorites bar
             mkdir -p ${chroot_dir}/etc/dconf/db/local.d
             cp ${overlay_dir}/etc/dconf/db/local.d/00-favorite-apps ${chroot_dir}/etc/dconf/db/local.d/00-favorite-apps
@@ -192,6 +181,10 @@ EOF
             chroot ${chroot_dir} /bin/bash -c "dconf update"
 
             if [[ ${RELEASE} == "jammy" ]]; then
+                # Set chromium as default browser
+                chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium-browser 500"
+                chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium-browser"
+
                 # Use mpv as the default video player
                 sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
 
