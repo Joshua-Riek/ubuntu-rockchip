@@ -15,4 +15,4 @@ dsmode: local
 # Warning: changing this will cause cloud-init to assume it is running on a
 # "new" instance, and to go through first time setup again (the value is
 # compared to a cached copy).
-instance_id: cloud-image
+instance-id: cloudimage
