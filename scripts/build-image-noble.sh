@@ -157,7 +157,7 @@ UUID=${root_uuid,,} /              ext4    defaults,x-systemd.growfs    0       
 EOF
 
 # Uboot env
-echo "root=UUID=${root_uuid} rootfstype=ext4 rootwait rw console=ttyS2,1500000 console=tty1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory ${bootargs}" > ${mount_point}/writable/etc/kernel/cmdline
+echo "console=ttyFIQ0,1500000n8 earlycon rootwait rw console=tty1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory ${bootargs}" > ${mount_point}/writable/etc/kernel/cmdline
 
 mv ${mount_point}/writable/boot/* ${mount_point}/system-boot/
 mount -o bind ${mount_point}/system-boot/ ${mount_point}/writable/boot
