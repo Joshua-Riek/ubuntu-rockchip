@@ -157,6 +157,8 @@ UUID=${boot_uuid^^} /boot/firmware vfat    defaults    0       2
 UUID=${root_uuid,,} /              ext4    defaults,x-systemd.growfs    0       1
 EOF
 
+if [[ ${RELEASE} == "jammy" ]]; then
+
 # Uboot script
 cat > ${mount_point}/system-boot/boot.cmd << 'EOF'
 # This is a boot script for U-Boot
@@ -204,6 +206,48 @@ fdtfile=${DEVICE_TREE_FILE}
 overlay_prefix=${OVERLAY_PREFIX}
 overlays=
 EOF
+
+# Add flash kernel override
+cat << EOF >> ${mount_point}/writable/etc/flash-kernel/db
+Machine: *
+Kernel-Flavors: any
+Method: pi
+Boot-Kernel-Path: /boot/firmware/vmlinuz
+Boot-Initrd-Path: /boot/firmware/initrd.img
+EOF
+
+    # Mount the temporary API filesystems
+    mkdir -p ${mount_point}/writable/{proc,sys,run,dev,dev/pts}
+    mount -t proc /proc ${mount_point}/writable/proc
+    mount -o bind /dev ${mount_point}/writable/dev
+    mount -o bind /dev/pts ${mount_point}/writable/dev/pts
+    
+    # Populate the boot firmware path
+	mkdir -p ${mount_point}/writable/boot/firmware
+    chroot ${mount_point}/writable /bin/bash -c "FK_FORCE=yes flash-kernel"
+
+    # Umount temporary API filesystems
+    umount -lf ${mount_point}/writable/dev/pts 2> /dev/null || true
+    umount -lf ${mount_point}/writable/* 2> /dev/null || true
+
+else
+    echo LINUX_KERNEL_CMDLINE="\"console=ttyS2,1500000 console=tty1 rootwait rw cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory ${bootargs}"\" > ${mount_point}/writable/etc/default/flash-kernel
+    echo LINUX_KERNEL_CMDLINE_DEFAULTS="\""\" >> ${mount_point}/writable/etc/default/flash-kernel
+
+    # Mount the temporary API filesystems
+    mkdir -p ${mount_point}/writable/{proc,sys,run,dev,dev/pts}
+    mount -t proc /proc ${mount_point}/writable/proc
+    mount -o bind /dev ${mount_point}/writable/dev
+    mount -o bind /dev/pts ${mount_point}/writable/dev/pts
+
+    # Populate the boot firmware path
+    mkdir -p ${mount_point}/writable/boot/firmware
+    chroot ${mount_point}/writable /bin/bash -c "FK_FORCE=yes flash-kernel --machine '${FLASH_KERNEL_MACHINE_MODEL}'"
+
+    # Umount temporary API filesystems
+    umount -lf ${mount_point}/writable/dev/pts 2> /dev/null || true
+    umount -lf ${mount_point}/writable/* 2> /dev/null || true
+fi
 
 # Copy the device trees, kernel, and initrd to the boot partition
 mv ${mount_point}/writable/boot/firmware/* ${mount_point}/system-boot/

@@ -89,11 +89,6 @@ for type in $target; do
     mount -o bind /dev ${chroot_dir}/dev
     mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
-    if [[ ${RELEASE} == "noble" ]]; then
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y purge flash-kernel"
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-menu"
-    fi
-
     if [ "${KERNEL_TARGET}" == "rockchip-5.10" ] || [ "${KERNEL_TARGET}" == "rockchip-6.1" ]; then
         if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
             if [[ ${RELEASE} == "jammy" ]]; then
@@ -229,24 +224,12 @@ for type in $target; do
     # Clean package cache
     chroot ${chroot_dir} /bin/bash -c "apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean"
 
-    # Populate the boot firmware path
-    if [[ ${RELEASE} == "jammy" ]]; then
-        umount -lf ${chroot_dir}/sys
-        mkdir -p ${chroot_dir}/boot/firmware
-        chroot ${chroot_dir} /bin/bash -c "FK_FORCE=yes flash-kernel"
-    fi
-
     # Umount temporary API filesystems
     umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
     umount -lf ${chroot_dir}/* 2> /dev/null || true
 
     # Tar the entire rootfs
     cd ${chroot_dir} && tar -cpf ../ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar . && cd .. && rm -rf ${chroot_dir}
-    if [[ ${RELEASE} == "jammy" ]]; then
-        ../scripts/build-image.sh ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar
-    else
-        ../scripts/build-image-noble.sh ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar
-    fi
-
+    ../scripts/build-image.sh ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar
     rm -f ubuntu-${RELASE_VERSION}-${type}-arm64-"${BOARD}".rootfs.tar
 done
