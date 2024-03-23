@@ -242,7 +242,7 @@ else
 
     # Populate the boot firmware path
     mkdir -p ${mount_point}/writable/boot/firmware
-    chroot ${mount_point}/writable /bin/bash -c "FK_FORCE=yes flash-kernel --machine '${FLASH_KERNEL_MACHINE_MODEL}'"
+    chroot ${mount_point}/writable /bin/bash -c "FK_FORCE=yes FK_MACHINE='${FLASH_KERNEL_MACHINE_MODEL}' update-initramfs -u"
 
     # Umount temporary API filesystems
     umount -lf ${mount_point}/writable/dev/pts 2> /dev/null || true
