@@ -177,7 +177,7 @@ if [ -n "${RELEASE}" ]; then
         for file in config/releases/*; do
             if [ "${RELEASE}" == "$(basename "${file%.sh}")" ]; then
                 # shellcheck source=/dev/null
-                source "${file}"
+                set -o allexport && source "${file}" && set +o allexport
                 break 2
             fi
         done
