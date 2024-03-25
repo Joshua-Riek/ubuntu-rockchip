@@ -156,43 +156,43 @@ for type in $target; do
                 else
                     chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config chromium-browser mali-g610-firmware malirun"
                 fi
-            fi
 
-            # Chromium uses fixed paths for libv4l2.so
-            chroot ${chroot_dir} /bin/bash -c "ln -rsf /usr/lib/*/libv4l2.so /usr/lib/"
-            chroot ${chroot_dir} /bin/bash -c "[ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64"
+                # Chromium uses fixed paths for libv4l2.so
+                chroot ${chroot_dir} /bin/bash -c "ln -rsf /usr/lib/*/libv4l2.so /usr/lib/"
+                chroot ${chroot_dir} /bin/bash -c "[ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64"
 
-            # Config file for xorg
-            mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
-            cp ${overlay_dir}/etc/X11/xorg.conf.d/20-modesetting.conf ${chroot_dir}/etc/X11/xorg.conf.d/20-modesetting.conf
+                # Config file for xorg
+                mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
+                cp ${overlay_dir}/etc/X11/xorg.conf.d/20-modesetting.conf ${chroot_dir}/etc/X11/xorg.conf.d/20-modesetting.conf
 
-            # Set chromium inital prefrences
-            mkdir -p ${chroot_dir}/usr/lib/chromium-browser
-            cp ${overlay_dir}/usr/lib/chromium-browser/initial_preferences ${chroot_dir}/usr/lib/chromium-browser/initial_preferences
+                # Set chromium inital prefrences
+                mkdir -p ${chroot_dir}/usr/lib/chromium-browser
+                cp ${overlay_dir}/usr/lib/chromium-browser/initial_preferences ${chroot_dir}/usr/lib/chromium-browser/initial_preferences
 
-            # Set chromium default launch args
-            mkdir -p ${chroot_dir}/usr/lib/chromium-browser
-            mkdir -p ${chroot_dir}/etc/chromium-browser
-            cp ${overlay_dir}/etc/chromium-browser/default ${chroot_dir}/etc/chromium-browser/default
+                # Set chromium default launch args
+                mkdir -p ${chroot_dir}/usr/lib/chromium-browser
+                mkdir -p ${chroot_dir}/etc/chromium-browser
+                cp ${overlay_dir}/etc/chromium-browser/default ${chroot_dir}/etc/chromium-browser/default
 
-            # Add chromium to favorites bar
-            mkdir -p ${chroot_dir}/etc/dconf/db/local.d
-            cp ${overlay_dir}/etc/dconf/db/local.d/00-favorite-apps ${chroot_dir}/etc/dconf/db/local.d/00-favorite-apps
-            cp ${overlay_dir}/etc/dconf/profile/user ${chroot_dir}/etc/dconf/profile/user
-            chroot ${chroot_dir} /bin/bash -c "dconf update"
+                # Add chromium to favorites bar
+                mkdir -p ${chroot_dir}/etc/dconf/db/local.d
+                cp ${overlay_dir}/etc/dconf/db/local.d/00-favorite-apps ${chroot_dir}/etc/dconf/db/local.d/00-favorite-apps
+                cp ${overlay_dir}/etc/dconf/profile/user ${chroot_dir}/etc/dconf/profile/user
+                chroot ${chroot_dir} /bin/bash -c "dconf update"
 
-            if [[ ${RELEASE} == "jammy" ]]; then
-                # Set chromium as default browser
-                chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium-browser 500"
-                chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium-browser"
+                if [[ ${RELEASE} == "jammy" ]]; then
+                    # Set chromium as default browser
+                    chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium-browser 500"
+                    chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium-browser"
 
-                # Use mpv as the default video player
-                sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
+                    # Use mpv as the default video player
+                    sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
 
-                # Set chromium as default browser
-                sed -i 's/firefox-esr\.desktop/chromium-browser\.desktop/g;s/firefox\.desktop;//g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
-            else
-                cp ${overlay_dir}/usr/share/applications/mimeapps.list ${chroot_dir}/usr/share/applications/mimeapps.list
+                    # Set chromium as default browser
+                    sed -i 's/firefox-esr\.desktop/chromium-browser\.desktop/g;s/firefox\.desktop;//g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
+                else
+                    cp ${overlay_dir}/usr/share/applications/mimeapps.list ${chroot_dir}/usr/share/applications/mimeapps.list
+                fi
             fi
         fi
     fi
