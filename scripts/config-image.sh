@@ -117,6 +117,11 @@ for type in $target; do
         # Download and update installed packages
         chroot ${chroot_dir} /bin/bash -c "apt-get -y update && apt-get --allow-downgrades -y upgrade && apt-get --allow-downgrades -y dist-upgrade"
 
+        # Install multimedia packages and mali firmware
+        if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
+            chroot ${chroot_dir} /bin/bash -c "apt-get -y install rockchip-multimedia-config mali-g610-firmware malirun"
+        fi
+
         # Realtek 8811CU/8821CU usb modeswitch support
         cp ${chroot_dir}/lib/udev/rules.d/40-usb_modeswitch.rules ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
         sed '/LABEL="modeswitch_rules_end"/d' -i ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
