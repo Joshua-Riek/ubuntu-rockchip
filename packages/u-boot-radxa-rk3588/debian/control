@@ -9,6 +9,7 @@ Vcs-Git: https://github.com/radxa/u-boot.git
 Package: u-boot-rock-5b
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-radxa-rk3588, u-boot
 Replaces: u-boot-radxa-rk3588, u-boot
 Conflicts: u-boot-radxa-rk3588, u-boot
@@ -22,6 +23,7 @@ Description: A boot loader for the Radxa ROCK 5B.
 Package: u-boot-rock-5a
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-radxa-rk3588, u-boot
 Replaces: u-boot-radxa-rk3588, u-boot
 Conflicts: u-boot-radxa-rk3588, u-boot
@@ -35,6 +37,7 @@ Description: A boot loader for the Radxa ROCK 5A.
 Package: u-boot-rock-5-itx
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-radxa-rk3588, u-boot
 Replaces: u-boot-radxa-rk3588, u-boot
 Conflicts: u-boot-radxa-rk3588, u-boot
@@ -48,6 +51,7 @@ Description: A boot loader for the Radxa ROCK 5 ITX.
 Package: u-boot-radxa-cm5-io
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-radxa-rk3588, u-boot
 Replaces: u-boot-radxa-rk3588, u-boot
 Conflicts: u-boot-radxa-rk3588, u-boot
@@ -61,6 +65,7 @@ Description: A boot loader for the Radxa CM5 IO.
 Package: u-boot-radxa-nx5-io
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-radxa-rk3588, u-boot
 Replaces: u-boot-radxa-rk3588, u-boot
 Conflicts: u-boot-radxa-rk3588, u-boot
@@ -74,6 +79,7 @@ Description: A boot loader for the Radxa NX5 IO.
 Package: u-boot-nanopi-r6s
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-friendlyelec-rk3588, u-boot
 Replaces: u-boot-friendlyelec-rk3588, u-boot
 Conflicts: u-boot-friendlyelec-rk3588, u-boot
@@ -87,6 +93,7 @@ Description: A boot loader for the FriendlyELEC NanoPi R6S.
 Package: u-boot-nanopi-r6c
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-friendlyelec-rk3588, u-boot
 Replaces: u-boot-friendlyelec-rk3588, u-boot
 Conflicts: u-boot-friendlyelec-rk3588, u-boot
@@ -100,6 +107,7 @@ Description: A boot loader for the FriendlyELEC NanoPi R6C.
 Package: u-boot-nanopc-t6
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-friendlyelec-rk3588, u-boot
 Replaces: u-boot-friendlyelec-rk3588, u-boot
 Conflicts: u-boot-friendlyelec-rk3588, u-boot
@@ -113,6 +121,7 @@ Description: A boot loader for the FriendlyELEC NanoPC T6.
 Package: u-boot-lubancat-4
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-lubancat-rk3588, u-boot
 Replaces: u-boot-lubancat-rk3588, u-boot
 Conflicts: u-boot-lubancat-rk3588, u-boot
@@ -126,6 +135,7 @@ Description: A boot loader for the lubancat 4.
 Package: u-boot-indiedroid-nova
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-9tripod-rk3588, u-boot
 Replaces: u-boot-9tripod-rk3588, u-boot
 Conflicts: u-boot-9tripod-rk3588, u-boot
@@ -139,6 +149,7 @@ Description: A boot loader for the Indiedroid Nova.
 Package: u-boot-armsom-w3
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-armsom-rk3588, u-boot
 Replaces: u-boot-armsom-rk3588, u-boot
 Conflicts: u-boot-armsom-rk3588, u-boot
@@ -152,6 +163,7 @@ Description: A boot loader for the ArmSoM w3.
 Package: u-boot-armsom-sige7
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-armsom-rk3588, u-boot
 Replaces: u-boot-armsom-rk3588, u-boot
 Conflicts: u-boot-armsom-rk3588, u-boot
@@ -165,6 +177,7 @@ Description: A boot loader for the ArmSoM Sige7.
 Package: u-boot-roc-rk3588s-pc
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-firefly-rk3588, u-boot
 Replaces: u-boot-firefly-rk3588, u-boot
 Conflicts: u-boot-firefly-rk3588, u-boot
@@ -178,6 +191,7 @@ Description: A boot loader for the Firefly ROC RK3588S PC.
 Package: u-boot-mixtile-core3588e
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-mixtile-rk3588, u-boot
 Replaces: u-boot-mixtile-rk3588, u-boot
 Conflicts: u-boot-mixtile-rk3588, u-boot

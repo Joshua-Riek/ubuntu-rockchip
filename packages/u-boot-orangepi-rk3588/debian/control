@@ -9,6 +9,7 @@ Vcs-Git: https://github.com/orangepi-xunlong/u-boot-orangepi.git
 Package: u-boot-orangepi-5
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-orangepi-rk3588, u-boot
 Replaces: u-boot-orangepi-rk3588, u-boot
 Conflicts: u-boot-orangepi-rk3588, u-boot
@@ -22,6 +23,7 @@ Description: A boot loader for the Orange Pi 5.
 Package: u-boot-orangepi-5b
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-orangepi-rk3588, u-boot
 Replaces: u-boot-orangepi-rk3588, u-boot
 Conflicts: u-boot-orangepi-rk3588, u-boot
@@ -35,6 +37,7 @@ Description: A boot loader for the Orange Pi 5B.
 Package: u-boot-orangepi-5-plus
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-orangepi-rk3588, u-boot
 Replaces: u-boot-orangepi-rk3588, u-boot
 Conflicts: u-boot-orangepi-rk3588, u-boot

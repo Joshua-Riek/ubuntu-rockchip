@@ -3,25 +3,21 @@
 set -eE 
 trap 'echo Error: in $0 on line $LINENO' ERR
 
-disk="$1"
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 /dev/mtdblock0"
-    exit 1
-fi
-
-if [ ! -b "${disk}" ]; then
+disk="/dev/mtd0"
+if [ ! -c "${disk}" ]; then
     echo "$0: block device '${disk}' not found"
-    exit 1
+fi
+echo "$0: writing U-Boot to the SPI flash"
+
+uboot_spi_image="/usr/lib/u-boot/u-boot-rockchip-spi-sata.bin"
+if [ ! -f "${uboot_spi_image}" ]; then
+    uboot_spi_image="/usr/lib/u-boot/rkspi_loader_sata.img"
 fi
 
-if [ -f /usr/lib/u-boot/u-boot-rockchip-spi-sata.bin ]; then
-    echo "Writing u-boot to the SPI flash"
-    sudo dd if=/usr/lib/u-boot/u-boot-rockchip-spi-sata.bin of="${disk}" conv=notrunc
-else
-    echo "Writing u-boot to the SPI flash"
-    sudo dd if=/usr/lib/u-boot/rkspi_loader_sata.img of="${disk}" conv=notrunc
+extra_opts_flashcp=("--verbose")
+if flashcp -h | grep -q -e '--partition'; then
+    extra_opts_flashcp+=("--partition")
 fi
+sudo flashcp "${extra_opts_flashcp[@]}" "${uboot_spi_image}" "${disk}"
 
-sudo sync "${disk}"
-
-sleep 2
+sudo sync

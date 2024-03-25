@@ -9,6 +9,7 @@ Vcs-Git: https://github.com/radxa/u-boot.git
 Package: u-boot-mixtile-blade3
 Architecture: arm64
 Priority: optional
+Depends: mtd-utils
 Provides: u-boot-mixtile-rk3588, u-boot
 Replaces: u-boot-mixtile-rk3588, u-boot
 Conflicts: u-boot-mixtile-rk3588, u-boot

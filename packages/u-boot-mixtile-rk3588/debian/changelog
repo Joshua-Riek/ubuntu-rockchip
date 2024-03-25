@@ -1,3 +1,9 @@
+u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-9) jammy; urgency=medium
+
+  * Use flashcp to update spi flash
+
+ -- Joshua Riek <jjriek@verizon.net>  Mon, 25 Mar 2024 14:09:10 -0400
+
 u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-8) jammy; urgency=medium
 
   * Fix gcc 13 compile error
