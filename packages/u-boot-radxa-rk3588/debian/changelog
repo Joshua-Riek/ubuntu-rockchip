@@ -1,3 +1,9 @@
+u-boot-radxa-rk3588 (2017.09+20240128.git722a6ab0-4) jammy; urgency=medium
+
+  * Add PD negotiation for the armsom sige 7
+
+ -- Joshua Riek <jjriek@verizon.net>  Tue, 26 Mar 2024 19:24:39 -0400
+
 u-boot-radxa-rk3588 (2017.09+20240128.git722a6ab0-3) jammy; urgency=medium
 
   * Use flashcp to update spi flash
