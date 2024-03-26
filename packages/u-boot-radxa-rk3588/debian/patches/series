@@ -10,3 +10,4 @@
 0010-board-add-roc-rk3588s-pc-support.patch
 0011-fix-gcc13-compile-error.patch
 0012-fix-noble-compile-error.patch
+0013-add-pd-nego-for-armsom-sige7.patch
