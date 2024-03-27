@@ -178,9 +178,6 @@ cp ${overlay_dir}/etc/profile.d/resize.sh ${chroot_dir}/etc/profile.d/resize.sh
 # Enable rc-local
 cp ${overlay_dir}/etc/rc.local ${chroot_dir}/etc/rc.local
 
-# Cloud init config
-cp ${overlay_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg ${chroot_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg
-
 # Default adduser config
 cp ${overlay_dir}/etc/adduser.conf ${chroot_dir}/etc/adduser.conf
 
@@ -224,6 +221,28 @@ cp ${overlay_dir}/usr/bin/ubuntu-rockchip-install ${chroot_dir}/usr/bin/ubuntu-r
 rm -f ${chroot_dir}/var/lib/dbus/machine-id
 true > ${chroot_dir}/etc/machine-id 
 
+# Configure cloud-init for NoCloud
+cat << EOF > ${chroot_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg
+datasource_list: [ NoCloud, None ]
+datasource:
+  NoCloud:
+    fs_label: system-boot
+EOF
+
+# Ensure our customized seed location is mounted prior to execution
+mkdir -p ${chroot_dir}/etc/systemd/system/cloud-init-local.service.d
+cat << EOF > ${chroot_dir}/etc/systemd/system/cloud-init-local.service.d/mount-seed.conf
+[Unit]
+RequiresMountsFor=/boot/firmware
+EOF
+
+# Wait for cloud-init to finish (creating users, etc.) before running getty
+mkdir -p ${chroot_dir}/etc/systemd/system/cloud-config.service.d
+cat << EOF > ${chroot_dir}/etc/systemd/system/cloud-config.service.d/getty-wait.conf
+[Unit]
+Before=getty.target
+EOF
+
 if [[ ${RELEASE} == "noble" ]]; then
     echo "options rfkill master_switch_mode=2" > ${chroot_dir}/etc/modprobe.d/rfkill.conf
     echo "options rfkill default_state=1" >> ${chroot_dir}/etc/modprobe.d/rfkill.conf
@@ -243,6 +262,11 @@ mount -t proc /proc ${chroot_dir}/proc
 mount -t sysfs /sys ${chroot_dir}/sys
 mount -o bind /dev ${chroot_dir}/dev
 mount -o bind /dev/pts ${chroot_dir}/dev/pts
+
+# Remove cloud init stuff from the desktop image
+rm -rf ${chroot_dir}/etc/cloud/cloud.cfg.d/99-fake_cloud.cfg
+rm -rf ${chroot_dir}/etc/systemd/system/cloud-config.service.d/getty-wait.conf
+rm -rf ${chroot_dir}/etc/systemd/system/cloud-init-local.service.d/mount-seed.conf
 
 # Download and update packages
 cat << EOF | chroot ${chroot_dir} /bin/bash
