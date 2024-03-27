@@ -128,10 +128,6 @@ for type in $target; do
         cp ${overlay_dir}/usr/share/initramfs-tools/hooks/usb_modeswitch ${chroot_dir}/usr/share/initramfs-tools/hooks/usb_modeswitch
         cp ${overlay_dir}/usr/share/initramfs-tools/hooks/rtl-bt ${chroot_dir}/usr/share/initramfs-tools/hooks/rtl-bt
 
-        # Config file for mpv
-        mkdir -p ${chroot_dir}/usr/local/etc/
-        cp ${overlay_dir}/usr/local/etc/mpv.conf ${chroot_dir}/usr/local/etc/mpv.conf
-
         if [[ $type == "preinstalled-desktop" ]]; then
             if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
                 # Install rkaiq and rkisp
@@ -151,6 +147,10 @@ for type in $target; do
                 else
                     chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config chromium-browser mali-g610-firmware malirun"
                 fi
+
+                # Config file for mpv
+                mkdir -p ${chroot_dir}/usr/local/etc/
+                cp ${overlay_dir}/usr/local/etc/mpv.conf ${chroot_dir}/usr/local/etc/mpv.conf
 
                 # Chromium uses fixed paths for libv4l2.so
                 chroot ${chroot_dir} /bin/bash -c "ln -rsf /usr/lib/*/libv4l2.so /usr/lib/"
