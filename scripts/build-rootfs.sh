@@ -320,9 +320,6 @@ if [[ ${RELEASE} == "jammy" ]]; then
 
     # Ubuntu desktop uses a diffrent network manager, so remove this systemd override
     rm -rf ${chroot_dir}/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
-else
-    mkdir -p ${chroot_dir}/etc/wireplumber/main.lua.d/
-    cp ${overlay_dir}/etc/wireplumber/main.lua.d/51-alsa-custom.lua ${chroot_dir}/etc/wireplumber/main.lua.d/51-alsa-custom.lua
 fi
 
 # Enable wayland session
