@@ -148,10 +148,6 @@ for type in $target; do
                     chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config chromium-browser mali-g610-firmware malirun"
                 fi
 
-                # Config file for mpv
-                mkdir -p ${chroot_dir}/usr/local/etc/
-                cp ${overlay_dir}/usr/local/etc/mpv.conf ${chroot_dir}/usr/local/etc/mpv.conf
-
                 # Chromium uses fixed paths for libv4l2.so
                 chroot ${chroot_dir} /bin/bash -c "ln -rsf /usr/lib/*/libv4l2.so /usr/lib/"
                 chroot ${chroot_dir} /bin/bash -c "[ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64"
