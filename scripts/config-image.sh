@@ -155,10 +155,6 @@ for type in $target; do
                 # Config file for mpv
                 cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 
-                # Config file for xorg
-                mkdir -p ${chroot_dir}/etc/X11/xorg.conf.d
-                cp ${overlay_dir}/etc/X11/xorg.conf.d/20-modesetting.conf ${chroot_dir}/etc/X11/xorg.conf.d/20-modesetting.conf
-
                 # Set chromium inital prefrences
                 mkdir -p ${chroot_dir}/usr/lib/chromium-browser
                 cp ${overlay_dir}/usr/lib/chromium-browser/initial_preferences ${chroot_dir}/usr/lib/chromium-browser/initial_preferences
