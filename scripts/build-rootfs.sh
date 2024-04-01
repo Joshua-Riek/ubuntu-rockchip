@@ -179,8 +179,8 @@ cp ${overlay_dir}/etc/profile.d/resize.sh ${chroot_dir}/etc/profile.d/resize.sh
 cp ${overlay_dir}/etc/rc.local ${chroot_dir}/etc/rc.local
 
 # Add extra groups to adduser config
-sed -i 's/#EXTRA_GROUPS=*/EXTRA_GROUPS="video adm dialout cdrom audio plugdev netdev input bluetooth"/g' ${chroot_dir}/etc/adduser.conf
-sed -i 's/#ADD_EXTRA_GROUPS=0/ADD_EXTRA_GROUPS=1/g' ${chroot_dir}/etc/adduser.conf
+sed -i 's/#EXTRA_GROUPS=.*/EXTRA_GROUPS="video adm dialout cdrom audio plugdev netdev input bluetooth floppy users"/g' ${chroot_dir}/etc/adduser.conf
+sed -i 's/#ADD_EXTRA_GROUPS=.*/ADD_EXTRA_GROUPS=1/g' ${chroot_dir}/etc/adduser.conf
 
 # Service to synchronise system clock to hardware RTC
 cp ${overlay_dir}/usr/lib/systemd/system/rtc-hym8563.service ${chroot_dir}/usr/lib/systemd/system/rtc-hym8563.service
