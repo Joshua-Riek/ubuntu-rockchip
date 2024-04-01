@@ -117,6 +117,9 @@ for type in $target; do
         # Download and update installed packages
         chroot ${chroot_dir} /bin/bash -c "apt-get -y update && apt-get --allow-downgrades -y upgrade && apt-get --allow-downgrades -y dist-upgrade"
 
+        # Install multimedia config and mali g610 firmware
+        chroot ${chroot_dir} /bin/bash -c "apt-get -y install mali-g610-firmware rockchip-multimedia-config"
+
         # Realtek 8811CU/8821CU usb modeswitch support
         cp ${chroot_dir}/lib/udev/rules.d/40-usb_modeswitch.rules ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
         sed '/LABEL="modeswitch_rules_end"/d' -i ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
@@ -143,14 +146,10 @@ for type in $target; do
                 cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
 
                 if [[ ${RELEASE} == "jammy" ]]; then
-                    chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install libwidevinecdm librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config gstreamer1.0-rockchip1 chromium-browser mali-g610-firmware malirun"
+                    chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install libwidevinecdm librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos gstreamer1.0-rockchip1 chromium-browser malirun"
                 else
-                    chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos rockchip-multimedia-config chromium-browser mali-g610-firmware malirun"
+                    chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos gstreamer1.0-rockchip1 chromium-browser malirun"
                 fi
-
-                # Chromium uses fixed paths for libv4l2.so
-                chroot ${chroot_dir} /bin/bash -c "ln -rsf /usr/lib/*/libv4l2.so /usr/lib/"
-                chroot ${chroot_dir} /bin/bash -c "[ -e /usr/lib/aarch64-linux-gnu/ ] && ln -Tsf lib /usr/lib64"
 
                 # Config file for mpv
                 cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
