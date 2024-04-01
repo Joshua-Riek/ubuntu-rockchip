@@ -3,6 +3,10 @@
 RELASE_NAME="Ubuntu 22.04 LTS (Jammy Jellyfish)"
 RELASE_VERSION="22.04.3"
 
+if [ -z "${KERNEL_TARGET}" ]; then
+    KERNEL_TARGET="rockchip-5.10"
+fi
+
 function build_image_hook__jammy() {
     # Uboot script
     cat > ${mount_point}/system-boot/boot.cmd << 'EOF'
