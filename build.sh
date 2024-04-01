@@ -7,20 +7,19 @@ cd "$(dirname -- "$(readlink -f -- "$0")")"
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi-5] --project=[preinstalled-desktop] --release=[jammy] --kernel=[bsp]
+Usage: $0 --board=[orangepi-5] --release=[jammy]
 
 Required arguments:
   -b, --board=BOARD      target board 
   -r, --release=RELEASE  ubuntu release
-  -p, --project=PROJECT  ubuntu project
-  -k, --kernel=KERNEL    kernel target
 
 Optional arguments:
   -h,  --help            show this help message and exit
   -c,  --clean           clean the build directory
   -d,  --docker          use docker to build
-  -ko,  --kernel-only    only compile the kernel
-  -uo,  --uboot-only     only compile uboot
+  -k,  --kernel=KERNEL   kernel target
+  -ko, --kernel-only     only compile the kernel
+  -uo, --uboot-only      only compile uboot
   -ro, --rootfs-only     only build rootfs
   -so, --server-only     only build server image
   -do, --desktop-only    only build desktop image
@@ -143,28 +142,6 @@ if [ -n "${BOARD}" ]; then
     done
 fi
 
-if [ "${KERNEL_TARGET}" == "help" ]; then
-    for file in config/kernels/*; do
-        basename "${file%.conf}"
-    done
-    exit 0
-fi
-
-if [ -n "${KERNEL_TARGET}" ]; then
-    while :; do
-        for file in config/kernels/*; do
-            if [ "${KERNEL_TARGET}" == "$(basename "${file%.conf}")" ]; then
-                # shellcheck source=/dev/null
-                set -o allexport && source "${file}" && set +o allexport
-                break 2
-            fi
-        done
-        echo "Error: \"${KERNEL_TARGET}\" is an unsupported kernel"
-        exit 1
-    done
-fi
-
-
 if [ "${RELEASE}" == "help" ]; then
     for file in config/releases/*; do
         basename "${file%.sh}"
@@ -182,6 +159,27 @@ if [ -n "${RELEASE}" ]; then
             fi
         done
         echo "Error: \"${RELEASE}\" is an unsupported release"
+        exit 1
+    done
+fi
+
+if [ "${KERNEL_TARGET}" == "help" ]; then
+    for file in config/kernels/*; do
+        basename "${file%.conf}"
+    done
+    exit 0
+fi
+
+if [ -n "${KERNEL_TARGET}" ]; then
+    while :; do
+        for file in config/kernels/*; do
+            if [ "${KERNEL_TARGET}" == "$(basename "${file%.conf}")" ]; then
+                # shellcheck source=/dev/null
+                set -o allexport && source "${file}" && set +o allexport
+                break 2
+            fi
+        done
+        echo "Error: \"${KERNEL_TARGET}\" is an unsupported kernel"
         exit 1
     done
 fi
