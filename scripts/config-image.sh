@@ -90,21 +90,28 @@ for type in $target; do
     mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
     if [ "${KERNEL_TARGET}" == "rockchip-5.10" ] || [ "${KERNEL_TARGET}" == "rockchip-6.1" ]; then
-        if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
-            if [[ ${RELEASE} == "jammy" ]]; then
-                cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
-                chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia"
+        if [[ ${RELEASE} == "jammy" ]]; then
+            cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
+            chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia"
 
+            if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
                 cp ${overlay_dir}/etc/apt/preferences.d/panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/panfork-mesa-ppa
                 chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/panfork-mesa"
-            else
-                cp ${overlay_dir}/etc/apt/preferences.d/jjriek-rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/jjriek-rockchip-multimedia-ppa
-                chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/rockchip-multimedia"  
-
-                cp ${overlay_dir}/etc/apt/preferences.d/jjriek-panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/jjriek-panfork-mesa-ppa
-                chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/panfork-mesa"  
             fi
+        else
+            cp ${overlay_dir}/etc/apt/preferences.d/jjriek-rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/jjriek-rockchip-multimedia-ppa
+            chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/rockchip-multimedia"  
 
+            if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
+                cp ${overlay_dir}/etc/apt/preferences.d/jjriek-panfork-mesa-ppa ${chroot_dir}/etc/apt/preferences.d/jjriek-panfork-mesa-ppa
+                chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:jjriek/panfork-mesa" 
+            fi
+        fi
+
+        # Download and update installed packages
+        chroot ${chroot_dir} /bin/bash -c "apt-get -y update && apt-get --allow-downgrades -y upgrade && apt-get --allow-downgrades -y dist-upgrade"
+
+        if [ "${OVERLAY_PREFIX}" == "rk3588" ]; then
             # Set cpu governor to performance
             cp ${overlay_dir}/usr/lib/systemd/system/cpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/cpu-governor-performance.service
             chroot ${chroot_dir} /bin/bash -c "systemctl enable cpu-governor-performance"
@@ -112,13 +119,13 @@ for type in $target; do
             # Set gpu governor to performance
             cp ${overlay_dir}/usr/lib/systemd/system/gpu-governor-performance.service ${chroot_dir}/usr/lib/systemd/system/gpu-governor-performance.service
             chroot ${chroot_dir} /bin/bash -c "systemctl enable gpu-governor-performance"
+
+            # Install the mali g610 firmware
+            chroot ${chroot_dir} /bin/bash -c "apt-get -y install mali-g610-firmware"
         fi
 
-        # Download and update installed packages
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y update && apt-get --allow-downgrades -y upgrade && apt-get --allow-downgrades -y dist-upgrade"
-
-        # Install multimedia config and mali g610 firmware
-        chroot ${chroot_dir} /bin/bash -c "apt-get -y install mali-g610-firmware rockchip-multimedia-config"
+        # Install the multimedia config
+        chroot ${chroot_dir} /bin/bash -c "apt-get -y install rockchip-multimedia-config"
 
         # Realtek 8811CU/8821CU usb modeswitch support
         cp ${chroot_dir}/lib/udev/rules.d/40-usb_modeswitch.rules ${chroot_dir}/etc/udev/rules.d/40-usb_modeswitch.rules
@@ -144,44 +151,43 @@ for type in $target; do
                 mkdir -p ${chroot_dir}/usr/lib/scripts
                 cp ${overlay_dir}/usr/lib/scripts/gdm-hack.sh ${chroot_dir}/usr/lib/scripts/gdm-hack.sh
                 cp ${overlay_dir}/etc/udev/rules.d/99-gdm-hack.rules ${chroot_dir}/etc/udev/rules.d/99-gdm-hack.rules
+            fi
 
-                if [[ ${RELEASE} == "jammy" ]]; then
-                    chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install libwidevinecdm librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos gstreamer1.0-rockchip1 chromium-browser malirun"
-                else
-                    chroot ${chroot_dir} /bin/bash -c "apt-get --allow-downgrades -y install librockchip-mpp1 librockchip-mpp-dev librockchip-vpu0 libv4l-rkmpp librist-dev librist4 librga2 librga-dev rist-tools rockchip-mpp-demos gstreamer1.0-rockchip1 chromium-browser malirun"
-                fi
+            # Install chrome and gstreamer rockchip
+            chroot ${chroot_dir} /bin/bash -c "apt-get -y install gstreamer1.0-rockchip1 chromium-browser libv4l-rkmpp"
+
+            # Set chromium inital prefrences
+            mkdir -p ${chroot_dir}/usr/lib/chromium-browser
+            cp ${overlay_dir}/usr/lib/chromium-browser/initial_preferences ${chroot_dir}/usr/lib/chromium-browser/initial_preferences
+
+            # Set chromium default launch args
+            mkdir -p ${chroot_dir}/usr/lib/chromium-browser
+            mkdir -p ${chroot_dir}/etc/chromium-browser
+            cp ${overlay_dir}/etc/chromium-browser/default ${chroot_dir}/etc/chromium-browser/default
+
+            # Add chromium to favorites bar
+            mkdir -p ${chroot_dir}/etc/dconf/db/local.d
+            cp ${overlay_dir}/etc/dconf/db/local.d/00-favorite-apps ${chroot_dir}/etc/dconf/db/local.d/00-favorite-apps
+            cp ${overlay_dir}/etc/dconf/profile/user ${chroot_dir}/etc/dconf/profile/user
+            chroot ${chroot_dir} /bin/bash -c "dconf update"
+
+            if [[ ${RELEASE} == "jammy" ]]; then
+                chroot ${chroot_dir} /bin/bash -c "apt-get -y install libwidevinecdm"
 
                 # Config file for mpv
                 cp ${overlay_dir}/etc/mpv/mpv.conf ${chroot_dir}/etc/mpv/mpv.conf
 
-                # Set chromium inital prefrences
-                mkdir -p ${chroot_dir}/usr/lib/chromium-browser
-                cp ${overlay_dir}/usr/lib/chromium-browser/initial_preferences ${chroot_dir}/usr/lib/chromium-browser/initial_preferences
+                # Set chromium as default browser
+                chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium-browser 500"
+                chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium-browser"
 
-                # Set chromium default launch args
-                mkdir -p ${chroot_dir}/usr/lib/chromium-browser
-                mkdir -p ${chroot_dir}/etc/chromium-browser
-                cp ${overlay_dir}/etc/chromium-browser/default ${chroot_dir}/etc/chromium-browser/default
+                # Use mpv as the default video player
+                sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
 
-                # Add chromium to favorites bar
-                mkdir -p ${chroot_dir}/etc/dconf/db/local.d
-                cp ${overlay_dir}/etc/dconf/db/local.d/00-favorite-apps ${chroot_dir}/etc/dconf/db/local.d/00-favorite-apps
-                cp ${overlay_dir}/etc/dconf/profile/user ${chroot_dir}/etc/dconf/profile/user
-                chroot ${chroot_dir} /bin/bash -c "dconf update"
-
-                if [[ ${RELEASE} == "jammy" ]]; then
-                    # Set chromium as default browser
-                    chroot ${chroot_dir} /bin/bash -c "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/chromium-browser 500"
-                    chroot ${chroot_dir} /bin/bash -c "update-alternatives --set x-www-browser /usr/bin/chromium-browser"
-
-                    # Use mpv as the default video player
-                    sed -i 's/org\.gnome\.Totem\.desktop/mpv\.desktop/g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
-
-                    # Set chromium as default browser
-                    sed -i 's/firefox-esr\.desktop/chromium-browser\.desktop/g;s/firefox\.desktop;//g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
-                else
-                    cp ${overlay_dir}/usr/share/applications/mimeapps.list ${chroot_dir}/usr/share/applications/mimeapps.list
-                fi
+                # Set chromium as default browser
+                sed -i 's/firefox-esr\.desktop/chromium-browser\.desktop/g;s/firefox\.desktop;//g' ${chroot_dir}/usr/share/applications/gnome-mimeapps.list 
+            else
+                cp ${overlay_dir}/usr/share/applications/mimeapps.list ${chroot_dir}/usr/share/applications/mimeapps.list
             fi
         fi
     fi
