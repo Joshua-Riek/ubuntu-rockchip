@@ -221,6 +221,8 @@ for type in $target; do
         chroot ${chroot_dir} /bin/bash -c "apt-mark hold $(echo "${linux_image_package}" | sed -rn 's/(.*)_[[:digit:]].*/\1/p')"
         chroot ${chroot_dir} /bin/bash -c "apt-mark hold $(echo "${linux_headers_package}" | sed -rn 's/(.*)_[[:digit:]].*/\1/p')"
     fi
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y purge flash-kernel"
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-menu"
 
     # Clean package cache
     chroot ${chroot_dir} /bin/bash -c "apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean"
