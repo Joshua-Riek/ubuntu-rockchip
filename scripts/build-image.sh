@@ -92,8 +92,8 @@ mkdir -p ${mount_point}
 dd if=/dev/zero of="${disk}" count=4096 bs=512
 parted --script "${disk}" \
 mklabel gpt \
-mkpart primary fat32 16MiB 528MiB \
-mkpart primary ext4 528MiB 100%
+mkpart primary fat32 16MiB 20MiB \
+mkpart primary ext4 20MiB 100%
 
 # Create partitions
 {
@@ -102,7 +102,7 @@ mkpart primary ext4 528MiB 100%
     echo "BC13C2FF-59E6-4262-A352-B275FD6F7172"
     echo "t"
     echo "2"
-    echo "0FC63DAF-8483-4772-8E79-3D69D8477DE4"
+    echo "C12A7328-F81F-11D2-BA4B-00A0C93EC93B"
     echo "w"
 } | fdisk "${disk}" &> /dev/null || true
 
@@ -133,9 +133,9 @@ boot_uuid=$(uuidgen | head -c8)
 root_uuid=$(uuidgen)
 
 # Create filesystems on partitions
-mkfs.vfat -i "${boot_uuid}" -F32 -n system-boot "${disk}${partition_char}1"
+mkfs.vfat -i "${boot_uuid}" -F32 -n CIDATA "${disk}${partition_char}1"
 dd if=/dev/zero of="${disk}${partition_char}2" bs=1KB count=10 > /dev/null
-mkfs.ext4 -U "${root_uuid}" -L writable "${disk}${partition_char}2"
+mkfs.ext4 -U "${root_uuid}" -L cloudimg-rootfs "${disk}${partition_char}2"
 
 # Mount partitions
 mkdir -p ${mount_point}/{system-boot,writable} 
@@ -149,11 +149,9 @@ tar -xpf "${rootfs}" -C ${mount_point}/writable
 [ -z "${img##*desktop*}" ] && bootargs="quiet splash plymouth.ignore-serial-consoles" || bootargs=""
 
 # Create fstab entries
-boot_uuid="${boot_uuid:0:4}-${boot_uuid:4:4}"
 mkdir -p ${mount_point}/writable/boot/firmware
 cat > ${mount_point}/writable/etc/fstab << EOF
 # <file system>     <mount point>  <type>  <options>   <dump>  <fsck>
-UUID=${boot_uuid^^} /boot/firmware vfat    defaults    0       2
 UUID=${root_uuid,,} /              ext4    defaults,x-systemd.growfs    0       1
 EOF
 
@@ -170,10 +168,42 @@ if [ -z "${img##*server*}" ]; then
     cp ../overlay/boot/firmware/{meta-data,user-data,network-config} ${mount_point}/system-boot
 fi
 
-# Run build image hook to handle board specific changes
-if [[ $(type -t build_image_hook__"${RELEASE}") == function ]]; then
-    build_image_hook__"${RELEASE}"
-fi 
+# Uboot env
+echo "console=ttyS2,1500000 console=tty1 rootwait rw cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory ${bootargs}" > ${mount_point}/writable/etc/kernel/cmdline
+
+# Mount the temporary API filesystems
+mkdir -p ${mount_point}/writable/{proc,sys,run,dev,dev/pts}
+mount -t proc /proc ${mount_point}/writable/proc
+mount -o bind /dev ${mount_point}/writable/dev
+mount -o bind /dev/pts ${mount_point}/writable/dev/pts
+
+touch ${mount_point}/writable/etc/kernel/cmdline
+mkdir -p ${mount_point}/writable/usr/share/u-boot-menu/conf.d/
+if [[ ${RELEASE} == "noble" ]]; then
+cat << EOF >> ${mount_point}/writable/usr/share/u-boot-menu/conf.d/ubuntu.conf
+U_BOOT_PROMPT="1"
+U_BOOT_PARAMETERS="\$(cat /etc/kernel/cmdline)"
+U_BOOT_TIMEOUT="10"
+U_BOOT_FDT="device-tree/rockchip/${DEVICE_TREE_FILE}"
+U_BOOT_FDT_DIR="/lib/firmware/"
+U_BOOT_FDT_OVERLAYS_DIR="/lib/firmware/"
+EOF
+else
+cat << EOF >> ${mount_point}/writable/usr/share/u-boot-menu/conf.d/ubuntu.conf
+U_BOOT_PROMPT="1"
+U_BOOT_PARAMETERS="\$(cat /etc/kernel/cmdline)"
+U_BOOT_TIMEOUT="10"
+U_BOOT_FDT="rockchip/${DEVICE_TREE_FILE}"
+U_BOOT_FDT_DIR="/usr/lib/linux-image-"
+U_BOOT_FDT_OVERLAYS_DIR="/usr/lib/linux-image-"
+EOF
+fi
+
+chroot ${mount_point}/writable/ /bin/bash -c "u-boot-update"
+
+# Umount temporary API filesystems
+umount -lf ${mount_point}/writable/dev/pts 2> /dev/null || true
+umount -lf ${mount_point}/writable/* 2> /dev/null || true
 
 # Run build image hook to handle board specific changes
 if [[ $(type -t build_image_hook__"${BOARD}") == function ]]; then
