@@ -75,3 +75,9 @@ u-boot-rockchip_platforms += mixtile-core3588e-rk3588
 mixtile-core3588e-rk3588_ddr := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 mixtile-core3588e-rk3588_bl31 := rk3588_bl31_v1.38.elf
 mixtile-core3588e-rk3588_pkg := mixtile-core3588e
+
+u-boot-rockchip_platforms += firefly-itx-3588j-rk3588
+firefly-itx-3588j-rk3588_ddr := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+firefly-itx-3588j-rk3588_bl31 := rk3588_bl31_v1.38.elf
+firefly-itx-3588j-rk3588_pkg := firefly-itx-3588j
+

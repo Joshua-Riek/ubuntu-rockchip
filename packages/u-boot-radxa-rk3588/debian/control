@@ -201,3 +201,18 @@ Description: A boot loader for the Mixtile Core 3588E.
  intended to be easy to port and to debug, and runs on many
  supported architectures, including PPC, ARM, MIPS, x86, m68k,
  NIOS, and Microblaze.
+
+Package: u-boot-firefly-itx-3588j
+Architecture: arm64
+Priority: optional
+Depends: mtd-utils
+Provides: u-boot-firefly-itx-3588j, u-boot
+Replaces: u-boot-firefly-itx-3588j,, u-boot
+Conflicts: u-boot-firefly-itx-3588j,, u-boot
+Description: A boot loader for the Firefly ITX-3588j.
+ Das U-Boot is a cross-platform bootloader for embedded systems,
+ used as the default boot loader by several board vendors.  It is
+ intended to be easy to port and to debug, and runs on many
+ supported architectures, including PPC, ARM, MIPS, x86, m68k,
+ NIOS, and Microblaze.
+
