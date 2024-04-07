@@ -203,10 +203,9 @@ else
     dd if="${mount_point}/writable/usr/lib/u-boot/u-boot.itb" of="${loop}" seek=16384 conv=notrunc
 fi
 
-# Mount the temporary API filesystems
+if [[ ${RELEASE} != "noble" ]]; then
 touch ${mount_point}/writable/etc/kernel/cmdline
 mkdir -p ${mount_point}/writable/usr/share/u-boot-menu/conf.d/
-if [[ ${RELEASE} != "noble" ]]; then
 cat << EOF >> ${mount_point}/writable/usr/share/u-boot-menu/conf.d/ubuntu.conf
 U_BOOT_PROMPT="1"
 U_BOOT_PARAMETERS="\$(cat /etc/kernel/cmdline)"
@@ -215,10 +214,9 @@ U_BOOT_FDT="rockchip/${DEVICE_TREE_FILE}"
 U_BOOT_FDT_DIR="/usr/lib/linux-image-"
 U_BOOT_FDT_OVERLAYS_DIR="/usr/lib/linux-image-"
 EOF
-fi
-
 # Uboot env
 echo "rootwait rw console=ttyS2,1500000 console=tty1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory ${bootargs}" > ${mount_point}/writable/etc/kernel/cmdline
+fi
 
 # Run build image hook to handle board specific changes
 if [[ $(type -t build_image_hook__"${BOARD}") == function ]]; then
