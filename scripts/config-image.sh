@@ -90,6 +90,7 @@ for type in $target; do
     mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
     if [ "${KERNEL_TARGET}" == "rockchip-5.10" ] || [ "${KERNEL_TARGET}" == "rockchip-6.1" ]; then
+        if [[ ${RELEASE} != "noble" ]]; then
         if [[ ${RELEASE} == "jammy" ]]; then
             cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
             chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia"
@@ -190,6 +191,7 @@ for type in $target; do
                 cp ${overlay_dir}/usr/share/applications/mimeapps.list ${chroot_dir}/usr/share/applications/mimeapps.list
             fi
         fi
+        fi
     fi
 
     # Run config hook to handle board specific changes
@@ -211,8 +213,6 @@ for type in $target; do
         if [[ ${RELEASE} == "jammy" ]]; then
             chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-rockchip-5.10"
             chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.160-rockchip"
-        else
-            chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-rockchip"
         fi
     else
         cp "${linux_image_package}" "${linux_headers_package}" ${chroot_dir}/tmp/
