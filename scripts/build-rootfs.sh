@@ -33,6 +33,16 @@ else
     fi
 fi
 
+if [[ ${SERVER_ONLY} == "Y" ]]; then
+    if [[ ${RELEASE} == "noble" ]]; then
+        git clone https://github.com/Joshua-Riek/ubuntu-live-build.git
+        cd ubuntu-live-build
+        sudo ./livecd-rootfs.sh && sudo ./build.sh 
+        mv ./build/ubuntu-24.04-beta-preinstalled-server-arm64.rootfs.tar.xz ../
+        exit 0
+    fi
+fi
+
 # These env vars can cause issues with chroot
 unset TMP
 unset TEMP
