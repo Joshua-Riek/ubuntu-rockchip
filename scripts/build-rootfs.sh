@@ -35,10 +35,26 @@ fi
 
 if [[ ${SERVER_ONLY} == "Y" ]]; then
     if [[ ${RELEASE} == "noble" ]]; then
-        git clone https://github.com/Joshua-Riek/ubuntu-live-build.git
+        git clone https://github.com/Joshua-Riek/ubuntu-live-build.git -b server
         cd ubuntu-live-build
         sudo ./livecd-rootfs.sh && sudo ./build.sh 
         mv ./build/ubuntu-24.04-beta-preinstalled-server-arm64.rootfs.tar.xz ../
+        exit 0
+    fi
+fi
+
+if [[ ${DESKTOP_ONLY} == "Y" ]]; then
+    if [[ ${RELEASE} == "noble" ]]; then
+        set +e
+        git clone https://github.com/Joshua-Riek/ubuntu-live-build.git
+        cd ubuntu-live-build
+        sudo ./livecd-rootfs.sh && sudo ./build.sh -d
+        set -eE 
+        trap 'echo Error: in $0 on line $LINENO' ERR
+        if [ ! -f "./build/ubuntu-24.04-beta-preinstalled-desktop-arm64.rootfs.tar.xz" ]; then
+            exit 1
+        fi
+        mv ./build/ubuntu-24.04-beta-preinstalled-desktop-arm64.rootfs.tar.xz ../
         exit 0
     fi
 fi
