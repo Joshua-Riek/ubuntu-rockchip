@@ -79,6 +79,7 @@ jobs:
     strategy:
         matrix:
           project:
+            - preinstalled-desktop
             - preinstalled-server
           release:
           - ${{ github.event.inputs.release }}
@@ -152,6 +153,7 @@ jobs:
           - armsom-sige7
           - armsom-w3
         project:
+          - preinstalled-desktop
           - preinstalled-server
         release:
           - ${{ github.event.inputs.release }}
