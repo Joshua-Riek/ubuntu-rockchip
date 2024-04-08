@@ -89,6 +89,8 @@ for type in $target; do
     mount -o bind /dev ${chroot_dir}/dev
     mount -o bind /dev/pts ${chroot_dir}/dev/pts
 
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y update"
+
     if [ "${KERNEL_TARGET}" == "rockchip-5.10" ] || [ "${KERNEL_TARGET}" == "rockchip-6.1" ]; then
         if [[ ${RELEASE} != "noble" ]]; then
         if [[ ${RELEASE} == "jammy" ]]; then
