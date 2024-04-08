@@ -72,7 +72,7 @@ fi
 # Create an empty disk image
 img="../images/$(basename "${rootfs}" .rootfs.tar)${KVER}.img"
 size="$(( $(wc -c < "${rootfs}" ) / 1024 / 1024 ))"
-truncate -s "$(( size + 1024 ))M" "${img}"
+truncate -s "$(( size + 2048 ))M" "${img}"
 
 # Create loop device for disk image
 loop="$(losetup -f)"
