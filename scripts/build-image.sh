@@ -239,6 +239,6 @@ losetup -d "${loop}"
 trap '' EXIT
 
 echo -e "\nCompressing $(basename "${img}.xz")\n"
-xz -3 --force --keep --quiet --threads=0 "${img}"
+xz -6 --force --keep --quiet --threads=0 "${img}"
 rm -f "${img}"
 cd ../images && sha256sum "$(basename "${img}.xz")" > "$(basename "${img}.xz.sha256")"
