@@ -120,6 +120,7 @@ for type in $target; do
     # Clean chroot dir and make sure folder is not mounted
     umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
     umount -lf ${chroot_dir}/* 2> /dev/null || true
+    teardown_mountpoint $chroot_dir
     rm -rf ${chroot_dir}
     mkdir -p ${chroot_dir}
 
@@ -265,6 +266,7 @@ setup_mountpoint $chroot_dir
     fi
     chroot ${chroot_dir} /bin/bash -c "apt-get -y purge flash-kernel"
     chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-menu"
+    chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
 
     # Clean package cache
     chroot ${chroot_dir} /bin/bash -c "apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean"
