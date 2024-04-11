@@ -1,21 +1,78 @@
 name: Release
-run-name: Release Ubuntu 24.04 Beta with Rockchip Linux 6.1
 
 on:
   workflow_dispatch:
+    inputs:
+      launchpad:
+        description: use launchpad
+        required: true
+        default: false
+        type: boolean
+      kernel:
+        type: choice
+        description: Kernel
+        options: 
+          - rockchip-5.10
+          - rockchip-6.1
+      release:
+        type: choice
+        description: Release
+        options: 
+            - jammy
+            - noble
+
+run-name: Release Ubuntu ${{ github.event.inputs.release == 'jammy' && '22.04' || github.event.inputs.release == 'noble' && '24.04 Beta' }} with ${{ github.event.inputs.kernel == 'rockchip-5.10' && 'Rockchip Linux 5.10' || github.event.inputs.kernel == 'rockchip-6.1' && 'Rockchip Linux 6.1' }}
 
 jobs:
-  release:
-    name: Create release
-    permissions:
-        contents: write
+
+  kernel:
     runs-on: ubuntu-latest
+    name: Build kernel 
+
     steps:
-      - name: Create release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: gh release create --draft v1.34 --title v1.34
+      - name: Get more disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
+
+      - name: Checkout code
+        if: ${{ github.event.inputs.launchpad == 'false' }}
+        uses: actions/checkout@v4
+
+      - name: Checkout LFS
+        shell: bash
+        if: ${{ github.event.inputs.launchpad == 'false' }}
+        run: git lfs fetch && git lfs checkout
+
+      - name: Install dependencies
+        shell: bash
+        if: ${{ github.event.inputs.launchpad == 'false' }}
+        run: |
+          sudo apt-get update && sudo apt-get upgrade -y
+          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
+          qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
+          debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
+          udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
+          python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
+
+      - name: Build
+        shell: bash
+        if: ${{ github.event.inputs.launchpad == 'false' }}
+        run: sudo ./build.sh --board=orangepi-5 --release=${{ github.event.inputs.release }} --project=preinstalled-server --kernel=${{ github.event.inputs.kernel }} --kernel-only
+
+      - name: Upload3
+        uses: actions/upload-artifact@v4.3.1
+        if: ${{ github.event.inputs.launchpad == 'false' }}
+        with:
+            name: linux-rockchip
+            path: ./build/linux-*.deb
+            if-no-files-found: error
 
   rootfs:
     runs-on: ubuntu-latest
@@ -25,6 +82,8 @@ jobs:
           project:
             - preinstalled-desktop
             - preinstalled-server
+          release:
+          - ${{ github.event.inputs.release }}
 
     steps:
       - name: Get more disk space
@@ -57,20 +116,33 @@ jobs:
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --release=noble ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=rockchip-6.1 --rootfs-only
+        run: sudo ./build.sh --board=orangepi-5 --release=${{ github.event.inputs.release }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.kernel }} --rootfs-only
 
       - name: Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.3.1
         with:
-            name: ubuntu-24.04-beta-${{ matrix.project }}-arm64-rootfs
-            path: ./build/ubuntu-24.04-beta-preinstalled-*-arm64.rootfs.tar.xz
+            name: ubuntu-${{ github.event.inputs.release }}-${{ matrix.project }}-arm64-rootfs
+            path: ./build/ubuntu-*-${{ matrix.project }}-arm64.rootfs.tar.xz
             if-no-files-found: error
-
-  build:
+  release:
+    name: Create release
     permissions:
         contents: write
-    needs: [release, rootfs]
     runs-on: ubuntu-latest
+    needs: [kernel, rootfs]
+
+    steps:
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release create --draft v1.34 --title v1.34
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [kernel, rootfs, release]
+    name: Build image 
+
     strategy:
       matrix:
         board:
@@ -92,13 +164,14 @@ jobs:
           - mixtile-core3588e
           - lubancat-4
           - turing-rk1
-          - roc-rk3588s-pc
           - armsom-sige7
           - armsom-w3
         project:
           - preinstalled-desktop
           - preinstalled-server
-
+        release:
+          - ${{ github.event.inputs.release }}
+  
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
@@ -117,10 +190,17 @@ jobs:
         shell: bash
         run: git lfs fetch && git lfs checkout
 
-      - name: Checkout rootfs
-        uses: actions/download-artifact@v3
+      - name: Checkout kernel
+        uses: actions/download-artifact@v4.1.2
+        if: ${{ github.event.inputs.launchpad == 'false' }}
         with:
-            name: ubuntu-24.04-beta-${{ matrix.project }}-arm64-rootfs
+            name: linux-rockchip
+            path: ./build/
+
+      - name: Checkout rootfs
+        uses: actions/download-artifact@v4.1.2
+        with:
+            name: ubuntu-${{ github.event.inputs.release }}-${{ matrix.project }}-arm64-rootfs
             path: ./build/
 
       - name: Install dependencies
@@ -134,9 +214,21 @@ jobs:
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
           python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
-      - name: Build image
+      - name: Build
         shell: bash
-        run: sudo ./build.sh --board=${{ matrix.board }} --launchpad --release=noble ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=rockchip-6.1
+        run: |
+            args=""
+            if [ "${{ inputs.launchpad }}" == true ]; then
+                args="--launchpad"
+            fi
+            sudo ./build.sh --board=${{ matrix.board }} $args --release=${{ github.event.inputs.release }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.kernel }}
+
+      - name: Upload
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: ubuntu-${{ github.event.inputs.release == 'jammy' && '22.04.3' || github.event.inputs.release == 'noble' && '24.04-beta' }}-${{ matrix.project }}-arm64-${{ matrix.board }}
+          path: ./images/ubuntu-*-${{ matrix.project }}-arm64-${{ matrix.board }}.*
+          if-no-files-found: error
 
       - name: Upload release assets
         env:
