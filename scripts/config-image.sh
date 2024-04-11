@@ -120,7 +120,7 @@ for type in $target; do
     # Clean chroot dir and make sure folder is not mounted
     umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
     umount -lf ${chroot_dir}/* 2> /dev/null || true
-    teardown_mountpoint $chroot_dir
+
     rm -rf ${chroot_dir}
     mkdir -p ${chroot_dir}
 
