@@ -1,5 +1,5 @@
 name: Release
-run-name: Release with Rockchip Linux 5.10.160
+run-name: Release Ubuntu 24.04 Beta with Rockchip Linux 6.1
 
 on:
   workflow_dispatch:
@@ -15,23 +15,27 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: gh release create --draft v1.33 --title v1.33
+        run: gh release create --draft v1.34 --title v1.34
 
   rootfs:
     runs-on: ubuntu-latest
     name: Build rootfs 
+    strategy:
+        matrix:
+          project:
+            - preinstalled-desktop
+            - preinstalled-server
 
     steps:
       - name: Get more disk space
-        uses: easimon/maximize-build-space@master
+        uses: jlumbroso/free-disk-space@main
         with:
-          root-reserve-mb: 2048
-          swap-size-mb: 1024
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-          remove-codeql: 'true'
-          remove-docker-images: 'true'
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -49,17 +53,17 @@ jobs:
           debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
-          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --rootfs-only
+        run: sudo ./build.sh --board=orangepi-5 --release=noble ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=rockchip-6.1 --rootfs-only
 
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-            name: ubuntu-22.04.3-preinstalled-arm64-rootfs
-            path: ./build/ubuntu-22.04.3-preinstalled-*-arm64.rootfs.tar.xz
+            name: ubuntu-24.04-beta-${{ matrix.project }}-arm64-rootfs
+            path: ./build/ubuntu-24.04-beta-preinstalled-*-arm64.rootfs.tar.xz
             if-no-files-found: error
 
   build:
@@ -69,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform:
+        board:
           - orangepi-3b
           - orangepi-5
           - orangepi-5b
@@ -91,18 +95,20 @@ jobs:
           - roc-rk3588s-pc
           - armsom-sige7
           - armsom-w3
+        project:
+          - preinstalled-desktop
+          - preinstalled-server
 
     steps:
       - name: Get more disk space
-        uses: easimon/maximize-build-space@master
+        uses: jlumbroso/free-disk-space@main
         with:
-          root-reserve-mb: 2048
-          swap-size-mb: 1024
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-          remove-codeql: 'true'
-          remove-docker-images: 'true'
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -114,7 +120,7 @@ jobs:
       - name: Checkout rootfs
         uses: actions/download-artifact@v3
         with:
-            name: ubuntu-22.04.3-preinstalled-arm64-rootfs
+            name: ubuntu-24.04-beta-${{ matrix.project }}-arm64-rootfs
             path: ./build/
 
       - name: Install dependencies
@@ -126,16 +132,16 @@ jobs:
           debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
           udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
           python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
-          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
       - name: Build image
         shell: bash
-        run: sudo ./build.sh -b ${{ matrix.platform }} --launchpad
+        run: sudo ./build.sh --board=${{ matrix.board }} --launchpad --release=noble ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=rockchip-6.1
 
       - name: Upload release assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload v1.33 ./images/ubuntu-*-preinstalled-*-arm64-${{ matrix.platform }}.*
+        run: gh release upload v1.34 ./images/ubuntu-*-preinstalled-*-arm64-${{ matrix.board }}.*
 
       - name: Clean cache
         shell: bash
