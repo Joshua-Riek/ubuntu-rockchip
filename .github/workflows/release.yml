@@ -17,16 +17,37 @@ on:
 
 permissions:
     contents: write
-run-name: Release Ubuntu 24.04 Beta wiith Rockchip Linux 6.1
+run-name: Release Ubuntu 24.04 Beta with Rockchip Linux 6.1
 
 jobs:
+  prepare_release:
+    name: Create release
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Create empty release
+        id: release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v2.0.0-beta
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target_commitish: main
+          draft: true
+    outputs:
+      release_id: ${{ steps.release.outputs.id }}
+
   rootfs:
     runs-on: ubuntu-latest
+    needs: [prepare_release]
     name: Build rootfs 
     strategy:
         matrix:
           project:
             - preinstalled-server
+            - preinstalled-desktop
 
     steps:
       - name: Get more disk space
@@ -67,24 +88,7 @@ jobs:
             name: ubuntu-noble-${{ matrix.project }}-arm64-rootfs
             path: ./build/ubuntu-*-${{ matrix.project }}-arm64.rootfs.tar.xz
             if-no-files-found: error
-  prepare_release:
-    name: Create release
 
-    runs-on: ubuntu-latest
-    needs: [rootfs]
-
-    steps:
-      - name: Create empty release
-        id: release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v1.34
-          body_path: README.md
-          token: ${{ secrets.GITHUB_TOKEN }}
-          target_commitish: main
-          draft: true
-    outputs:
-      release_id: ${{ steps.release.outputs.id }}
   build:
     runs-on: ubuntu-latest
     needs: [rootfs, prepare_release]
@@ -115,6 +119,7 @@ jobs:
           - armsom-w3
         project:
           - preinstalled-server
+          - preinstalled-desktop
   
     steps:
       - name: Get more disk space
@@ -167,7 +172,7 @@ jobs:
             GITHUB_TOKEN:  ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ needs.prepare_release.outputs.release_id }}
-          file: "./images/ubuntu-*-preinstalled-*-arm64-${{ matrix.board }}.*"
+          file: images/ubuntu-*-preinstalled-*-arm64-${{ matrix.board }}.*
           draft: true
           overwrite: true
 
