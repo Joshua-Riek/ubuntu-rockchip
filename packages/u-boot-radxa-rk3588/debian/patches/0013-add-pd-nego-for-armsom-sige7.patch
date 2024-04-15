@@ -1,5 +1,25 @@
+From 1e158e758b50b5d8d3a9e997413bc307ce55293d Mon Sep 17 00:00:00 2001
+From: Joshua Riek <jjriek@verizon.net>
+Date: Sun, 14 Apr 2024 23:07:55 -0400
+Subject: [PATCH] enable armsom-sige7 early PD negotiation
+
+---
+ arch/arm/dts/rk3588-armsom-sige7.dts          | 73 +++++++++++++++++++
+ arch/arm/mach-rockchip/rk3588/Kconfig         |  7 ++
+ board/armsom/armsom-sige7-rk3588/Kconfig      | 15 ++++
+ board/armsom/armsom-sige7-rk3588/Makefile     |  7 ++
+ .../armsom-sige7-rk3588/armsom-sige7-rk3588.c | 33 +++++++++
+ configs/armsom-sige7-rk3588_defconfig         | 13 +++-
+ drivers/power/power_delivery/tcpm.c           |  4 +-
+ include/configs/armsom-sige7-rk3588.h         | 28 +++++++
+ 8 files changed, 175 insertions(+), 5 deletions(-)
+ create mode 100644 board/armsom/armsom-sige7-rk3588/Kconfig
+ create mode 100644 board/armsom/armsom-sige7-rk3588/Makefile
+ create mode 100644 board/armsom/armsom-sige7-rk3588/armsom-sige7-rk3588.c
+ create mode 100644 include/configs/armsom-sige7-rk3588.h
+
 diff --git a/arch/arm/dts/rk3588-armsom-sige7.dts b/arch/arm/dts/rk3588-armsom-sige7.dts
-index 36183d0..39400da 100755
+index 36183d0415..39400da5e7 100755
 --- a/arch/arm/dts/rk3588-armsom-sige7.dts
 +++ b/arch/arm/dts/rk3588-armsom-sige7.dts
 @@ -8,6 +8,7 @@
@@ -89,10 +109,116 @@ index 36183d0..39400da 100755
  &pcie3x4 {
  	u-boot,dm-pre-reloc;
  	reset-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
+diff --git a/arch/arm/mach-rockchip/rk3588/Kconfig b/arch/arm/mach-rockchip/rk3588/Kconfig
+index 93f58c9391..9d1477b90a 100644
+--- a/arch/arm/mach-rockchip/rk3588/Kconfig
++++ b/arch/arm/mach-rockchip/rk3588/Kconfig
+@@ -15,6 +15,12 @@ config TARGET_ROC_RK3588S_PC
+ 	  It also includes on-board eMMC and LPDDR4. Expansion connectors
+ 	  provide access to display pins, MIPI-CSI/DSI, I2C, SPI, UART and GPIOs.
+ 
++config TARGET_ARMSOM_SIGE7_RK3588
++	bool "ARMSOM_SIGE7_RK3588"
++	select BOARD_LATE_INIT
++	help
++	  foobar
++
+ config SYS_SOC
+ 	default "rockchip"
+ 
+@@ -23,5 +29,6 @@ config SYS_MALLOC_F_LEN
+ 
+ source board/rockchip/evb_rk3588/Kconfig
+ source board/firefly/roc-rk3588s-pc/Kconfig
++source board/armsom/armsom-sige7-rk3588/Kconfig
+ 
+ endif
+diff --git a/board/armsom/armsom-sige7-rk3588/Kconfig b/board/armsom/armsom-sige7-rk3588/Kconfig
+new file mode 100644
+index 0000000000..3bfe46c659
+--- /dev/null
++++ b/board/armsom/armsom-sige7-rk3588/Kconfig
+@@ -0,0 +1,15 @@
++if TARGET_ARMSOM_SIGE7_RK3588
++
++config SYS_BOARD
++	default "armsom-sige7-rk3588"
++
++config SYS_VENDOR
++	default "armsom"
++
++config SYS_CONFIG_NAME
++	default "armsom-sige7-rk3588"
++
++config BOARD_SPECIFIC_OPTIONS # dummy
++	def_bool y
++
++endif
+diff --git a/board/armsom/armsom-sige7-rk3588/Makefile b/board/armsom/armsom-sige7-rk3588/Makefile
+new file mode 100644
+index 0000000000..a77e1a0721
+--- /dev/null
++++ b/board/armsom/armsom-sige7-rk3588/Makefile
+@@ -0,0 +1,7 @@
++#
++# SPDX-License-Identifier:	GPL-2.0+
++#
++# Copyright (c) 2021 Rockchip Electronics Co., Ltd
++#
++
++obj-y	+= armsom-sige7-rk3588.o
+diff --git a/board/armsom/armsom-sige7-rk3588/armsom-sige7-rk3588.c b/board/armsom/armsom-sige7-rk3588/armsom-sige7-rk3588.c
+new file mode 100644
+index 0000000000..81c5089944
+--- /dev/null
++++ b/board/armsom/armsom-sige7-rk3588/armsom-sige7-rk3588.c
+@@ -0,0 +1,33 @@
++/*
++ * SPDX-License-Identifier:     GPL-2.0+
++ *
++ * (C) Copyright 2021 Rockchip Electronics Co., Ltd
++ */
++
++#include <common.h>
++#include <dwc3-uboot.h>
++#include <usb.h>
++
++DECLARE_GLOBAL_DATA_PTR;
++
++#ifdef CONFIG_USB_DWC3
++static struct dwc3_device dwc3_device_data = {
++	.maximum_speed = USB_SPEED_HIGH,
++	.base = 0xfc000000,
++	.dr_mode = USB_DR_MODE_PERIPHERAL,
++	.index = 0,
++	.dis_u2_susphy_quirk = 1,
++	.usb2_phyif_utmi_width = 16,
++};
++
++int usb_gadget_handle_interrupts(void)
++{
++	dwc3_uboot_handle_interrupt(0);
++	return 0;
++}
++
++int board_usb_init(int index, enum usb_init_type init)
++{
++	return dwc3_uboot_init(&dwc3_device_data);
++}
++#endif
 diff --git a/configs/armsom-sige7-rk3588_defconfig b/configs/armsom-sige7-rk3588_defconfig
-index 50bf9b7..ea5e3c8 100755
+index 50bf9b70f8..cc700b05bd 100755
 --- a/configs/armsom-sige7-rk3588_defconfig
 +++ b/configs/armsom-sige7-rk3588_defconfig
+@@ -17,7 +17,7 @@ CONFIG_LOADER_INI="RK3588MINIALL.ini"
+ CONFIG_TRUST_INI="RK3588TRUST.ini"
+ CONFIG_SPL_SERIAL_SUPPORT=y
+ CONFIG_SPL_DRIVERS_MISC_SUPPORT=y
+-CONFIG_TARGET_EVB_RK3588=y
++CONFIG_TARGET_ARMSOM_SIGE7_RK3588=y
+ CONFIG_SPL_LIBDISK_SUPPORT=y
+ CONFIG_SPL_SPI_FLASH_SUPPORT=y
+ CONFIG_SPL_SPI_SUPPORT=y
 @@ -31,8 +31,6 @@ CONFIG_SPL_FIT_IMAGE_POST_PROCESS=y
  CONFIG_SPL_FIT_HW_CRYPTO=y
  # CONFIG_SPL_SYS_DCACHE_OFF is not set
@@ -137,7 +263,7 @@ index 50bf9b7..ea5e3c8 100755
 +CONFIG_CMD_CHARGE_DISPLAY=y
 +CONFIG_DM_CHARGE_DISPLAY=y
 diff --git a/drivers/power/power_delivery/tcpm.c b/drivers/power/power_delivery/tcpm.c
-index 22334c6..1b94a40 100644
+index 22334c6230..1b94a40183 100644
 --- a/drivers/power/power_delivery/tcpm.c
 +++ b/drivers/power/power_delivery/tcpm.c
 @@ -1390,8 +1390,8 @@ static void tcpm_pd_rx_handler(struct tcpm_port *port,
@@ -151,16 +277,41 @@ index 22334c6..1b94a40 100644
  		} else {
  			if (cnt)
  				tcpm_pd_data_request(port, msg);
-diff --git a/include/configs/rk3588_common.h b/include/configs/rk3588_common.h
-index 275c02a..1a8a647 100644
---- a/include/configs/rk3588_common.h
-+++ b/include/configs/rk3588_common.h
-@@ -86,7 +86,7 @@
- #define CONFIG_USB_OHCI_NEW
- #define CONFIG_SYS_USB_OHCI_MAX_ROOT_PORTS	1
- 
--#define CONFIG_PREBOOT
+diff --git a/include/configs/armsom-sige7-rk3588.h b/include/configs/armsom-sige7-rk3588.h
+new file mode 100644
+index 0000000000..d067c25ddc
+--- /dev/null
++++ b/include/configs/armsom-sige7-rk3588.h
+@@ -0,0 +1,28 @@
++/*
++ * SPDX-License-Identifier:     GPL-2.0+
++ *
++ * Copyright (c) 2021 Rockchip Electronics Co., Ltd
++ */
++
++#ifndef __CONFIGS_ARMSOM_SIGE7_RK3588_H
++#define __CONFIGS_ARMSOM_SIGE7_RK3588_H
++
++#include <configs/rk3588_common.h>
++
++#undef CONFIG_PREBOOT
 +#define CONFIG_PREBOOT "charge_pd"
- #define CONFIG_LIB_HW_RAND
- 
- #endif
++
++#ifndef CONFIG_SPL_BUILD
++
++#undef ROCKCHIP_DEVICE_SETTINGS
++#define ROCKCHIP_DEVICE_SETTINGS \
++		"stdout=serial,vidconsole\0" \
++		"stderr=serial,vidconsole\0"
++
++#define CONFIG_SYS_MMC_ENV_DEV		0
++
++#undef CONFIG_BOOTCOMMAND
++#define CONFIG_BOOTCOMMAND RKIMG_BOOTCOMMAND
++
++#endif
++#endif
+\ No newline at end of file
+-- 
+2.25.1
+

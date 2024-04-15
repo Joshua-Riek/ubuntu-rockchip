@@ -11,4 +11,3 @@
 0011-fix-gcc13-compile-error.patch
 0012-fix-noble-compile-error.patch
 0013-add-pd-nego-for-armsom-sige7.patch
-0014-move-config-preboot-into-the-armsom-defconfig.patch
