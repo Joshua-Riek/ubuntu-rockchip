@@ -1,3 +1,15 @@
+u-boot-orangepi-rk3588 (2017.09+20240401.git7f7ff61a-2) jammy; urgency=medium
+
+  * Add Orange Pi 5 Pro to control info
+
+ -- Joshua Riek <jjriek@verizon.net>  Wed, 17 Apr 2024 14:51:01 -0400
+
+u-boot-orangepi-rk3588 (2017.09+20240401.git7f7ff61a-1) jammy; urgency=medium
+
+  * Add support for the Orange Pi 5 Pro
+
+ -- Joshua Riek <jjriek@verizon.net>  Wed, 17 Apr 2024 14:51:01 -0400
+
 u-boot-orangepi-rk3588 (2017.09+20230704.git1f70ac3a-9) jammy; urgency=medium
 
   * Use flashcp to update spi flash
