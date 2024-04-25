@@ -32,23 +32,25 @@ fi
 # shellcheck source=/dev/null
 source ../config/releases/"${RELEASE}.sh"
 
-if [[ ${LAUNCHPAD} != "Y" ]]; then
-    uboot_package="$(basename "$(find u-boot-"${BOARD}"_*.deb | sort | tail -n1)")"
-    if [ ! -e "$uboot_package" ]; then
-        echo 'Error: could not find the u-boot .deb file'
-        exit 1
-    fi
+if [[ ${RELEASE} != "noble" ]]; then
+    if [[ ${LAUNCHPAD} != "Y" ]]; then
+        uboot_package="$(basename "$(find u-boot-"${BOARD}"_*.deb | sort | tail -n1)")"
+        if [ ! -e "$uboot_package" ]; then
+            echo 'Error: could not find the u-boot .deb file'
+            exit 1
+        fi
 
-    linux_image_package="$(basename "$(find linux-image-*.deb | sort | tail -n1)")"
-    if [ ! -e "$linux_image_package" ]; then
-        echo 'Error: could not find the linux image .deb file'
-        exit 1
-    fi
+        linux_image_package="$(basename "$(find linux-image-*.deb | sort | tail -n1)")"
+        if [ ! -e "$linux_image_package" ]; then
+            echo 'Error: could not find the linux image .deb file'
+            exit 1
+        fi
 
-    linux_headers_package="$(basename "$(find linux-headers-*.deb | sort | tail -n1)")"
-    if [ ! -e "$linux_headers_package" ]; then
-        echo 'Error: could not find the linux headers .deb file'
-        exit 1
+        linux_headers_package="$(basename "$(find linux-headers-*.deb | sort | tail -n1)")"
+        if [ ! -e "$linux_headers_package" ]; then
+            echo 'Error: could not find the linux headers .deb file'
+            exit 1
+        fi
     fi
 fi
 
@@ -96,12 +98,18 @@ setup_mountpoint() {
     mv "$mountpoint/etc/nsswitch.conf" nsswitch.conf.tmp
     sed 's/systemd//g' nsswitch.conf.tmp > "$mountpoint/etc/nsswitch.conf"
     chroot "$mountpoint" apt-get update
-
+    chroot "$mountpoint" apt-get -y upgrade
 }
 
 teardown_mountpoint() {
     # Reverse the operations from setup_mountpoint
     local mountpoint=$(realpath "$1")
+
+    # Clean package cache and update initramfs
+    chroot "$mountpoint" update-initramfs -u
+    chroot "$mountpoint" apt-get -y autoremove
+    chroot "$mountpoint" apt-get -y clean
+    chroot "$mountpoint" apt-get -y autoclean
 
     # ensure we have exactly one trailing slash, and escape all slashes for awk
     mountpoint_match=$(echo "$mountpoint" | sed -e's,/$,,; s,/,\\/,g;')'\/'
@@ -114,6 +122,29 @@ teardown_mountpoint() {
     mv resolv.conf.tmp "$mountpoint/etc/resolv.conf"
     mv nsswitch.conf.tmp "$mountpoint/etc/nsswitch.conf"
 }
+
+if [[ ${RELEASE} == "noble" ]]; then
+    for type in $target; do
+        rm -rf ${chroot_dir} && mkdir -p ${chroot_dir}
+        tar -xpJf "ubuntu-${RELASE_VERSION}-${type}-arm64.rootfs.tar.xz" -C ${chroot_dir}
+
+        setup_mountpoint $chroot_dir
+
+        # Run config hook to handle board specific changes
+        if [[ $(type -t config_image_hook__"${BOARD}") == function ]]; then
+            config_image_hook__"${BOARD}"
+        fi 
+
+        chroot ${chroot_dir} apt-get -y install "u-boot-${BOARD}"
+
+        teardown_mountpoint $chroot_dir
+
+        cd ${chroot_dir} && tar -cpf "../ubuntu-${RELASE_VERSION}-${type}-arm64-${BOARD}.rootfs.tar" . && cd .. && rm -rf ${chroot_dir}
+        ../scripts/build-image.sh "ubuntu-${RELASE_VERSION}-${type}-arm64-${BOARD}.rootfs.tar"
+        rm -f "ubuntu-${RELASE_VERSION}-${type}-arm64-${BOARD}.rootfs.tar"
+    done
+    exit 0
+fi
 
 for type in $target; do
 

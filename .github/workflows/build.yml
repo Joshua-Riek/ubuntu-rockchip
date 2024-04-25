@@ -8,12 +8,6 @@ on:
         required: true
         default: false
         type: boolean
-      kernel:
-        type: choice
-        description: Kernel
-        options: 
-          - rockchip-5.10
-          - rockchip-6.1
       release:
         type: choice
         description: Release
@@ -21,7 +15,7 @@ on:
             - jammy
             - noble
 
-run-name: Build Ubuntu ${{ github.event.inputs.release == 'jammy' && '22.04' || github.event.inputs.release == 'noble' && '24.04 Beta' }} with ${{ github.event.inputs.kernel == 'rockchip-5.10' && 'Rockchip Linux 5.10' || github.event.inputs.kernel == 'rockchip-6.1' && 'Rockchip Linux 6.1' }}
+run-name: Build Ubuntu ${{ github.event.inputs.release == 'jammy' && '22.04 With Rockchip Linux 5.10' || github.event.inputs.release == 'noble' && '24.04 Beta with Rockchip Linux 6.1' }}
 
 jobs:
   kernel:
@@ -63,7 +57,7 @@ jobs:
       - name: Build
         shell: bash
         if: ${{ github.event.inputs.launchpad == 'false' }}
-        run: sudo ./build.sh --board=orangepi-5 --release=${{ github.event.inputs.release }} --project=preinstalled-server --kernel=${{ github.event.inputs.kernel }} --kernel-only
+        run: sudo ./build.sh --board=orangepi-5 --release=${{ github.event.inputs.release }} --project=preinstalled-server --kernel=${{ github.event.inputs.release == 'jammy' && 'rockchip-5.10' || github.event.inputs.release == 'noble' && 'rockchip-6.1' }} --kernel-only
 
       - name: Upload3
         uses: actions/upload-artifact@v4.3.1
@@ -115,7 +109,7 @@ jobs:
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --release=${{ github.event.inputs.release }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.kernel }} --rootfs-only
+        run: sudo ./build.sh --board=orangepi-5 --release=${{ github.event.inputs.release }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.release == 'jammy' && 'rockchip-5.10' || github.event.inputs.release == 'noble' && 'rockchip-6.1' }} --rootfs-only
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
@@ -208,7 +202,7 @@ jobs:
             if [ "${{ inputs.launchpad }}" == true ]; then
                 args="--launchpad"
             fi
-            sudo ./build.sh --board=${{ matrix.board }} $args --release=${{ github.event.inputs.release }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.kernel }}
+            sudo ./build.sh --board=${{ matrix.board }} $args --release=${{ github.event.inputs.release }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.release == 'jammy' && 'rockchip-5.10' || github.event.inputs.release == 'noble' && 'rockchip-6.1' }}
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
