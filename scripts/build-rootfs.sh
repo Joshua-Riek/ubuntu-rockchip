@@ -35,6 +35,9 @@ fi
 
 if [[ ${SERVER_ONLY} == "Y" ]]; then
     if [[ ${RELEASE} == "noble" ]]; then
+        if [[ -f ubuntu-${RELEASE}-preinstalled-server-arm64.rootfs.tar.xz ]]; then
+            exit 0
+        fi
         git clone https://github.com/Joshua-Riek/ubuntu-live-build.git -b server
         cd ubuntu-live-build
         sudo ./livecd-rootfs.sh && sudo ./build.sh -s
@@ -45,6 +48,9 @@ fi
 
 if [[ ${DESKTOP_ONLY} == "Y" ]]; then
     if [[ ${RELEASE} == "noble" ]]; then
+        if [[ -f ubuntu-${RELEASE}-preinstalled-desktop-arm64.rootfs.tar.xz ]]; then
+            exit 0
+        fi
         set +e
         git clone https://github.com/Joshua-Riek/ubuntu-live-build.git
         cd ubuntu-live-build
