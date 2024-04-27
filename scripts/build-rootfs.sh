@@ -37,7 +37,7 @@ if [[ ${SERVER_ONLY} == "Y" ]]; then
     if [[ ${RELEASE} == "noble" ]]; then
         git clone https://github.com/Joshua-Riek/ubuntu-live-build.git -b server
         cd ubuntu-live-build
-        sudo ./livecd-rootfs.sh && sudo ./build.sh 
+        sudo ./livecd-rootfs.sh && sudo ./build.sh -s
         mv ./build/ubuntu-24.04-beta-preinstalled-server-arm64.rootfs.tar.xz ../
         exit 0
     fi
