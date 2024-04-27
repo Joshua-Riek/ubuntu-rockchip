@@ -1,0 +1,11 @@
+[Unit]
+Description=Radxa Wireless Module A8 Bluetooth
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=bash -c '(modinfo btusb >/dev/null 2>/dev/null && ! modprobe -n --first-time btusb 2>/dev/null) && (modprobe -r btusb && modprobe -i btusb)'
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
