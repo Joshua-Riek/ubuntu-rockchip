@@ -1,0 +1,13 @@
+[Unit]
+Description=Bluetooth AP6275P
+After=bluetooth.target
+
+[Service]
+Type=forking
+ExecStartPre=rfkill unblock all
+ExecStart=hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd &
+TimeoutSec=0
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
