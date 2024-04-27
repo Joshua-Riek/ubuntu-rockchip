@@ -5,7 +5,7 @@ on:
 
 permissions:
     contents: write
-run-name: Release Ubuntu 24.04 Beta with Rockchip Linux 6.1
+run-name: Release Ubuntu 24.04 LTS (Noble Nombat)
 
 jobs:
   prepare_release:
@@ -20,7 +20,7 @@ jobs:
         id: release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v2.0.0-beta1
+          tag_name: v2.0.0
           token: ${{ secrets.GITHUB_TOKEN }}
           target_commitish: main
           draft: true
@@ -87,16 +87,15 @@ jobs:
     strategy:
       matrix:
         board:
-          - orangepi-3b
           - orangepi-5
           - orangepi-5b
+          - orangepi-5-pro
           - orangepi-5-plus
           - rock-5b
           - rock-5a
           - rock-5-itx
           - radxa-cm5-io
           - radxa-nx5-io
-          - radxa-zero3
           - nanopc-t6
           - nanopi-r6c
           - nanopi-r6s
