@@ -15,7 +15,7 @@ on:
             - jammy
             - noble
 
-run-name: Build Ubuntu ${{ github.event.inputs.release == 'jammy' && '22.04 With Rockchip Linux 5.10' || github.event.inputs.release == 'noble' && '24.04 Beta with Rockchip Linux 6.1' }}
+run-name: Build Ubuntu ${{ github.event.inputs.release == 'jammy' && '22.04 With Rockchip Linux 5.10' || github.event.inputs.release == 'noble' && '24.04 LTS (Noble Nombat)' }}
 
 jobs:
   kernel:
@@ -207,7 +207,7 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
         with:
-          name: ubuntu-${{ github.event.inputs.release == 'jammy' && '22.04.3' || github.event.inputs.release == 'noble' && '24.04-beta' }}-${{ matrix.project }}-arm64-${{ matrix.board }}
+          name: ubuntu-${{ github.event.inputs.release == 'jammy' && '22.04.3' || github.event.inputs.release == 'noble' && '24.04' }}-${{ matrix.project }}-arm64-${{ matrix.board }}
           path: ./images/ubuntu-*-${{ matrix.project }}-arm64-${{ matrix.board }}.*
           if-no-files-found: error
 
