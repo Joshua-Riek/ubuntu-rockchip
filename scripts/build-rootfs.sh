@@ -38,7 +38,7 @@ if [[ ${SERVER_ONLY} == "Y" ]]; then
         if [[ -f ubuntu-${RELEASE}-preinstalled-server-arm64.rootfs.tar.xz ]]; then
             exit 0
         fi
-        git clone https://github.com/Joshua-Riek/ubuntu-live-build.git -b server
+        git clone https://github.com/Joshua-Riek/ubuntu-live-build.git
         cd ubuntu-live-build
         sudo ./livecd-rootfs.sh && sudo ./build.sh -s
         mv ./build/ubuntu-24.04-beta-preinstalled-server-arm64.rootfs.tar.xz ../
