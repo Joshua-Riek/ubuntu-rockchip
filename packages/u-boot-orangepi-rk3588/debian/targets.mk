@@ -16,8 +16,8 @@ orangepi_5b_bl31 := rk3588_bl31_v1.38.elf
 orangepi_5b_pkg := orangepi-5b
 
 u-boot-rockchip_platforms += orangepi_5_pro
-orangepi_5_pro_ddr := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.15.bin
-orangepi_5_pro_bl31 := rk3588_bl31_v1.44.elf
+orangepi_5_pro_ddr := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+orangepi_5_pro_bl31 := rk3588_bl31_v1.38.elf
 orangepi_5_pro_pkg := orangepi-5-pro
 
 u-boot-rockchip_platforms += orangepi_5_plus
