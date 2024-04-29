@@ -1,3 +1,9 @@
+u-boot-orangepi-rk3588 (2017.09+20240401.git7f7ff61a-3) jammy; urgency=medium
+
+  * Use older ddr and bl31 blobs for the Orange Pi 5 Pro
+
+ -- Joshua Riek <jjriek@verizon.net>  Mon, 29 Apr 2024 17:05:10 -0400
+
 u-boot-orangepi-rk3588 (2017.09+20240401.git7f7ff61a-2) jammy; urgency=medium
 
   * Add Orange Pi 5 Pro to control info
