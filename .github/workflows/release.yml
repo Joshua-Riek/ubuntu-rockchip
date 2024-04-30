@@ -5,7 +5,7 @@ on:
 
 permissions:
     contents: write
-run-name: Release Ubuntu 24.04 Beta with Rockchip Linux 6.1
+run-name: Release Ubuntu 24.04 LTS (Noble Nombat)
 
 jobs:
   prepare_release:
@@ -20,7 +20,7 @@ jobs:
         id: release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v2.0.0-beta1
+          tag_name: v2.0.0
           token: ${{ secrets.GITHUB_TOKEN }}
           target_commitish: main
           draft: true
