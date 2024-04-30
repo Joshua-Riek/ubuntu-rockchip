@@ -1,0 +1,13 @@
+[Unit]
+Description=Bluetooth AP6275P
+After=bluetooth.target
+
+[Service]
+Type=forking
+ExecStartPre=rfkill unblock all
+ExecStart=brcm_patchram_plus --bd_addr_rand --enable_hci --no2bytes --use_baudrate_for_download --tosleep 200000 --baudrate 1500000 --patchram /lib/firmware/BCM4345C0.hcd /dev/ttyS9 &
+TimeoutSec=0
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

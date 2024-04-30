@@ -72,7 +72,7 @@ fi
 # Create an empty disk image
 img="../images/$(basename "${rootfs}" .rootfs.tar)${KVER}.img"
 size="$(( $(wc -c < "${rootfs}" ) / 1024 / 1024 ))"
-truncate -s "$(( size + 1024 ))M" "${img}"
+truncate -s "$(( size + 2048 ))M" "${img}"
 
 # Create loop device for disk image
 loop="$(losetup -f)"
@@ -100,7 +100,7 @@ if [ -z "${img##*server*}" ]; then
     {
         echo "t"
         echo "1"
-        echo "BC13C2FF-59E6-4262-A352-B275FD6F7172"
+        echo "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7"
         echo "t"
         echo "2"
         echo "C12A7328-F81F-11D2-BA4B-00A0C93EC93B"
@@ -203,19 +203,9 @@ else
     dd if="${mount_point}/writable/usr/lib/u-boot/u-boot.itb" of="${loop}" seek=16384 conv=notrunc
 fi
 
-# Mount the temporary API filesystems
+if [[ ${RELEASE} != "noble" ]]; then
 touch ${mount_point}/writable/etc/kernel/cmdline
 mkdir -p ${mount_point}/writable/usr/share/u-boot-menu/conf.d/
-if [[ ${RELEASE} == "noble" ]]; then
-cat << EOF >> ${mount_point}/writable/usr/share/u-boot-menu/conf.d/ubuntu.conf
-U_BOOT_PROMPT="1"
-U_BOOT_PARAMETERS="\$(cat /etc/kernel/cmdline)"
-U_BOOT_TIMEOUT="10"
-U_BOOT_FDT="device-tree/rockchip/${DEVICE_TREE_FILE}"
-U_BOOT_FDT_DIR="/lib/firmware/"
-U_BOOT_FDT_OVERLAYS_DIR="/lib/firmware/"
-EOF
-else
 cat << EOF >> ${mount_point}/writable/usr/share/u-boot-menu/conf.d/ubuntu.conf
 U_BOOT_PROMPT="1"
 U_BOOT_PARAMETERS="\$(cat /etc/kernel/cmdline)"
@@ -224,19 +214,13 @@ U_BOOT_FDT="rockchip/${DEVICE_TREE_FILE}"
 U_BOOT_FDT_DIR="/usr/lib/linux-image-"
 U_BOOT_FDT_OVERLAYS_DIR="/usr/lib/linux-image-"
 EOF
-fi
-
 # Uboot env
 echo "rootwait rw console=ttyS2,1500000 console=tty1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory ${bootargs}" > ${mount_point}/writable/etc/kernel/cmdline
+fi
 
 # Run build image hook to handle board specific changes
 if [[ $(type -t build_image_hook__"${BOARD}") == function ]]; then
     build_image_hook__"${BOARD}"
-fi 
-
-# Run build image hook to handle kernel specific changes
-if [[ $(type -t build_image_hook__"${KERNEL_TARGET}") == function ]]; then
-    build_image_hook__"${KERNEL_TARGET}"
 fi 
 
 chroot ${mount_point}/writable/ /bin/bash -c "u-boot-update"
@@ -255,6 +239,6 @@ losetup -d "${loop}"
 trap '' EXIT
 
 echo -e "\nCompressing $(basename "${img}.xz")\n"
-xz -3 --force --keep --quiet --threads=0 "${img}"
+xz -6 --force --keep --quiet --threads=0 "${img}"
 rm -f "${img}"
 cd ../images && sha256sum "$(basename "${img}.xz")" > "$(basename "${img}.xz.sha256")"

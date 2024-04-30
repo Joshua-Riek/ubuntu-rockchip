@@ -3,7 +3,7 @@
 [![Latest GitHub Release](https://img.shields.io/github/release/Joshua-Riek/ubuntu-rockchip.svg?label=Latest%20Release)](https://github.com/Joshua-Riek/ubuntu-rockchip/releases/latest)
 [![Total Github Downloads](https://img.shields.io/github/downloads/Joshua-Riek/ubuntu-rockchip/total.svg?&color=E95420&label=Total%20Downloads)](https://github.com/Joshua-Riek/ubuntu-rockchip/releases)
 
-This project aims to provide a default Ubuntu 22.04 experience for Rockchip RK3588 devices. Get started today with an Ubuntu Server or Desktop image for a familiar environment. For additional information about this project or a specific device, please take a look at the documentation available on the [Wiki](https://github.com/Joshua-Riek/ubuntu-rockchip/wiki).
+This project aims to provide a default Ubuntu experience for Rockchip RK3588 devices. Get started today with an Ubuntu Server or Desktop image for a familiar environment. For additional information about this project or a specific device, please take a look at the documentation available on the [Wiki](https://github.com/Joshua-Riek/ubuntu-rockchip/wiki).
 
 The supported devices are undergoing continuous development. As a result, you may encounter bugs or missing features. I'll do my best to update this project with the most recent changes and fixes. If you find problems, please report them in the issues or discussions section.
 
@@ -12,12 +12,13 @@ The supported devices are undergoing continuous development. As a result, you ma
 * Package management via apt using the official Ubuntu repositories
 * Receive kernel, firmware, and bootloader updates through apt
 * Desktop first-run wizard for user setup and configuration
-* 3D video hardware acceleration support via panfork
+* 3D hardware acceleration support via panfork
 * Fully working GNOME desktop using wayland
 * Chromium browser with smooth 4k youtube video playback
 * MPV video player capable of smooth 4k video playback
 * Gstreamer can be used as an alternative 4k video player from the command line
-* 5.10.160 Linux kernel
+* Ubuntu 22.04 LTS with Rockchip Linux 5.10
+* Ubuntu 24.04 LTS with Rockchip Linux 6.1
 
 ## Supported Boards
 
@@ -32,6 +33,7 @@ The supported devices are undergoing continuous development. As a result, you ma
 * [NanoPi R6C](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6C)
 * [NanoPi R6S](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6S)
 * [Orange Pi 5 Plus](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-plus.html)
+* [Orange Pi 5 Pro](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Pro.html)
 * [Orange Pi 5B](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5B.html)
 * [Orange Pi 5](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5.html)
 * [Orange Pi 3B](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-3B.html)

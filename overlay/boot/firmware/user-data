@@ -25,6 +25,8 @@ chpasswd:
   - name: ubuntu
     password: ubuntu
     type: text
+    groups:
+      - video
 
 ## Set the system's hostname. Please note that, unless you have a local DNS
 ## setup where the hostname is derived from DHCP requests (as with dnsmasq),

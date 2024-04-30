@@ -32,23 +32,25 @@ fi
 # shellcheck source=/dev/null
 source ../config/releases/"${RELEASE}.sh"
 
-if [[ ${LAUNCHPAD} != "Y" ]]; then
-    uboot_package="$(basename "$(find u-boot-"${BOARD}"_*.deb | sort | tail -n1)")"
-    if [ ! -e "$uboot_package" ]; then
-        echo 'Error: could not find the u-boot .deb file'
-        exit 1
-    fi
+if [[ ${RELEASE} != "noble" ]]; then
+    if [[ ${LAUNCHPAD} != "Y" ]]; then
+        uboot_package="$(basename "$(find u-boot-"${BOARD}"_*.deb | sort | tail -n1)")"
+        if [ ! -e "$uboot_package" ]; then
+            echo 'Error: could not find the u-boot .deb file'
+            exit 1
+        fi
 
-    linux_image_package="$(basename "$(find linux-image-*.deb | sort | tail -n1)")"
-    if [ ! -e "$linux_image_package" ]; then
-        echo 'Error: could not find the linux image .deb file'
-        exit 1
-    fi
+        linux_image_package="$(basename "$(find linux-image-*.deb | sort | tail -n1)")"
+        if [ ! -e "$linux_image_package" ]; then
+            echo 'Error: could not find the linux image .deb file'
+            exit 1
+        fi
 
-    linux_headers_package="$(basename "$(find linux-headers-*.deb | sort | tail -n1)")"
-    if [ ! -e "$linux_headers_package" ]; then
-        echo 'Error: could not find the linux headers .deb file'
-        exit 1
+        linux_headers_package="$(basename "$(find linux-headers-*.deb | sort | tail -n1)")"
+        if [ ! -e "$linux_headers_package" ]; then
+            echo 'Error: could not find the linux headers .deb file'
+            exit 1
+        fi
     fi
 fi
 
@@ -72,11 +74,84 @@ export DEBIAN_FRONTEND=noninteractive
 chroot_dir=rootfs
 overlay_dir=../overlay
 
+setup_mountpoint() {
+    local mountpoint="$1"
+
+    if [ ! -c /dev/mem ]; then
+        mknod -m 660 /dev/mem c 1 1
+        chown root:kmem /dev/mem
+    fi
+
+    mount dev-live -t devtmpfs "$mountpoint/dev"
+    mount devpts-live -t devpts -o nodev,nosuid "$mountpoint/dev/pts"
+    mount proc-live -t proc "$mountpoint/proc"
+    mount sysfs-live -t sysfs "$mountpoint/sys"
+    mount securityfs -t securityfs "$mountpoint/sys/kernel/security"
+    # Provide more up to date apparmor features, matching target kernel
+    # cgroup2 mount for LP: 1944004
+    mount -t cgroup2 none "$mountpoint/sys/fs/cgroup"
+    mount -t tmpfs none "$mountpoint/tmp"
+    mount -t tmpfs none "$mountpoint/var/lib/apt/lists"
+    mount -t tmpfs none "$mountpoint/var/cache/apt"
+    mv "$mountpoint/etc/resolv.conf" resolv.conf.tmp
+    cp /etc/resolv.conf "$mountpoint/etc/resolv.conf"
+    mv "$mountpoint/etc/nsswitch.conf" nsswitch.conf.tmp
+    sed 's/systemd//g' nsswitch.conf.tmp > "$mountpoint/etc/nsswitch.conf"
+    chroot "$mountpoint" apt-get update
+    chroot "$mountpoint" apt-get -y upgrade
+}
+
+teardown_mountpoint() {
+    # Reverse the operations from setup_mountpoint
+    local mountpoint=$(realpath "$1")
+
+    # Clean package cache and update initramfs
+    chroot "$mountpoint" update-initramfs -u
+    chroot "$mountpoint" apt-get -y autoremove
+    chroot "$mountpoint" apt-get -y clean
+    chroot "$mountpoint" apt-get -y autoclean
+
+    # ensure we have exactly one trailing slash, and escape all slashes for awk
+    mountpoint_match=$(echo "$mountpoint" | sed -e's,/$,,; s,/,\\/,g;')'\/'
+    # sort -r ensures that deeper mountpoints are unmounted first
+    for submount in $(awk </proc/self/mounts "\$2 ~ /$mountpoint_match/ \
+                      { print \$2 }" | LC_ALL=C sort -r); do
+        mount --make-private $submount
+        umount $submount
+    done
+    mv resolv.conf.tmp "$mountpoint/etc/resolv.conf"
+    mv nsswitch.conf.tmp "$mountpoint/etc/nsswitch.conf"
+}
+
+if [[ ${RELEASE} == "noble" ]]; then
+    for type in $target; do
+        rm -rf ${chroot_dir} && mkdir -p ${chroot_dir}
+        tar -xpJf "ubuntu-${RELASE_VERSION}-${type}-arm64.rootfs.tar.xz" -C ${chroot_dir}
+
+        setup_mountpoint $chroot_dir
+
+        # Run config hook to handle board specific changes
+        if [[ $(type -t config_image_hook__"${BOARD}") == function ]]; then
+            config_image_hook__"${BOARD}"
+        fi 
+
+        chroot ${chroot_dir} apt-get -y install "u-boot-${BOARD}"
+
+        teardown_mountpoint $chroot_dir
+
+        cd ${chroot_dir} && tar -cpf "../ubuntu-${RELASE_VERSION}-${type}-arm64-${BOARD}.rootfs.tar" . && cd .. && rm -rf ${chroot_dir}
+        ../scripts/build-image.sh "ubuntu-${RELASE_VERSION}-${type}-arm64-${BOARD}.rootfs.tar"
+        rm -f "ubuntu-${RELASE_VERSION}-${type}-arm64-${BOARD}.rootfs.tar"
+    done
+    exit 0
+fi
+
 for type in $target; do
 
     # Clean chroot dir and make sure folder is not mounted
     umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
     umount -lf ${chroot_dir}/* 2> /dev/null || true
+
     rm -rf ${chroot_dir}
     mkdir -p ${chroot_dir}
 
@@ -84,12 +159,12 @@ for type in $target; do
 
     # Mount the temporary API filesystems
     mkdir -p ${chroot_dir}/{proc,sys,run,dev,dev/pts}
-    mount -t proc /proc ${chroot_dir}/proc
-    mount -t sysfs /sys ${chroot_dir}/sys
-    mount -o bind /dev ${chroot_dir}/dev
-    mount -o bind /dev/pts ${chroot_dir}/dev/pts
+setup_mountpoint $chroot_dir
+
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y update"
 
     if [ "${KERNEL_TARGET}" == "rockchip-5.10" ] || [ "${KERNEL_TARGET}" == "rockchip-6.1" ]; then
+        if [[ ${RELEASE} != "noble" ]]; then
         if [[ ${RELEASE} == "jammy" ]]; then
             cp ${overlay_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa ${chroot_dir}/etc/apt/preferences.d/rockchip-multimedia-ppa
             chroot ${chroot_dir} /bin/bash -c "add-apt-repository -y ppa:liujianfeng1994/rockchip-multimedia"
@@ -190,6 +265,7 @@ for type in $target; do
                 cp ${overlay_dir}/usr/share/applications/mimeapps.list ${chroot_dir}/usr/share/applications/mimeapps.list
             fi
         fi
+        fi
     fi
 
     # Run config hook to handle board specific changes
@@ -211,8 +287,6 @@ for type in $target; do
         if [[ ${RELEASE} == "jammy" ]]; then
             chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-rockchip-5.10"
             chroot ${chroot_dir} /bin/bash -c "depmod -a 5.10.160-rockchip"
-        else
-            chroot ${chroot_dir} /bin/bash -c "apt-get -y install linux-rockchip"
         fi
     else
         cp "${linux_image_package}" "${linux_headers_package}" ${chroot_dir}/tmp/
@@ -223,10 +297,11 @@ for type in $target; do
     fi
     chroot ${chroot_dir} /bin/bash -c "apt-get -y purge flash-kernel"
     chroot ${chroot_dir} /bin/bash -c "apt-get -y install u-boot-menu"
+    chroot ${chroot_dir} /bin/bash -c "update-initramfs -u"
 
     # Clean package cache
     chroot ${chroot_dir} /bin/bash -c "apt-get -y autoremove && apt-get -y clean && apt-get -y autoclean"
-
+teardown_mountpoint $chroot_dir
     # Umount temporary API filesystems
     umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
     umount -lf ${chroot_dir}/* 2> /dev/null || true
