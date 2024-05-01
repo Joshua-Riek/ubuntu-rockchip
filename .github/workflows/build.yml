@@ -2,71 +2,10 @@ name: Build
 
 on:
   workflow_dispatch:
-    inputs:
-      launchpad:
-        description: use launchpad
-        required: true
-        default: false
-        type: boolean
-      release:
-        type: choice
-        description: Release
-        options: 
-            - jammy
-            - noble
 
-run-name: Build Ubuntu ${{ github.event.inputs.release == 'jammy' && '22.04 LTS (Jammy Jellyfish)' || github.event.inputs.release == 'noble' && '24.04 LTS (Noble Nombat)' }}
+run-name: Build Ubuntu 22.04 LTS and 24.04 LTS
 
 jobs:
-  kernel:
-    runs-on: ubuntu-latest
-    name: Build kernel 
-
-    steps:
-      - name: Get more disk space
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: false
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: true
-
-      - name: Checkout code
-        if: ${{ github.event.inputs.launchpad == 'false' }}
-        uses: actions/checkout@v4
-
-      - name: Checkout LFS
-        shell: bash
-        if: ${{ github.event.inputs.launchpad == 'false' }}
-        run: git lfs fetch && git lfs checkout
-
-      - name: Install dependencies
-        shell: bash
-        if: ${{ github.event.inputs.launchpad == 'false' }}
-        run: |
-          sudo apt-get update && sudo apt-get upgrade -y
-          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
-          qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
-          debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
-          udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
-          python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
-          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
-
-      - name: Build
-        shell: bash
-        if: ${{ github.event.inputs.launchpad == 'false' }}
-        run: sudo ./build.sh --board=orangepi-5 --release=${{ github.event.inputs.release }} --project=preinstalled-server --kernel=${{ github.event.inputs.release == 'jammy' && 'rockchip-5.10' || github.event.inputs.release == 'noble' && 'rockchip-6.1' }} --kernel-only
-
-      - name: Upload3
-        uses: actions/upload-artifact@v4.3.1
-        if: ${{ github.event.inputs.launchpad == 'false' }}
-        with:
-            name: linux-rockchip
-            path: ./build/linux-*.deb
-            if-no-files-found: error
-
   rootfs:
     runs-on: ubuntu-latest
     name: Build rootfs 
@@ -76,8 +15,8 @@ jobs:
             - preinstalled-desktop
             - preinstalled-server
           release:
-          - ${{ github.event.inputs.release }}
-
+            - jammy
+            - noble
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
@@ -109,18 +48,18 @@ jobs:
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --release=${{ github.event.inputs.release }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.release == 'jammy' && 'rockchip-5.10' || github.event.inputs.release == 'noble' && 'rockchip-6.1' }} --rootfs-only
+        run: sudo ./build.sh --board=orangepi-5 --release=${{ matrix.release }} --project=${{ matrix.project }} --rootfs-only --launchpad
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
         with:
-            name: ubuntu-${{ github.event.inputs.release }}-${{ matrix.project }}-arm64-rootfs
+            name: ubuntu-${{ matrix.release }}-${{ matrix.project }}-arm64-rootfs
             path: ./build/ubuntu-*-${{ matrix.project }}-arm64.rootfs.tar.xz
             if-no-files-found: error
 
   build:
     runs-on: ubuntu-latest
-    needs: [kernel, rootfs]
+    needs: [rootfs]
     name: Build image 
 
     strategy:
@@ -151,8 +90,8 @@ jobs:
           - preinstalled-desktop
           - preinstalled-server
         release:
-          - ${{ github.event.inputs.release }}
-  
+          - jammy
+          - noble  
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
@@ -171,17 +110,10 @@ jobs:
         shell: bash
         run: git lfs fetch && git lfs checkout
 
-      - name: Checkout kernel
-        uses: actions/download-artifact@v4.1.2
-        if: ${{ github.event.inputs.launchpad == 'false' }}
-        with:
-            name: linux-rockchip
-            path: ./build/
-
       - name: Checkout rootfs
         uses: actions/download-artifact@v4.1.2
         with:
-            name: ubuntu-${{ github.event.inputs.release }}-${{ matrix.project }}-arm64-rootfs
+            name: ubuntu-${{ matrix.release }}-${{ matrix.project }}-arm64-rootfs
             path: ./build/
 
       - name: Install dependencies
@@ -197,17 +129,12 @@ jobs:
 
       - name: Build
         shell: bash
-        run: |
-            args=""
-            if [ "${{ inputs.launchpad }}" == true ]; then
-                args="--launchpad"
-            fi
-            sudo ./build.sh --board=${{ matrix.board }} $args --release=${{ github.event.inputs.release }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --kernel=${{ github.event.inputs.release == 'jammy' && 'rockchip-5.10' || github.event.inputs.release == 'noble' && 'rockchip-6.1' }}
+        run: sudo ./build.sh --board=${{ matrix.board }} --release=${{ matrix.release }} --project=${{ matrix.project }} --launchpad
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
         with:
-          name: ubuntu-${{ github.event.inputs.release == 'jammy' && '22.04' || github.event.inputs.release == 'noble' && '24.04' }}-${{ matrix.project }}-arm64-${{ matrix.board }}
+          name: ubuntu-${{ matrix.release == 'jammy' && '22.04' || matrix.release == 'noble' && '24.04' }}-${{ matrix.project }}-arm64-${{ matrix.board }}
           path: ./images/ubuntu-*-${{ matrix.project }}-arm64-${{ matrix.board }}.*
           if-no-files-found: error
 

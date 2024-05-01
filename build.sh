@@ -7,11 +7,12 @@ cd "$(dirname -- "$(readlink -f -- "$0")")"
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi-5] --release=[jammy]
+Usage: $0 --board=[orangepi-5] --release=[jammy] --project=[preinstalled-server]
 
 Required arguments:
   -b, --board=BOARD      target board 
-  -r, --release=RELEASE  ubuntu release
+  -r, --release=RELEASE  ubuntu release 
+  -p, --project=PROJECT  ubuntu project
 
 Optional arguments:
   -h,  --help            show this help message and exit
@@ -184,13 +185,34 @@ if [ -n "${KERNEL_TARGET}" ]; then
     done
 fi
 
+if [ "${PROJECT}" == "help" ]; then
+    for file in config/releases/*; do
+        basename "${file%.sh}"
+    done
+    exit 0
+fi
+
+if [ -n "${PROJECT}" ]; then
+    while :; do
+        for file in config/projects/*; do
+            if [ "${PROJECT}" == "$(basename "${file%.sh}")" ]; then
+                # shellcheck source=/dev/null
+                set -o allexport && source "${file}" && set +o allexport
+                break 2
+            fi
+        done
+        echo "Error: \"${PROJECT}\" is an unsupported project"
+        exit 1
+    done
+fi
+
 # No board param passed
-if [ -z "${BOARD}" ] || [ -z "${KERNEL_TARGET}" ] || [ -z "${RELEASE}" ]; then
+if [ -z "${BOARD}" ] || [ -z "${KERNEL_TARGET}" ] || [ -z "${RELEASE}" ] || [ -z "${PROJECT}" ]; then
     usage
     exit 1
 fi
 
-# Clean the build directory
+# Clean the build deirectory
 if [[ ${CLEAN} == "Y" ]]; then
     if [ -d build/rootfs ]; then
         umount -lf build/rootfs/dev/pts 2> /dev/null || true
