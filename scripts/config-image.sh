@@ -114,10 +114,9 @@ teardown_mountpoint() {
     # ensure we have exactly one trailing slash, and escape all slashes for awk
     mountpoint_match=$(echo "$mountpoint" | sed -e's,/$,,; s,/,\\/,g;')'\/'
     # sort -r ensures that deeper mountpoints are unmounted first
-    for submount in $(awk </proc/self/mounts "\$2 ~ /$mountpoint_match/ \
-                      { print \$2 }" | LC_ALL=C sort -r); do
-        mount --make-private $submount
-        umount $submount
+    awk </proc/self/mounts "\$2 ~ /$mountpoint_match/ { print \$2 }" | LC_ALL=C sort -r | while IFS= read -r submount; do
+        mount --make-private "$submount"
+        umount "$submount"
     done
     mv resolv.conf.tmp "$mountpoint/etc/resolv.conf"
     mv nsswitch.conf.tmp "$mountpoint/etc/nsswitch.conf"
