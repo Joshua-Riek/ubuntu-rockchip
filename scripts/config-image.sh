@@ -101,6 +101,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # Debootstrap options
 chroot_dir=rootfs
+overlay_dir=../overlay
 
 rm -rf ${chroot_dir} && mkdir -p ${chroot_dir}
 tar -xpJf "ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64.rootfs.tar.xz" -C ${chroot_dir}
