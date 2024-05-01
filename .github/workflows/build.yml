@@ -12,8 +12,8 @@ jobs:
     strategy:
         matrix:
           project:
-            - preinstalled-desktop
-            - preinstalled-server
+            - desktop
+            - server
           release:
             - jammy
             - noble
@@ -53,8 +53,8 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
         with:
-            name: ubuntu-${{ matrix.release }}-${{ matrix.project }}-arm64-rootfs
-            path: ./build/ubuntu-*-${{ matrix.project }}-arm64.rootfs.tar.xz
+            name: ubuntu-${{ matrix.release }}-preinstalled-${{ matrix.project }}-arm64-rootfs
+            path: ./build/ubuntu-*-preinstalled-${{ matrix.project }}-arm64.rootfs.tar.xz
             if-no-files-found: error
 
   build:
@@ -87,11 +87,11 @@ jobs:
           - armsom-sige7
           - armsom-w3
         project:
-          - preinstalled-desktop
-          - preinstalled-server
+          - desktop
+          - server
         release:
           - jammy
-          - noble  
+          - noble
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
@@ -113,7 +113,7 @@ jobs:
       - name: Checkout rootfs
         uses: actions/download-artifact@v4.1.2
         with:
-            name: ubuntu-${{ matrix.release }}-${{ matrix.project }}-arm64-rootfs
+            name: ubuntu-${{ matrix.release }}-preinstalled-${{ matrix.project }}-arm64-rootfs
             path: ./build/
 
       - name: Install dependencies
@@ -134,8 +134,8 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
         with:
-          name: ubuntu-${{ matrix.release == 'jammy' && '22.04' || matrix.release == 'noble' && '24.04' }}-${{ matrix.project }}-arm64-${{ matrix.board }}
-          path: ./images/ubuntu-*-${{ matrix.project }}-arm64-${{ matrix.board }}.*
+          name: ubuntu-${{ matrix.release == 'jammy' && '22.04' || matrix.release == 'noble' && '24.04' }}-preinstalled-${{ matrix.project }}-arm64-${{ matrix.board }}
+          path: ./images/ubuntu-*-preinstalled-${{ matrix.project }}-arm64-${{ matrix.board }}.*
           if-no-files-found: error
 
       - name: Clean cache

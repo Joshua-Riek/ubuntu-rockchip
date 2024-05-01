@@ -27,12 +27,12 @@ fi
 # shellcheck source=/dev/null
 source "../config/projects/${PROJECT}.sh"
 
-if [[ -f ubuntu-${RELASE_VERSION}-${PROJECT}-arm64.rootfs.tar.xz ]]; then
+if [[ -f ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64.rootfs.tar.xz ]]; then
     exit 0
 fi
 
 git clone https://github.com/Joshua-Riek/ubuntu-live-build.git
 cd ubuntu-live-build
 docker build -t livecd-rootfs docker
-docker run --privileged -v /dev:/dev --rm -v "$(pwd)":/opt livecd-rootfs bash ./build.sh "--${PROJECT//preinstalled-}" "--${RELEASE}"
-mv "./build/ubuntu-${RELASE_VERSION}-${PROJECT}-arm64.rootfs.tar.xz" ../
+docker run --privileged -v /dev:/dev --rm -v "$(pwd)":/opt livecd-rootfs bash ./build.sh "--${PROJECT}" "--${RELEASE}"
+mv "./build/ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64.rootfs.tar.xz" ../
