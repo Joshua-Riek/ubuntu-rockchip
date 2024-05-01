@@ -123,28 +123,27 @@ teardown_mountpoint() {
     mv nsswitch.conf.tmp "$mountpoint/etc/nsswitch.conf"
 }
 
-if [[ ${RELEASE} == "noble" ]]; then
-    for type in $target; do
-        rm -rf ${chroot_dir} && mkdir -p ${chroot_dir}
-        tar -xpJf "ubuntu-${RELASE_VERSION}-${type}-arm64.rootfs.tar.xz" -C ${chroot_dir}
+for type in $target; do
+    rm -rf ${chroot_dir} && mkdir -p ${chroot_dir}
+    tar -xpJf "ubuntu-${RELASE_VERSION}-${type}-arm64.rootfs.tar.xz" -C ${chroot_dir}
 
-        setup_mountpoint $chroot_dir
+    setup_mountpoint $chroot_dir
 
-        # Run config hook to handle board specific changes
-        if [[ $(type -t config_image_hook__"${BOARD}") == function ]]; then
-            config_image_hook__"${BOARD}"
-        fi 
+    # Run config hook to handle board specific changes
+    if [[ $(type -t config_image_hook__"${BOARD}") == function ]]; then
+        config_image_hook__"${BOARD}"
+    fi 
 
-        chroot ${chroot_dir} apt-get -y install "u-boot-${BOARD}"
+    chroot ${chroot_dir} apt-get -y install "u-boot-${BOARD}"
 
-        teardown_mountpoint $chroot_dir
+    teardown_mountpoint $chroot_dir
 
-        cd ${chroot_dir} && tar -cpf "../ubuntu-${RELASE_VERSION}-${type}-arm64-${BOARD}.rootfs.tar" . && cd .. && rm -rf ${chroot_dir}
-        ../scripts/build-image.sh "ubuntu-${RELASE_VERSION}-${type}-arm64-${BOARD}.rootfs.tar"
-        rm -f "ubuntu-${RELASE_VERSION}-${type}-arm64-${BOARD}.rootfs.tar"
-    done
-    exit 0
-fi
+    cd ${chroot_dir} && tar -cpf "../ubuntu-${RELASE_VERSION}-${type}-arm64-${BOARD}.rootfs.tar" . && cd .. && rm -rf ${chroot_dir}
+    ../scripts/build-image.sh "ubuntu-${RELASE_VERSION}-${type}-arm64-${BOARD}.rootfs.tar"
+    rm -f "ubuntu-${RELASE_VERSION}-${type}-arm64-${BOARD}.rootfs.tar"
+done
+
+exit 0
 
 for type in $target; do
 

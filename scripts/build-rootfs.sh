@@ -34,24 +34,20 @@ else
 fi
 
 if [[ ${SERVER_ONLY} == "Y" ]]; then
-    if [[ ${RELEASE} == "noble" ]]; then
-        git clone https://github.com/Joshua-Riek/ubuntu-live-build.git
-        cd ubuntu-live-build
-        sudo ./livecd-rootfs.sh && sudo ./build.sh -s
-        mv "./build/ubuntu-${RELASE_VERSION}-preinstalled-server-arm64.rootfs.tar.xz" ../
-        exit 0
-    fi
+    git clone https://github.com/Joshua-Riek/ubuntu-live-build.git
+    cd ubuntu-live-build
+    docker build -t livecd-rootfs docker
+    docker run --privileged -v /dev:/dev --rm -v "$(pwd)":/opt livecd-rootfs bash ./build.sh --server "--${RELEASE}"
+    mv "./build/ubuntu-${RELASE_VERSION}-preinstalled-server-arm64.rootfs.tar.xz" ../
+elif [[ ${DESKTOP_ONLY} == "Y" ]]; then
+    git clone https://github.com/Joshua-Riek/ubuntu-live-build.git
+    cd ubuntu-live-build
+    docker build -t livecd-rootfs docker
+    docker run --privileged -v /dev:/dev --rm -v "$(pwd)":/opt livecd-rootfs bash ./build.sh --desktop "--${RELEASE}"
+    mv "./build/ubuntu-${RELASE_VERSION}-preinstalled-desktop-arm64.rootfs.tar.xz" ../
 fi
 
-if [[ ${DESKTOP_ONLY} == "Y" ]]; then
-    if [[ ${RELEASE} == "noble" ]]; then
-        git clone https://github.com/Joshua-Riek/ubuntu-live-build.git
-        cd ubuntu-live-build
-        sudo ./livecd-rootfs.sh && sudo ./build.sh -d
-        mv "./build/ubuntu-${RELASE_VERSION}-preinstalled-desktop-arm64.rootfs.tar.xz" ../
-        exit 0
-    fi
-fi
+exit 0
 
 # These env vars can cause issues with chroot
 unset TMP
