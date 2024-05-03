@@ -17,6 +17,12 @@
 # Some additional examples are provided in comments below the default
 # configuration.
 
+# The (default) ubuntu user must be in the video group for hardware acceleration
+users:
+  - default
+  - name: ubuntu
+    groups: video
+
 # On first boot, set the (default) ubuntu user's password to "ubuntu" and
 # expire user passwords
 chpasswd:
@@ -25,8 +31,6 @@ chpasswd:
   - name: ubuntu
     password: ubuntu
     type: text
-    groups:
-      - video
 
 ## Set the system's hostname. Please note that, unless you have a local DNS
 ## setup where the hostname is derived from DHCP requests (as with dnsmasq),
