@@ -66,19 +66,11 @@ setup_mountpoint() {
     cp /etc/resolv.conf "$mountpoint/etc/resolv.conf"
     mv "$mountpoint/etc/nsswitch.conf" nsswitch.conf.tmp
     sed 's/systemd//g' nsswitch.conf.tmp > "$mountpoint/etc/nsswitch.conf"
-    chroot "$mountpoint" apt-get update
-    chroot "$mountpoint" apt-get -y upgrade
 }
 
 teardown_mountpoint() {
     # Reverse the operations from setup_mountpoint
     local mountpoint=$(realpath "$1")
-
-    # Clean package cache and update initramfs
-    chroot "$mountpoint" update-initramfs -u
-    chroot "$mountpoint" apt-get -y autoremove
-    chroot "$mountpoint" apt-get -y clean
-    chroot "$mountpoint" apt-get -y autoclean
 
     # ensure we have exactly one trailing slash, and escape all slashes for awk
     mountpoint_match=$(echo "$mountpoint" | sed -e's,/$,,; s,/,\\/,g;')'\/'
@@ -91,11 +83,6 @@ teardown_mountpoint() {
     mv nsswitch.conf.tmp "$mountpoint/etc/nsswitch.conf"
 }
 
-# These env vars can cause issues with chroot
-unset TMP
-unset TEMP
-unset TMPDIR
-
 # Prevent dpkg interactive dialogues
 export DEBIAN_FRONTEND=noninteractive
 
@@ -103,22 +90,37 @@ export DEBIAN_FRONTEND=noninteractive
 chroot_dir=rootfs
 overlay_dir=../overlay
 
+# Extract the compressed root filesystem
 rm -rf ${chroot_dir} && mkdir -p ${chroot_dir}
 tar -xpJf "ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64.rootfs.tar.xz" -C ${chroot_dir}
 
+# Mount the root filesystem
 setup_mountpoint $chroot_dir
 
+# Update packages
+chroot $chroot_dir apt-get update
+chroot $chroot_dir apt-get -y upgrade
+    
 # Run config hook to handle board specific changes
 if [[ $(type -t config_image_hook__"${BOARD}") == function ]]; then
     config_image_hook__"${BOARD}"
 fi 
 
+# Download and install U-Boot
 chroot ${chroot_dir} apt-get -y install "u-boot-${BOARD}"
 
+# Update the initramfs
+chroot ${chroot_dir} update-initramfs -u
+
+# Remove packages
+chroot ${chroot_dir} apt-get -y clean
+chroot ${chroot_dir} apt-get -y autoclean
+chroot ${chroot_dir} apt-get -y autoremove
+
+# Umount the root filesystem
 teardown_mountpoint $chroot_dir
 
+# Compress the root filesystem and then build a disk image
 cd ${chroot_dir} && tar -cpf "../ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64-${BOARD}.rootfs.tar" . && cd .. && rm -rf ${chroot_dir}
 ../scripts/build-image.sh "ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64-${BOARD}.rootfs.tar"
 rm -f "ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64-${BOARD}.rootfs.tar"
-
-exit 0
