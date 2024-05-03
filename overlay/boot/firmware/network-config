@@ -23,12 +23,10 @@ network:
       match:
         name: "en*"
       dhcp4: true
-      optional: true
     zz-all-eth:
       match:
         name: "eth*"
       dhcp4: true
-      optional: true
 
 #  wifis:
 #    wlan0:
