@@ -33,6 +33,6 @@ fi
 
 git clone https://github.com/Joshua-Riek/ubuntu-live-build.git
 cd ubuntu-live-build
-docker build -t livecd-rootfs docker
-docker run --privileged -v /dev:/dev --rm -v "$(pwd)":/opt livecd-rootfs bash ./build.sh "--${PROJECT}" "--${RELEASE}"
+bash ./docker/build-livecd-rootfs.sh
+bash ./build.sh "--${PROJECT}" "--${RELEASE}"
 mv "./build/ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64.rootfs.tar.xz" ../
