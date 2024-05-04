@@ -86,6 +86,9 @@ teardown_mountpoint() {
 # Prevent dpkg interactive dialogues
 export DEBIAN_FRONTEND=noninteractive
 
+# Override localisation settings to address a perl warning
+export LC_ALL=C
+
 # Debootstrap options
 chroot_dir=rootfs
 overlay_dir=../overlay
