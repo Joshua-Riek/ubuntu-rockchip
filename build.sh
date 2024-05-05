@@ -7,7 +7,7 @@ cd "$(dirname -- "$(readlink -f -- "$0")")"
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi-5] --release=[jammy] --project=[preinstalled-server]
+Usage: $0 --board=[orangepi-5] --release=[jammy|noble] --project=[server|desktop]
 
 Required arguments:
   -b, --board=BOARD      target board 
@@ -124,7 +124,7 @@ done
 
 if [ "${BOARD}" == "help" ]; then
     for file in config/boards/*; do
-        basename "${file%.conf}"
+        basename "${file%.sh}"
     done
     exit 0
 fi
@@ -132,7 +132,7 @@ fi
 if [ -n "${BOARD}" ]; then
     while :; do
         for file in config/boards/*; do
-            if [ "${BOARD}" == "$(basename "${file%.conf}")" ]; then
+            if [ "${BOARD}" == "$(basename "${file%.sh}")" ]; then
                 # shellcheck source=/dev/null
                 source "${file}"
                 break 2
@@ -155,7 +155,7 @@ if [ -n "${RELEASE}" ]; then
         for file in config/releases/*; do
             if [ "${RELEASE}" == "$(basename "${file%.sh}")" ]; then
                 # shellcheck source=/dev/null
-                set -o allexport && source "${file}" && set +o allexport
+                source "${file}"
                 break 2
             fi
         done
@@ -197,7 +197,7 @@ if [ -n "${PROJECT}" ]; then
         for file in config/projects/*; do
             if [ "${PROJECT}" == "$(basename "${file%.sh}")" ]; then
                 # shellcheck source=/dev/null
-                set -o allexport && source "${file}" && set +o allexport
+                source "${file}"
                 break 2
             fi
         done
