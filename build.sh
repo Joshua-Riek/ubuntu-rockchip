@@ -134,7 +134,7 @@ if [ -n "${BOARD}" ]; then
         for file in config/boards/*; do
             if [ "${BOARD}" == "$(basename "${file%.conf}")" ]; then
                 # shellcheck source=/dev/null
-                set -o allexport && source "${file}" && set +o allexport
+                source "${file}"
                 break 2
             fi
         done

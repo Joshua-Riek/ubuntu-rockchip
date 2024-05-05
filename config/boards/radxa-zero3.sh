@@ -1,0 +1,20 @@
+# shellcheck shell=bash
+
+export BOARD_NAME="Radxa Zero 3"
+export BOARD_MAKER="Radxa"
+export UBOOT_PACKAGE="u-boot-turing-rk3588"
+export UBOOT_RULES_TARGET="radxa-zero3-rk3566"
+
+function config_image_hook__radxa-zero3() {
+    local rootfs="$1"
+    local overlay="$2"
+
+    # Enable the on-board bluetooth module AIC8800
+    mkdir -p "${rootfs}/usr/lib/scripts/"
+    cp "${overlay}/usr/bin/bt_test" "${rootfs}/usr/bin/bt_test"
+    cp "${overlay}/usr/lib/scripts/aic8800-bluetooth.sh" "${rootfs}/usr/lib/scripts/aic8800-bluetooth.sh"
+    cp "${overlay}/usr/lib/systemd/system/aic8800-bluetooth.service" "${rootfs}/usr/lib/systemd/system/aic8800-bluetooth.service"
+    chroot "${rootfs}" systemctl enable aic8800-bluetooth
+
+    return 0
+}

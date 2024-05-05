@@ -106,7 +106,7 @@ chroot $chroot_dir apt-get -y upgrade
     
 # Run config hook to handle board specific changes
 if [[ $(type -t config_image_hook__"${BOARD}") == function ]]; then
-    config_image_hook__"${BOARD}"
+    config_image_hook__"${BOARD}" "${chroot_dir}" "${overlay_dir}"
 fi 
 
 # Download and install U-Boot
