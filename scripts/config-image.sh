@@ -17,7 +17,7 @@ if [[ -z ${BOARD} ]]; then
 fi
 
 # shellcheck source=/dev/null
-source "../config/boards/${BOARD}.conf"
+source "../config/boards/${BOARD}.sh"
 
 if [[ -z ${KERNEL_TARGET} ]]; then
     echo "Error: KERNEL_TARGET is not set"
