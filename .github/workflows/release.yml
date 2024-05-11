@@ -5,7 +5,7 @@ on:
 
 permissions:
     contents: write
-run-name: Release Ubuntu 24.04 LTS (Noble Nombat)
+run-name: Release Ubuntu 22.04 LTS and 24.04 LTS
 
 jobs:
   prepare_release:
@@ -34,10 +34,11 @@ jobs:
     strategy:
         matrix:
           project:
-            - preinstalled-server
-            - preinstalled-desktop
+            - desktop
+            - server
           release:
-          - noble
+            - jammy
+            - noble
 
     steps:
       - name: Get more disk space
@@ -70,13 +71,13 @@ jobs:
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --release=noble ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }} --rootfs-only
+        run: sudo ./build.sh --board=orangepi-5 --release=${{ matrix.release }} --project=${{ matrix.project }} --rootfs-only --launchpad
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
         with:
-            name: ubuntu-noble-${{ matrix.project }}-arm64-rootfs
-            path: ./build/ubuntu-*-${{ matrix.project }}-arm64.rootfs.tar.xz
+            name: ubuntu-${{ matrix.release == 'jammy' && '22.04' || matrix.release == 'noble' && '24.04' }}-preinstalled-${{ matrix.project }}-arm64-rootfs
+            path: ./build/ubuntu-${{ matrix.release == 'jammy' && '22.04' || matrix.release == 'noble' && '24.04' }}-preinstalled-${{ matrix.project }}-arm64.rootfs.tar.xz
             if-no-files-found: error
 
   build:
@@ -87,15 +88,17 @@ jobs:
     strategy:
       matrix:
         board:
+          - orangepi-3b
           - orangepi-5
           - orangepi-5b
-          - orangepi-5-pro
           - orangepi-5-plus
+          - orangepi-5-pro
           - rock-5b
           - rock-5a
           - rock-5-itx
           - radxa-cm5-io
           - radxa-nx5-io
+          - radxa-zero3
           - nanopc-t6
           - nanopi-r6c
           - nanopi-r6s
@@ -107,11 +110,11 @@ jobs:
           - roc-rk3588s-pc
           - armsom-sige7
           - armsom-w3
-
         project:
-          - preinstalled-server
-          - preinstalled-desktop
+          - desktop
+          - server
         release:
+          - jammy
           - noble
 
     steps:
@@ -135,7 +138,7 @@ jobs:
       - name: Checkout rootfs
         uses: actions/download-artifact@v4.1.2
         with:
-            name: ubuntu-noble-${{ matrix.project }}-arm64-rootfs
+            name: ubuntu-${{ matrix.release == 'jammy' && '22.04' || matrix.release == 'noble' && '24.04' }}-preinstalled-${{ matrix.project }}-arm64-rootfs
             path: ./build/
 
       - name: Install dependencies
@@ -151,8 +154,7 @@ jobs:
 
       - name: Build
         shell: bash
-        run: |
-            sudo ./build.sh --board=${{ matrix.board }} --launchpad --release=${{ matrix.release }} ${{ matrix.project == 'preinstalled-desktop' && '--desktop-only' || matrix.project == 'preinstalled-server' && '--server-only' }}
+        run: sudo ./build.sh --board=${{ matrix.board }} --release=${{ matrix.release }} --project=${{ matrix.project }} --launchpad
 
       - name: Upload
         if: needs.prepare_release.outputs.release_id != '' 
