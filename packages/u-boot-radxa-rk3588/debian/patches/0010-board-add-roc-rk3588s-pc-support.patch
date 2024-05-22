@@ -4,7 +4,7 @@ Date: Thu, 30 Nov 2023 17:38:34 +0800
 Subject: [PATCH] board: add roc-rk3588s-pc support
 
 ---
- arch/arm/dts/rk3588s-roc-rk3588s-pc.dts       | 261 ++++++++++++++++++
+ arch/arm/dts/rk3588s-roc-pc.dts       | 261 ++++++++++++++++++
  arch/arm/mach-rockchip/rk3588/Kconfig         |  10 +
  board/firefly/roc-rk3588s-pc/Kconfig          |  15 +
  board/firefly/roc-rk3588s-pc/Makefile         |   7 +
@@ -12,18 +12,18 @@ Subject: [PATCH] board: add roc-rk3588s-pc support
  configs/roc-rk3588s-pc-rk3588s_defconfig      | 238 ++++++++++++++++
  include/configs/roc-rk3588s-pc.h              |  25 ++
  7 files changed, 619 insertions(+)
- create mode 100755 arch/arm/dts/rk3588s-roc-rk3588s-pc.dts
+ create mode 100755 arch/arm/dts/rk3588s-roc-pc.dts
  create mode 100644 board/firefly/roc-rk3588s-pc/Kconfig
  create mode 100644 board/firefly/roc-rk3588s-pc/Makefile
  create mode 100644 board/firefly/roc-rk3588s-pc/roc-rk3588s-pc.c
  create mode 100644 configs/roc-rk3588s-pc-rk3588s_defconfig
  create mode 100644 include/configs/roc-rk3588s-pc.h
 
-diff --git a/arch/arm/dts/rk3588s-roc-rk3588s-pc.dts b/arch/arm/dts/rk3588s-roc-rk3588s-pc.dts
+diff --git a/arch/arm/dts/rk3588s-roc-pc.dts b/arch/arm/dts/rk3588s-roc-pc.dts
 new file mode 100755
 index 0000000000..e0c66434e9
 --- /dev/null
-+++ b/arch/arm/dts/rk3588s-roc-rk3588s-pc.dts
++++ b/arch/arm/dts/rk3588s-roc-pc.dts
 @@ -0,0 +1,261 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
@@ -442,7 +442,7 @@ index 0000000000..e89bb0557f
 +CONFIG_SPL_LIBDISK_SUPPORT=y
 +CONFIG_SPL_SPI_FLASH_SUPPORT=y
 +CONFIG_SPL_SPI_SUPPORT=y
-+CONFIG_DEFAULT_DEVICE_TREE="rk3588s-roc-rk3588s-pc"
++CONFIG_DEFAULT_DEVICE_TREE="rk3588s-roc-pc"
 +CONFIG_DEBUG_UART=y
 +CONFIG_FIT=y
 +CONFIG_FIT_IMAGE_POST_PROCESS=y
