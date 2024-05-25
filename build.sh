@@ -18,7 +18,6 @@ Optional arguments:
   -h,  --help            show this help message and exit
   -c,  --clean           clean the build directory
   -d,  --docker          use docker to build
-  -k,  --kernel=KERNEL   kernel target
   -ko, --kernel-only     only compile the kernel
   -uo, --uboot-only      only compile uboot
   -ro, --rootfs-only     only build rootfs
@@ -65,14 +64,6 @@ while [ "$#" -gt 0 ]; do
             ;;
         -p|--project)
             export PROJECT="${2}"
-            shift 2
-            ;;
-        -k=*|--kernel=*)
-            export KERNEL_TARGET="${1#*=}"
-            shift
-            ;;
-        -k|--kernel)
-            export KERNEL_TARGET="${2}"
             shift 2
             ;;
         -d|--docker)
@@ -164,27 +155,6 @@ if [ -n "${RELEASE}" ]; then
     done
 fi
 
-if [ "${KERNEL_TARGET}" == "help" ]; then
-    for file in config/kernels/*; do
-        basename "${file%.conf}"
-    done
-    exit 0
-fi
-
-if [ -n "${KERNEL_TARGET}" ]; then
-    while :; do
-        for file in config/kernels/*; do
-            if [ "${KERNEL_TARGET}" == "$(basename "${file%.conf}")" ]; then
-                # shellcheck source=/dev/null
-                set -o allexport && source "${file}" && set +o allexport
-                break 2
-            fi
-        done
-        echo "Error: \"${KERNEL_TARGET}\" is an unsupported kernel"
-        exit 1
-    done
-fi
-
 if [ "${PROJECT}" == "help" ]; then
     for file in config/releases/*; do
         basename "${file%.sh}"
@@ -207,7 +177,7 @@ if [ -n "${PROJECT}" ]; then
 fi
 
 # No board param passed
-if [ -z "${BOARD}" ] || [ -z "${KERNEL_TARGET}" ] || [ -z "${RELEASE}" ] || [ -z "${PROJECT}" ]; then
+if [ -z "${BOARD}" ] || [ -z "${RELEASE}" ] || [ -z "${PROJECT}" ]; then
     usage
     exit 1
 fi

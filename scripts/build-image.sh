@@ -56,19 +56,6 @@ if [[ -z ${BOARD} ]]; then
     exit 1
 fi
 
-if [[ -z ${KERNEL_TARGET} ]]; then
-    echo "Error: KERNEL_TARGET is not set"
-    exit 1
-fi
-
-# shellcheck source=/dev/null
-source ../config/kernels/"${KERNEL_TARGET}.conf"
-
-KVER=""
-if [[ "${KERNEL_TARGET}" == "mainline" ]]; then
-    KVER="-${KERNEL_TARGET}-${KERNEL_VERSION}"
-fi
-
 # Create an empty disk image
 img="../images/$(basename "${rootfs}" .rootfs.tar)${KVER}.img"
 size="$(( $(wc -c < "${rootfs}" ) / 1024 / 1024 ))"
