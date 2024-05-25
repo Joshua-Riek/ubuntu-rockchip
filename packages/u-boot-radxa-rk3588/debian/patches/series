@@ -11,3 +11,4 @@
 0011-fix-gcc13-compile-error.patch
 0012-fix-noble-compile-error.patch
 0013-add-pd-nego-for-armsom-sige7.patch
+0014-arm64-dts-rockchip-Add-the-Radxa-Rock-5D.patch
