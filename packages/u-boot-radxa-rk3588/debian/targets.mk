@@ -21,6 +21,11 @@ rock-5a-spi-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 rock-5a-spi-rk3588s_bl31 := rk3588_bl31_v1.38.elf
 rock-5a-spi-rk3588s_pkg := rock-5a-spi
 
+u-boot-rockchip_platforms += rock-5d-rk3588s
+rock-5d-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+rock-5d-rk3588s_bl31 := rk3588_bl31_v1.38.elf
+rock-5d-rk3588s_pkg := rock-5d
+
 u-boot-rockchip_platforms += rock-5c-rk3588s
 rock-5c-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 rock-5c-rk3588s_bl31 := rk3588_bl31_v1.38.elf
