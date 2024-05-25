@@ -183,9 +183,6 @@ else
     # Mount partitions
     mkdir -p ${mount_point}/writable
     mount "${disk}${partition_char}1" ${mount_point}/writable
-
-    # Set boot args for the splash screen
-    bootargs="quiet splash plymouth.ignore-serial-consoles"
 fi
 
 # Copy the rootfs to root partition
@@ -208,7 +205,7 @@ if [[ $(type -t build_image_hook__"${BOARD}") == function ]]; then
     build_image_hook__"${BOARD}"
 fi 
 
-chroot ${mount_point}/writable/ /bin/bash -c "u-boot-update"
+chroot ${mount_point}/writable/ u-boot-update
 
 sync --file-system
 sync
