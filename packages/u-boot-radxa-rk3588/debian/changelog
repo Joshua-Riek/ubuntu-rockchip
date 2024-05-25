@@ -1,3 +1,17 @@
+u-boot-radxa-rk3588 (2017.09+20240313.gitcdbe95ed-1) jammy; urgency=medium
+
+  * enable the rock 5b plus
+  * enable the rock 5c
+  * configs: cm3i-io: update defconfig
+  * rockchip: rk3568: enable CONFIG_MISC_INIT_R
+  * arm: dts: rk3568-u-boot: add otp and cpuinfo
+  * arm: dts: rock 5c: add recovery key
+  * defconfig: add rock 5c defconfig
+  * arm: dts: add rock 5c
+  * configs: rock-5b: Disable usb boot option to speed up startup
+
+ -- Joshua Riek <jjriek@verizon.net>  Sat, 25 May 2024 11:42:00 -0400
+
 u-boot-radxa-rk3588 (2017.09+20240128.git722a6ab0-6) jammy; urgency=medium
 
   * Refactor armsom pd patch
