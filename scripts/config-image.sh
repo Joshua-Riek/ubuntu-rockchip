@@ -70,7 +70,8 @@ setup_mountpoint() {
 
 teardown_mountpoint() {
     # Reverse the operations from setup_mountpoint
-    local mountpoint=$(realpath "$1")
+    local mountpoint
+    mountpoint=$(realpath "$1")
 
     # ensure we have exactly one trailing slash, and escape all slashes for awk
     mountpoint_match=$(echo "$mountpoint" | sed -e's,/$,,; s,/,\\/,g;')'\/'
