@@ -19,14 +19,6 @@ fi
 # shellcheck source=/dev/null
 source "../config/boards/${BOARD}.sh"
 
-if [[ -z ${KERNEL_TARGET} ]]; then
-    echo "Error: KERNEL_TARGET is not set"
-    exit 1
-fi
-
-# shellcheck source=/dev/null
-source "../config/kernels/${KERNEL_TARGET}.conf"
-
 if [[ -z ${RELEASE} ]]; then
     echo "Error: RELEASE is not set"
     exit 1
@@ -42,6 +34,44 @@ fi
 
 # shellcheck source=/dev/null
 source "../config/projects/${PROJECT}.sh"
+
+if [[ ${LAUNCHPAD} != "Y" ]]; then
+    uboot_package="$(basename "$(find u-boot-"${BOARD}"_*.deb | sort | tail -n1)")"
+    if [ ! -e "$uboot_package" ]; then
+        echo 'Error: could not find the u-boot package'
+        exit 1
+    fi
+
+    linux_image_package="$(basename "$(find linux-image-*.deb | sort | tail -n1)")"
+    if [ ! -e "$linux_image_package" ]; then
+        echo "Error: could not find the linux image package"
+        exit 1
+    fi
+
+    linux_headers_package="$(basename "$(find linux-headers-*.deb | sort | tail -n1)")"
+    if [ ! -e "$linux_headers_package" ]; then
+        echo "Error: could not find the linux headers package"
+        exit 1
+    fi
+
+    linux_modules_package="$(basename "$(find linux-modules-*.deb | sort | tail -n1)")"
+    if [ ! -e "$linux_modules_package" ]; then
+        echo "Error: could not find the linux modules package"
+        exit 1
+    fi
+
+    linux_buildinfo_package="$(basename "$(find linux-buildinfo-*.deb | sort | tail -n1)")"
+    if [ ! -e "$linux_buildinfo_package" ]; then
+        echo "Error: could not find the linux buildinfo package"
+        exit 1
+    fi
+
+    linux_rockchip_headers_package="$(basename "$(find linux-rockchip-headers-*.deb | sort | tail -n1)")"
+    if [ ! -e "$linux_rockchip_headers_package" ]; then
+        echo "Error: could not find the linux rockchip headers package"
+        exit 1
+    fi
+fi
 
 setup_mountpoint() {
     local mountpoint="$1"
@@ -111,7 +141,21 @@ if [[ $(type -t config_image_hook__"${BOARD}") == function ]]; then
 fi 
 
 # Download and install U-Boot
-chroot ${chroot_dir} apt-get -y install "u-boot-${BOARD}"
+if [[ ${LAUNCHPAD} == "Y" ]]; then
+    chroot ${chroot_dir} apt-get -y install "u-boot-${BOARD}"
+else
+    cp "${uboot_package}" ${chroot_dir}/tmp/
+    chroot ${chroot_dir} dpkg -i "/tmp/${uboot_package}"
+    chroot ${chroot_dir} apt-mark hold "$(echo "${uboot_package}" | sed -rn 's/(.*)_[[:digit:]].*/\1/p')"
+
+    cp "${linux_image_package}" "${linux_headers_package}" "${linux_modules_package}" "${linux_buildinfo_package}" "${linux_rockchip_headers_package}" ${chroot_dir}/tmp/
+    chroot ${chroot_dir} /bin/bash -c "apt-get -y purge \$(dpkg --list | grep -Ei 'linux-image|linux-headers|linux-modules|linux-rockchip' | awk '{ print \$2 }')"
+    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/{${linux_image_package},${linux_modules_package},${linux_buildinfo_package},${linux_rockchip_headers_package}}"
+    chroot ${chroot_dir} apt-mark hold "$(echo "${linux_image_package}" | sed -rn 's/(.*)_[[:digit:]].*/\1/p')"
+    chroot ${chroot_dir} apt-mark hold "$(echo "${linux_modules_package}" | sed -rn 's/(.*)_[[:digit:]].*/\1/p')"
+    chroot ${chroot_dir} apt-mark hold "$(echo "${linux_buildinfo_package}" | sed -rn 's/(.*)_[[:digit:]].*/\1/p')"
+    chroot ${chroot_dir} apt-mark hold "$(echo "${linux_rockchip_headers_package}" | sed -rn 's/(.*)_[[:digit:]].*/\1/p')"
+fi
 
 # Update the initramfs
 chroot ${chroot_dir} update-initramfs -u
