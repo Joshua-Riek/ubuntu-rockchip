@@ -12,3 +12,6 @@
 0012-fix-noble-compile-error.patch
 0013-add-pd-nego-for-armsom-sige7.patch
 0014-arm64-dts-rockchip-Add-the-Radxa-Rock-5D.patch
+0015-rockchip-rk3588-Rename-rk3582-functions.patch
+0016-rockchip-rk3588-Add-rk3583-support.patch
+0017-rock-5-itx-force-to-boot-from-eMMC-when-recovery-pin.patch
