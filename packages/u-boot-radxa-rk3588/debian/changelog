@@ -2,6 +2,7 @@ u-boot-radxa-rk3588 (2017.09+20240313.gitcdbe95ed-1) jammy; urgency=medium
 
   * enable the rock 5b plus
   * enable the rock 5c
+  * enable the rock 5d
   * configs: cm3i-io: update defconfig
   * rockchip: rk3568: enable CONFIG_MISC_INIT_R
   * arm: dts: rk3568-u-boot: add otp and cpuinfo
