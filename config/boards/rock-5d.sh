@@ -3,7 +3,7 @@
 export BOARD_NAME="ROCK 5D"
 export BOARD_MAKER="Radxa"
 export UBOOT_PACKAGE="u-boot-radxa-rk3588"
-export UBOOT_RULES_TARGET="rock-5d-rk3588"
+export UBOOT_RULES_TARGET="rock-5d-rk3588s"
 
 function config_image_hook__rock-5d() {
     local rootfs="$1"
