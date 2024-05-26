@@ -15,15 +15,14 @@ function config_image_hook__rock-5b-plus() {
     chroot "${rootfs}" apt-get -y install mali-g610-firmware
     chroot "${rootfs}" apt-get -y dist-upgrade
 
-    # Fix Bluetooth not working with Radxa RTL8852BE WiFi + BT card
-    cp "${overlay}/usr/lib/systemd/system/radxa-a8-bluetooth.service" "${rootfs}/usr/lib/systemd/system/radxa-a8-bluetooth.service"
-    chroot "${rootfs}" systemctl enable radxa-a8-bluetooth
-
     # Fix and configure audio device
     mkdir -p "${rootfs}/usr/lib/scripts"
     cp "${overlay}/usr/lib/scripts/alsa-audio-config" "${rootfs}/usr/lib/scripts/alsa-audio-config"
     cp "${overlay}/usr/lib/systemd/system/alsa-audio-config.service" "${rootfs}/usr/lib/systemd/system/alsa-audio-config.service"
     chroot "${rootfs}" systemctl enable alsa-audio-config
+
+    # Use ttyFIQ0 for serial console output
+    sed -i 's/console=ttyS2,1500000/console=ttyFIQ0,1500000n8/g' "${rootfs}/etc/kernel/cmdline"
 
     return 0
 }
