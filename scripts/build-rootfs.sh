@@ -11,28 +11,28 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
-if [[ -z ${RELEASE} ]]; then
-    echo "Error: RELEASE is not set"
+if [[ -z ${SUITE} ]]; then
+    echo "Error: SUITE is not set"
     exit 1
 fi
 
 # shellcheck source=/dev/null
-source "../config/releases/${RELEASE}.sh"
+source "../config/suites/${SUITE}.sh"
 
-if [[ -z ${PROJECT} ]]; then
-    echo "Error: PROJECT is not set"
+if [[ -z ${FLAVOR} ]]; then
+    echo "Error: FLAVOR is not set"
     exit 1
 fi
 
 # shellcheck source=/dev/null
-source "../config/projects/${PROJECT}.sh"
+source "../config/flavors/${FLAVOR}.sh"
 
-if [[ -f ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64.rootfs.tar.xz ]]; then
+if [[ -f ubuntu-${RELASE_VERSION}-preinstalled-${FLAVOR}-arm64.rootfs.tar.xz ]]; then
     exit 0
 fi
 
 git clone https://github.com/Joshua-Riek/ubuntu-live-build.git
 cd ubuntu-live-build
 bash ./docker/build-livecd-rootfs.sh
-bash ./build.sh "--${PROJECT}" "--${RELEASE}"
-mv "./build/ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64.rootfs.tar.xz" ../
+bash ./build.sh "--${FLAVOR}" "--${SUITE}"
+mv "./build/ubuntu-${RELASE_VERSION}-preinstalled-${FLAVOR}-arm64.rootfs.tar.xz" ../

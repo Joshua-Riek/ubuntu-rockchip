@@ -19,21 +19,21 @@ fi
 # shellcheck source=/dev/null
 source "../config/boards/${BOARD}.sh"
 
-if [[ -z ${RELEASE} ]]; then
-    echo "Error: RELEASE is not set"
+if [[ -z ${SUITE} ]]; then
+    echo "Error: SUITE is not set"
     exit 1
 fi
 
 # shellcheck source=/dev/null
-source "../config/releases/${RELEASE}.sh"
+source "../config/suites/${SUITE}.sh"
 
-if [[ -z ${PROJECT} ]]; then
-    echo "Error: PROJECT is not set"
+if [[ -z ${FLAVOR} ]]; then
+    echo "Error: FLAVOR is not set"
     exit 1
 fi
 
 # shellcheck source=/dev/null
-source "../config/projects/${PROJECT}.sh"
+source "../config/flavors/${FLAVOR}.sh"
 
 if [[ ${LAUNCHPAD} != "Y" ]]; then
     uboot_package="$(basename "$(find u-boot-"${BOARD}"_*.deb | sort | tail -n1)")"
@@ -126,7 +126,7 @@ overlay_dir=../overlay
 
 # Extract the compressed root filesystem
 rm -rf ${chroot_dir} && mkdir -p ${chroot_dir}
-tar -xpJf "ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64.rootfs.tar.xz" -C ${chroot_dir}
+tar -xpJf "ubuntu-${RELASE_VERSION}-preinstalled-${FLAVOR}-arm64.rootfs.tar.xz" -C ${chroot_dir}
 
 # Mount the root filesystem
 setup_mountpoint $chroot_dir
@@ -169,6 +169,6 @@ chroot ${chroot_dir} apt-get -y autoremove
 teardown_mountpoint $chroot_dir
 
 # Compress the root filesystem and then build a disk image
-cd ${chroot_dir} && tar -cpf "../ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64-${BOARD}.rootfs.tar" . && cd .. && rm -rf ${chroot_dir}
-../scripts/build-image.sh "ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64-${BOARD}.rootfs.tar"
-rm -f "ubuntu-${RELASE_VERSION}-preinstalled-${PROJECT}-arm64-${BOARD}.rootfs.tar"
+cd ${chroot_dir} && tar -cpf "../ubuntu-${RELASE_VERSION}-preinstalled-${FLAVOR}-arm64-${BOARD}.rootfs.tar" . && cd .. && rm -rf ${chroot_dir}
+../scripts/build-image.sh "ubuntu-${RELASE_VERSION}-preinstalled-${FLAVOR}-arm64-${BOARD}.rootfs.tar"
+rm -f "ubuntu-${RELASE_VERSION}-preinstalled-${FLAVOR}-arm64-${BOARD}.rootfs.tar"
