@@ -11,8 +11,8 @@ Usage: $0 --board=[orangepi-5] --suite=[jammy|noble] --flavor=[server|desktop]
 
 Required arguments:
   -b, --board=BOARD      target board 
-  -r, --suite=SUITE      ubuntu suite 
-  -p, --flavor=FLAVOR    ubuntu flavor
+  -s, --suite=SUITE      ubuntu suite 
+  -f, --flavor=FLAVOR    ubuntu flavor
 
 Optional arguments:
   -h,  --help            show this help message and exit
@@ -21,9 +21,6 @@ Optional arguments:
   -ko, --kernel-only     only compile the kernel
   -uo, --uboot-only      only compile uboot
   -ro, --rootfs-only     only build rootfs
-  -so, --server-only     only build server image
-  -do, --desktop-only    only build desktop image
-  -m,  --mainline        use mainline linux sources
   -l,  --launchpad       use kernel and uboot from launchpad repo
   -v,  --verbose         increase the verbosity of the bash script
 HEREDOC
@@ -50,19 +47,19 @@ while [ "$#" -gt 0 ]; do
             export BOARD="${2}"
             shift 2
             ;;
-        -r=*|--suite=*)
+        -s=*|--suite=*)
             export SUITE="${1#*=}"
             shift
             ;;
-        -r|--suite)
+        -s|--suite)
             export SUITE="${2}"
             shift 2
             ;;
-        -p=*|--flavor=*)
+        -f=*|--flavor=*)
             export FLAVOR="${1#*=}"
             shift
             ;;
-        -p|--flavor)
+        -f|--flavor)
             export FLAVOR="${2}"
             shift 2
             ;;
@@ -81,14 +78,6 @@ while [ "$#" -gt 0 ]; do
             ;;
         -ro|--rootfs-only)
             export ROOTFS_ONLY=Y
-            shift
-            ;;
-        -do|--desktop-only)
-            export DESKTOP_ONLY=Y
-            shift
-            ;;
-        -so|--server-only)
-            export SERVER_ONLY=Y
             shift
             ;;
         -l|--launchpad)
@@ -112,27 +101,6 @@ while [ "$#" -gt 0 ]; do
             ;;
     esac
 done
-
-if [ "${BOARD}" == "help" ]; then
-    for file in config/boards/*; do
-        basename "${file%.sh}"
-    done
-    exit 0
-fi
-
-if [ -n "${BOARD}" ]; then
-    while :; do
-        for file in config/boards/*; do
-            if [ "${BOARD}" == "$(basename "${file%.sh}")" ]; then
-                # shellcheck source=/dev/null
-                source "${file}"
-                break 2
-            fi
-        done
-        echo "Error: \"${BOARD}\" is an unsupported board"
-        exit 1
-    done
-fi
 
 if [ "${SUITE}" == "help" ]; then
     for file in config/suites/*; do
@@ -176,14 +144,28 @@ if [ -n "${FLAVOR}" ]; then
     done
 fi
 
-# No board param passed
-if [ -z "${BOARD}" ] || [ -z "${SUITE}" ] || [ -z "${FLAVOR}" ]; then
-    usage
-    exit 1
+if [ "${BOARD}" == "help" ]; then
+    for file in config/boards/*; do
+        basename "${file%.sh}"
+    done
+    exit 0
 fi
 
-# Clean the build deirectory
-if [[ ${CLEAN} == "Y" ]]; then
+if [ -n "${BOARD}" ]; then
+    while :; do
+        for file in config/boards/*; do
+            if [ "${BOARD}" == "$(basename "${file%.sh}")" ]; then
+                # shellcheck source=/dev/null
+                source "${file}"
+                break 2
+            fi
+        done
+        echo "Error: \"${BOARD}\" is an unsupported board"
+        exit 1
+    done
+fi
+
+if [ "${CLEAN}" == "Y" ]; then
     if [ -d build/rootfs ]; then
         umount -lf build/rootfs/dev/pts 2> /dev/null || true
         umount -lf build/rootfs/* 2> /dev/null || true
@@ -191,25 +173,39 @@ if [[ ${CLEAN} == "Y" ]]; then
     rm -rf build
 fi
 
-# Start logging the build process
 mkdir -p build/logs && exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
 
-# Build only the Linux kernel then exit
-if [[ ${KERNEL_ONLY} == "Y" ]]; then
+if [ "${KERNEL_ONLY}" == "Y" ]; then
+    if [ -z "${SUITE}" ]; then
+        usage
+        exit 1
+    fi
     eval "${DOCKER}" ./scripts/build-kernel.sh
     exit 0
 fi
 
-# Build only U-Boot then exit
-if [[ ${UBOOT_ONLY} == "Y" ]]; then
-    eval "${DOCKER}" ./scripts/build-u-boot.sh
+if [ "${ROOTFS_ONLY}" == "Y" ]; then
+    if [ -z "${SUITE}" ] || [ -z "${FLAVOR}" ]; then
+        usage
+        exit 1
+    fi
+    eval "${DOCKER}" ./scripts/build-rootfs.sh
     exit 0
 fi
 
-# Build only the rootfs then exit
-if [[ ${ROOTFS_ONLY} == "Y" ]]; then
+if [ "${UBOOT_ONLY}" == "Y" ]; then
+    if [ -z "${BOARD}" ]; then
+        usage
+        exit 1
+    fi
     eval "${DOCKER}" ./scripts/build-rootfs.sh
     exit 0
+fi
+
+# No board param passed
+if [ -z "${BOARD}" ] || [ -z "${SUITE}" ] || [ -z "${FLAVOR}" ]; then
+    usage
+    exit 1
 fi
 
 # Build the Linux kernel if not found
