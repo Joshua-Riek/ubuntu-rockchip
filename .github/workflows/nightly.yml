@@ -69,6 +69,9 @@ jobs:
           - orangepi-5b
           - orangepi-5-plus
           - orangepi-5-pro
+          - rock-5d
+          - rock-5c
+          - rock-5b-plus
           - rock-5b
           - rock-5a
           - rock-5-itx
