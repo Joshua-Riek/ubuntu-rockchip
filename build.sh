@@ -7,12 +7,12 @@ cd "$(dirname -- "$(readlink -f -- "$0")")"
 
 usage() {
 cat << HEREDOC
-Usage: $0 --board=[orangepi-5] --release=[jammy|noble] --project=[server|desktop]
+Usage: $0 --board=[orangepi-5] --suite=[jammy|noble] --flavor=[server|desktop]
 
 Required arguments:
   -b, --board=BOARD      target board 
-  -r, --release=RELEASE  ubuntu release 
-  -p, --project=PROJECT  ubuntu project
+  -r, --suite=SUITE      ubuntu suite 
+  -p, --flavor=FLAVOR    ubuntu flavor
 
 Optional arguments:
   -h,  --help            show this help message and exit
@@ -50,20 +50,20 @@ while [ "$#" -gt 0 ]; do
             export BOARD="${2}"
             shift 2
             ;;
-        -r=*|--release=*)
-            export RELEASE="${1#*=}"
+        -r=*|--suite=*)
+            export SUITE="${1#*=}"
             shift
             ;;
-        -r|--release)
-            export RELEASE="${2}"
+        -r|--suite)
+            export SUITE="${2}"
             shift 2
             ;;
-        -p=*|--project=*)
-            export PROJECT="${1#*=}"
+        -p=*|--flavor=*)
+            export FLAVOR="${1#*=}"
             shift
             ;;
-        -p|--project)
-            export PROJECT="${2}"
+        -p|--flavor)
+            export FLAVOR="${2}"
             shift 2
             ;;
         -d|--docker)
@@ -134,50 +134,50 @@ if [ -n "${BOARD}" ]; then
     done
 fi
 
-if [ "${RELEASE}" == "help" ]; then
-    for file in config/releases/*; do
+if [ "${SUITE}" == "help" ]; then
+    for file in config/suites/*; do
         basename "${file%.sh}"
     done
     exit 0
 fi
 
-if [ -n "${RELEASE}" ]; then
+if [ -n "${SUITE}" ]; then
     while :; do
-        for file in config/releases/*; do
-            if [ "${RELEASE}" == "$(basename "${file%.sh}")" ]; then
+        for file in config/suites/*; do
+            if [ "${SUITE}" == "$(basename "${file%.sh}")" ]; then
                 # shellcheck source=/dev/null
                 source "${file}"
                 break 2
             fi
         done
-        echo "Error: \"${RELEASE}\" is an unsupported release"
+        echo "Error: \"${SUITE}\" is an unsupported suite"
         exit 1
     done
 fi
 
-if [ "${PROJECT}" == "help" ]; then
-    for file in config/releases/*; do
+if [ "${FLAVOR}" == "help" ]; then
+    for file in config/suites/*; do
         basename "${file%.sh}"
     done
     exit 0
 fi
 
-if [ -n "${PROJECT}" ]; then
+if [ -n "${FLAVOR}" ]; then
     while :; do
-        for file in config/projects/*; do
-            if [ "${PROJECT}" == "$(basename "${file%.sh}")" ]; then
+        for file in config/flavors/*; do
+            if [ "${FLAVOR}" == "$(basename "${file%.sh}")" ]; then
                 # shellcheck source=/dev/null
                 source "${file}"
                 break 2
             fi
         done
-        echo "Error: \"${PROJECT}\" is an unsupported project"
+        echo "Error: \"${FLAVOR}\" is an unsupported flavor"
         exit 1
     done
 fi
 
 # No board param passed
-if [ -z "${BOARD}" ] || [ -z "${RELEASE}" ] || [ -z "${PROJECT}" ]; then
+if [ -z "${BOARD}" ] || [ -z "${SUITE}" ] || [ -z "${FLAVOR}" ]; then
     usage
     exit 1
 fi

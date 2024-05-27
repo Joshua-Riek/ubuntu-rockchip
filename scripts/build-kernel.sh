@@ -11,13 +11,13 @@ fi
 cd "$(dirname -- "$(readlink -f -- "$0")")" && cd ..
 mkdir -p build && cd build
 
-if [[ -z ${RELEASE} ]]; then
-    echo "Error: RELEASE is not set"
+if [[ -z ${SUITE} ]]; then
+    echo "Error: SUITE is not set"
     exit 1
 fi
 
 # shellcheck source=/dev/null
-source "../config/releases/${RELEASE}.sh"
+source "../config/suites/${SUITE}.sh"
 
 # Clone the kernel repo
 if ! git -C linux-rockchip pull; then

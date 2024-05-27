@@ -10,10 +10,10 @@ jobs:
     name: Build rootfs 
     strategy:
         matrix:
-          project:
+          flavor:
             - desktop
             - server
-          release:
+          suite:
             - jammy
             - noble
     steps:
@@ -47,13 +47,13 @@ jobs:
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=orangepi-5 --release=${{ matrix.release }} --project=${{ matrix.project }} --rootfs-only --launchpad
+        run: sudo ./build.sh --board=orangepi-5 --suite=${{ matrix.suite }} --flavor=${{ matrix.flavor }} --rootfs-only --launchpad
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
         with:
-            name: ubuntu-${{ matrix.release == 'jammy' && '22.04' || matrix.release == 'noble' && '24.04' }}-preinstalled-${{ matrix.project }}-arm64-rootfs
-            path: ./build/ubuntu-${{ matrix.release == 'jammy' && '22.04' || matrix.release == 'noble' && '24.04' }}-preinstalled-${{ matrix.project }}-arm64.rootfs.tar.xz
+            name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
+            path: ./build/ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' }}-preinstalled-${{ matrix.flavor }}-arm64.rootfs.tar.xz
             if-no-files-found: error
 
   build:
@@ -86,10 +86,10 @@ jobs:
           - roc-rk3588s-pc
           - armsom-sige7
           - armsom-w3
-        project:
+        flavor:
           - desktop
           - server
-        release:
+        suite:
           - jammy
           - noble
     steps:
@@ -113,7 +113,7 @@ jobs:
       - name: Checkout rootfs
         uses: actions/download-artifact@v4.1.2
         with:
-            name: ubuntu-${{ matrix.release == 'jammy' && '22.04' || matrix.release == 'noble' && '24.04' }}-preinstalled-${{ matrix.project }}-arm64-rootfs
+            name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
             path: ./build/
 
       - name: Install dependencies
@@ -129,13 +129,13 @@ jobs:
 
       - name: Build
         shell: bash
-        run: sudo ./build.sh --board=${{ matrix.board }} --release=${{ matrix.release }} --project=${{ matrix.project }} --launchpad
+        run: sudo ./build.sh --board=${{ matrix.board }} --suite=${{ matrix.suite }} --flavor=${{ matrix.flavor }} --launchpad
 
       - name: Upload
         uses: actions/upload-artifact@v4.3.1
         with:
-          name: ubuntu-${{ matrix.release == 'jammy' && '22.04' || matrix.release == 'noble' && '24.04' }}-preinstalled-${{ matrix.project }}-arm64-${{ matrix.board }}
-          path: ./images/ubuntu-*-preinstalled-${{ matrix.project }}-arm64-${{ matrix.board }}.*
+          name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' }}-preinstalled-${{ matrix.flavor }}-arm64-${{ matrix.board }}
+          path: ./images/ubuntu-*-preinstalled-${{ matrix.flavor }}-arm64-${{ matrix.board }}.*
           if-no-files-found: error
 
       - name: Clean cache
