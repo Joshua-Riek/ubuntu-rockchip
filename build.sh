@@ -198,7 +198,7 @@ if [ "${UBOOT_ONLY}" == "Y" ]; then
         usage
         exit 1
     fi
-    eval "${DOCKER}" ./scripts/build-rootfs.sh
+    eval "${DOCKER}" ./scripts/build-u-boot.sh
     exit 0
 fi
 
