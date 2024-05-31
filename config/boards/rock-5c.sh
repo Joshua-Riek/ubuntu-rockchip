@@ -15,8 +15,11 @@ function config_image_hook__rock-5c() {
     chroot "${rootfs}" apt-get -y install mali-g610-firmware
     chroot "${rootfs}" apt-get -y dist-upgrade
 
+    # Install AIC8800 WiFi and Bluetooth DKMS
+    chroot "${rootfs}" apt-get -y install dkms aic8800-firmware aic8800-usb-dkms
+
     # shellcheck disable=SC2016
-	echo 'SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="88:00:*", NAME="$ENV{ID_NET_SLOT}"' > "${rootfs}/etc/udev/rules.d/99-radxa-aic8800.rules"
+    echo 'SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="88:00:*", NAME="$ENV{ID_NET_SLOT}"' > "${rootfs}/etc/udev/rules.d/99-radxa-aic8800.rules"
 
     # Fix and configure audio device
     mkdir -p "${rootfs}/usr/lib/scripts"
