@@ -134,11 +134,6 @@ setup_mountpoint $chroot_dir
 # Update packages
 chroot $chroot_dir apt-get update
 chroot $chroot_dir apt-get -y upgrade
-    
-# Run config hook to handle board specific changes
-if [[ $(type -t config_image_hook__"${BOARD}") == function ]]; then
-    config_image_hook__"${BOARD}" "${chroot_dir}" "${overlay_dir}"
-fi 
 
 # Download and install U-Boot
 if [[ ${LAUNCHPAD} == "Y" ]]; then
@@ -150,11 +145,17 @@ else
 
     cp "${linux_image_package}" "${linux_headers_package}" "${linux_modules_package}" "${linux_buildinfo_package}" "${linux_rockchip_headers_package}" ${chroot_dir}/tmp/
     chroot ${chroot_dir} /bin/bash -c "apt-get -y purge \$(dpkg --list | grep -Ei 'linux-image|linux-headers|linux-modules|linux-rockchip' | awk '{ print \$2 }')"
-    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/{${linux_image_package},${linux_modules_package},${linux_buildinfo_package},${linux_rockchip_headers_package}}"
+    chroot ${chroot_dir} /bin/bash -c "dpkg -i /tmp/{${linux_image_package},${linux_headers_package},${linux_modules_package},${linux_buildinfo_package},${linux_rockchip_headers_package}}"
     chroot ${chroot_dir} apt-mark hold "$(echo "${linux_image_package}" | sed -rn 's/(.*)_[[:digit:]].*/\1/p')"
+    chroot ${chroot_dir} apt-mark hold "$(echo "${linux_headers_package}" | sed -rn 's/(.*)_[[:digit:]].*/\1/p')"
     chroot ${chroot_dir} apt-mark hold "$(echo "${linux_modules_package}" | sed -rn 's/(.*)_[[:digit:]].*/\1/p')"
     chroot ${chroot_dir} apt-mark hold "$(echo "${linux_buildinfo_package}" | sed -rn 's/(.*)_[[:digit:]].*/\1/p')"
     chroot ${chroot_dir} apt-mark hold "$(echo "${linux_rockchip_headers_package}" | sed -rn 's/(.*)_[[:digit:]].*/\1/p')"
+fi
+
+# Run config hook to handle board specific changes
+if [[ $(type -t config_image_hook__"${BOARD}") == function ]]; then
+    config_image_hook__"${BOARD}" "${chroot_dir}" "${overlay_dir}"
 fi
 
 # Update the initramfs
