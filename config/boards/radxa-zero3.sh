@@ -9,6 +9,16 @@ function config_image_hook__radxa-zero3() {
     local rootfs="$1"
     local overlay="$2"
 
+    # Kernel modules to blacklist
+    (
+        echo "blacklist aic8800_bsp"
+        echo "blacklist aic8800_fdrv"
+        echo "blacklist aic8800_btlpm"
+    ) > "${rootfs}/etc/modprobe.d/aic8800.conf"
+
+    # Install AIC8800 SDIO WiFi and Bluetooth DKMS
+    chroot "${rootfs}" apt-get -y install dkms aic8800-firmware aic8800-sdio-dkms
+
     # Enable the on-board bluetooth module AIC8800
     mkdir -p "${rootfs}/usr/lib/scripts/"
     cp "${overlay}/usr/bin/bt_test" "${rootfs}/usr/bin/bt_test"
