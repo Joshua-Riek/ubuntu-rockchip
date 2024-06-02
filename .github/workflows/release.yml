@@ -5,7 +5,7 @@ on:
 
 permissions:
     contents: write
-run-name: Release Ubuntu 22.04 LTS and 24.04 LTS
+run-name: Release
 
 jobs:
   prepare_release:
