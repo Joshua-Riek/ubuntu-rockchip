@@ -3,7 +3,7 @@ name: Build
 on:
   workflow_dispatch:
 
-run-name: Build Ubuntu 22.04 LTS and 24.04 LTS
+run-name: Build
 
 jobs:
   rootfs:
