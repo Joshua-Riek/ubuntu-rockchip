@@ -1,3 +1,10 @@
+u-boot-radxa-rk3588 (2017.09+20240313.gitcdbe95ed-2) jammy; urgency=medium
+
+  * update ddr and spl blobs
+  * enable the radxa cm5 rpi cm4 io
+
+ -- Joshua Riek <jjriek@verizon.net>  Tue, 04 Jun 2024 17:33:36 -0400
+
 u-boot-radxa-rk3588 (2017.09+20240313.gitcdbe95ed-1) jammy; urgency=medium
 
   * enable the rock 5b plus
