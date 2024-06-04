@@ -41,6 +41,11 @@ radxa-cm5-io-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
 radxa-cm5-io-rk3588s_bl31 := rk3588_bl31_v1.45.elf
 radxa-cm5-io-rk3588s_pkg := radxa-cm5-io
 
+u-boot-rockchip_platforms += radxa-cm5-rpi-cm4-io-rk3588s
+radxa-cm5-rpi-cm4-io-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
+radxa-cm5-rpi-cm4-io-rk3588s_bl31 := rk3588_bl31_v1.45.elf
+radxa-cm5-rpi-cm4-io-rk3588s_pkg := radxa-cm5-rpi-cm4-io
+
 u-boot-rockchip_platforms += radxa-nx5-io-rk3588s
 radxa-nx5-io-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
 radxa-nx5-io-rk3588s_bl31 := rk3588_bl31_v1.45.elf
