@@ -2,8 +2,8 @@
 # debian/rules includes this Makefile snippet.
 
 u-boot-rockchip_platforms += rock-5b-rk3588
-rock-5b-rk3588_ddr := rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
-rock-5b-rk3588_bl31 := rk3588_bl31_v1.38.elf
+rock-5b-rk3588_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
+rock-5b-rk3588_bl31 := rk3588_bl31_v1.45.elf
 rock-5b-rk3588_pkg := rock-5b
 
 u-boot-rockchip_platforms += rock-5b-plus-rk3588
@@ -27,7 +27,7 @@ rock-5d-rk3588s_bl31 := rk3588_bl31_v1.45.elf
 rock-5d-rk3588s_pkg := rock-5d
 
 u-boot-rockchip_platforms += rock-5c-rk3588s
-rock-5c-rk3588s_ddr := rrk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
+rock-5c-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
 rock-5c-rk3588s_bl31 := rk3588_bl31_v1.45.elf
 rock-5c-rk3588s_pkg := rock-5c
 
