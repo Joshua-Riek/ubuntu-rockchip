@@ -27,8 +27,5 @@ function config_image_hook__rock-5d() {
     cp "${overlay}/usr/lib/systemd/system/alsa-audio-config.service" "${rootfs}/usr/lib/systemd/system/alsa-audio-config.service"
     chroot "${rootfs}" systemctl enable alsa-audio-config
 
-    # Use ttyFIQ0 for serial console output
-    sed -i 's/console=ttyS2,1500000/console=ttyFIQ0,1500000n8/g' "${rootfs}/etc/kernel/cmdline"
-
     return 0
 }
