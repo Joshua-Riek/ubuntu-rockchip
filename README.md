@@ -22,8 +22,8 @@ The supported devices are undergoing continuous development. As a result, you ma
 
 ## Supported Boards
 
-* [ArmSoM-Sige7](https://docs.armsom.org/docs/category/sige7-1)
-* [ArmSoM-w3](http://wiki.armsom.org/index.php/ArmSoM-w3)
+* [ArmSoM-Sige7](https://docs.armsom.org/armsom-sige7)
+* [ArmSoM-w3](https://docs.armsom.org/armsom-w3)
 * [Indiedroid Nova](https://indiedroid.us)
 * [ROC-RK3588S-PC](https://en.t-firefly.com/product/industry/rocrk3588spc)
 * [LubanCat 4](https://doc.embedfire.com/products/link/zh/latest/linux/ebf_lubancat.html)
