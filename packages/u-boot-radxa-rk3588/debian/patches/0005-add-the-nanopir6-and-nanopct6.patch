@@ -4,7 +4,7 @@ Date: Sun, 25 Jun 2023 14:45:56 -0400
 Subject: [PATCH] add the nanopir6 and nanopct6
 
 ---
- arch/arm/dts/rk3588-nanopc-t6.dts   | 161 ++++++++++++++++++++
+ arch/arm/dts/rk3588-nanopc-t6.dts   | 197 ++++++++++++++++++++
  arch/arm/dts/rk3588s-nanopi-r6c.dts | 177 ++++++++++++++++++++++
  arch/arm/dts/rk3588s-nanopi-r6s.dts | 125 ++++++++++++++++
  configs/nanopc-t6-rk3588_defconfig         | 218 ++++++++++++++++++++++++++++
@@ -23,7 +23,7 @@ new file mode 100644
 index 0000000000..ee7c7f005c
 --- /dev/null
 +++ b/arch/arm/dts/rk3588-nanopc-t6.dts
-@@ -0,0 +1,161 @@
+@@ -0,0 +1,197 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2021 Rockchip Electronics Co., Ltd
@@ -104,6 +104,21 @@ index 0000000000..ee7c7f005c
 +		vin-supply = <&vcc5v0_sys>;
 +	};
 +
++       vdd_mpcie_3v3: vdd-mpcie-3v3 {
++               u-boot,dm-pre-reloc;
++               compatible = "regulator-fixed";
++               regulator-name = "vdd_mpcie_3v3";
++               pinctrl-names = "default";
++               pinctrl-0 = <&pcie_m2_1_pwren>;
++               regulator-min-microvolt = <3300000>;
++               regulator-max-microvolt = <3300000>;
++               enable-active-high;
++               gpio = <&gpio4 RK_PC2 GPIO_ACTIVE_HIGH>;
++               regulator-boot-on;
++               regulator-always-on;
++               vin-supply = <&vcc5v0_sys>;
++       };
++
 +	led_sys: led-sys {
 +		u-boot,dm-pre-reloc;
 +		compatible = "regulator-fixed";
@@ -128,9 +143,21 @@ index 0000000000..ee7c7f005c
 +	status = "okay";
 +};
 +
++&pcie2x1l1 {
++       u-boot,dm-pre-reloc;
++       vpcie3v3-supply = <&vdd_mpcie_3v3>;
++       reset-gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
++       status = "okay";
++};
++
 +&combphy0_ps {
 +	u-boot,dm-pre-reloc;
 +	status = "okay";
++};
++
++&combphy1_ps {
++       u-boot,dm-pre-reloc;
++       status = "okay";
 +};
 +
 +&combphy2_psu {
@@ -184,6 +211,15 @@ index 0000000000..ee7c7f005c
 +			rockchip,pins = <4 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +	};
++
++       pcie {
++               u-boot,dm-pre-reloc;
++               pcie_m2_1_pwren: pcie-m21-pwren {
++                       u-boot,dm-pre-reloc;
++                       rockchip,pins = <4 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
++               };
++       };
++
 +};
 diff --git a/arch/arm/dts/rk3588s-nanopi-r6c.dts b/arch/arm/dts/rk3588s-nanopi-r6c.dts
 new file mode 100644
