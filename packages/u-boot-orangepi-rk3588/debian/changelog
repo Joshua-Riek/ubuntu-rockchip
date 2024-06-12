@@ -1,3 +1,10 @@
+u-boot-orangepi-rk3588 (2017.09+20240401.git7f7ff61a-6) jammy; urgency=medium
+
+  * Update ddr and bl31 blobs for the Orange Pi 5, 5B, and 5 Pro
+  * Update U-Boot install scripts
+
+ -- Joshua Riek <jjriek@verizon.net>  Wed, 12 Jun 2024 18:42:39 -0400
+
 u-boot-orangepi-rk3588 (2017.09+20240401.git7f7ff61a-5) jammy; urgency=medium
 
   * Update ddr and bl31 blobs for the Orange Pi 5 Pro

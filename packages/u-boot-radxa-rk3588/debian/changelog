@@ -1,3 +1,11 @@
+u-boot-radxa-rk3588 (2017.09+20240313.gitcdbe95ed-3) jammy; urgency=medium
+
+  * Update ddr and bl31 blobs for all boards
+  * Add E-Key slot nvme boot support for NanoPC T6
+  * Update U-Boot install scripts
+
+ -- Joshua Riek <jjriek@verizon.net>  Wed, 12 Jun 2024 18:42:39 -0400
+
 u-boot-radxa-rk3588 (2017.09+20240313.gitcdbe95ed-2) jammy; urgency=medium
 
   * update ddr and spl blobs
