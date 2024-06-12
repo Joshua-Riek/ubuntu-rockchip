@@ -1,3 +1,10 @@
+u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-10) jammy; urgency=medium
+
+  * Update ddr and bl31 blobs for the Mixtile Blade 3
+  * Update U-Boot install scripts
+
+ -- Joshua Riek <jjriek@verizon.net>  Wed, 12 Jun 2024 18:42:39 -0400
+
 u-boot-mixtile-rk3588 (2017.09+20230920.git609a77ef-9) jammy; urgency=medium
 
   * Use flashcp to update spi flash

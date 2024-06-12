@@ -1,16 +1,15 @@
 #!/bin/bash
 
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
+set -eE  
 
 disk="$1"
 if [ $# -ne 1 ]; then
-    echo "Usage: $0 /dev/mmcblk0"
+    echo "Usage: $(basename "$0") /dev/mmcblk0"
     exit 1
 fi
 
 if [ ! -b "${disk}" ]; then
-    echo "$0: block device '${disk}' not found"
+    echo "$(basename "$0"): block device '${disk}' not found"
     exit 1
 fi
 
