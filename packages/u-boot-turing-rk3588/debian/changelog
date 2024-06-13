@@ -1,3 +1,9 @@
+u-boot-turing-rk3588 (2024.01-4) jammy; urgency=medium
+
+  * Update ddr and spl blobs
+
+ -- Joshua Riek <jjriek@verizon.net>  Wed, 12 Jun 2024 20:11:59 -0400
+
 u-boot-turing-rk3588 (2024.01-3) jammy; urgency=medium
 
   * Update U-Boot install scripts

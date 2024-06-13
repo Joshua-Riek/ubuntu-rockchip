@@ -1,5 +1,5 @@
-debian/rkbin/rk3588_bl31_v1.38.elf
-debian/rkbin/rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
-debian/rkbin/rk3588_ddr_lp4_2112MHz_lp5_2736MHz_uart9_115200_v1.11.bin
+debian/rkbin/rk3588_bl31_v1.45.elf
+debian/rkbin/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
+debian/rkbin/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_uart9_115200_v1.16.bin
 debian/rkbin/rk3566_ddr_1056MHz_v1.18.bin
 debian/rkbin/rk3568_bl31_v1.43.elf
