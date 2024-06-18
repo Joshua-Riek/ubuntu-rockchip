@@ -15,6 +15,9 @@ function config_image_hook__orangepi-5-pro() {
     chroot "${rootfs}" apt-get -y install mali-g610-firmware
     chroot "${rootfs}" apt-get -y dist-upgrade
 
+    # Install libmali blobs alongside panfork
+    chroot "${rootfs}" apt-get -y install libmali-g610-x11
+
     # Enable bluetooth
     cp "${overlay}/usr/bin/brcm_patchram_plus" "${rootfs}/usr/bin/brcm_patchram_plus"
     cp "${overlay}/usr/lib/systemd/system/ap6256-bluetooth.service" "${rootfs}/usr/lib/systemd/system/ap6256-bluetooth.service"

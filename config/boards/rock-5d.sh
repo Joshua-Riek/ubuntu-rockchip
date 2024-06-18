@@ -15,6 +15,9 @@ function config_image_hook__rock-5d() {
     chroot "${rootfs}" apt-get -y install mali-g610-firmware
     chroot "${rootfs}" apt-get -y dist-upgrade
 
+    # Install libmali blobs alongside panfork
+    chroot "${rootfs}" apt-get -y install libmali-g610-x11
+
     # Install AIC8800 WiFi and Bluetooth DKMS
     chroot "${rootfs}" apt-get -y install dkms aic8800-firmware aic8800-usb-dkms
 

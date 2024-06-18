@@ -14,6 +14,9 @@ function config_image_hook__turing-rk1() {
     chroot "${rootfs}" apt-get -y install mali-g610-firmware
     chroot "${rootfs}" apt-get -y dist-upgrade
 
+    # Install libmali blobs alongside panfork
+    chroot "${rootfs}" apt-get -y install libmali-g610-x11
+
     # The RK1 uses UART9 for console output
     sed -i 's/console=ttyS2,1500000/console=ttyS9,115200/g' "${rootfs}/etc/kernel/cmdline"
 

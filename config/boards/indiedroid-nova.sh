@@ -15,6 +15,9 @@ function config_image_hook__indiedroid-nova() {
     chroot "${rootfs}" apt-get -y install mali-g610-firmware
     chroot "${rootfs}" apt-get -y dist-upgrade
 
+    # Install libmali blobs alongside panfork
+    chroot "${rootfs}" apt-get -y install libmali-g610-x11
+
     # Enable the on-board WiFi / Bluetooth module RTL8821CS
     cp "${overlay}/usr/bin/rtk_hciattach" "${rootfs}/usr/bin/rtk_hciattach"
     cp "${overlay}/usr/bin/bt_load_rtk_firmware" "${rootfs}/usr/bin/bt_load_rtk_firmware"

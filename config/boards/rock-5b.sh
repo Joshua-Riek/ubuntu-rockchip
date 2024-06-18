@@ -15,6 +15,9 @@ function config_image_hook__rock-5b() {
     chroot "${rootfs}" apt-get -y install mali-g610-firmware
     chroot "${rootfs}" apt-get -y dist-upgrade
 
+    # Install libmali blobs alongside panfork
+    chroot "${rootfs}" apt-get -y install libmali-g610-x11
+
     # Fix Bluetooth not working with Radxa RTL8852BE WiFi + BT card
     cp "${overlay}/usr/lib/systemd/system/radxa-a8-bluetooth.service" "${rootfs}/usr/lib/systemd/system/radxa-a8-bluetooth.service"
     chroot "${rootfs}" systemctl enable radxa-a8-bluetooth
