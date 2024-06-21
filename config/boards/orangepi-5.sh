@@ -2,6 +2,8 @@
 
 export BOARD_NAME="Orange Pi 5"
 export BOARD_MAKER="Xulong"
+export BOARD_SOC="Rockchip RK3588S"
+export BOARD_CPU="ARM Cortex A76 / A55"
 export UBOOT_PACKAGE="u-boot-orangepi-rk3588"
 export UBOOT_RULES_TARGET="orangepi_5"
 export UBOOT_RULES_TARGET_EXTRA="orangepi_5_sata"

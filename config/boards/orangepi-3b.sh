@@ -2,6 +2,8 @@
 
 export BOARD_NAME="Orange Pi 3B"
 export BOARD_MAKER="Xulong"
+export BOARD_SOC="Rockchip RK3566"
+export BOARD_CPU="ARM Cortex A55"
 export UBOOT_PACKAGE="u-boot-turing-rk3588"
 export UBOOT_RULES_TARGET="orangepi-3b-rk3566"
 

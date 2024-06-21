@@ -2,6 +2,8 @@
 
 export BOARD_NAME="NanoPi R6S"
 export BOARD_MAKER="FriendlyElec"
+export BOARD_SOC="Rockchip RK3588S"
+export BOARD_CPU="ARM Cortex A76 / A55"
 export UBOOT_PACKAGE="u-boot-radxa-rk3588"
 export UBOOT_RULES_TARGET="nanopi-r6s-rk3588s"
 
