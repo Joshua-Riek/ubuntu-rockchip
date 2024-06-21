@@ -2,6 +2,8 @@
 
 export BOARD_NAME="Mixtile Blade 3"
 export BOARD_MAKER="Mixtile"
+export BOARD_SOC="Rockchip RK3588"
+export BOARD_CPU="ARM Cortex A76 / A55"
 export UBOOT_PACKAGE="u-boot-mixtile-rk3588"
 export UBOOT_RULES_TARGET="mixtile-blade3-rk3588"
 

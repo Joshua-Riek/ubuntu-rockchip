@@ -2,6 +2,8 @@
 
 export BOARD_NAME="Radxa Zero 3"
 export BOARD_MAKER="Radxa"
+export BOARD_SOC="Rockchip RK3566"
+export BOARD_CPU="ARM Cortex A55"
 export UBOOT_PACKAGE="u-boot-turing-rk3588"
 export UBOOT_RULES_TARGET="radxa-zero3-rk3566"
 

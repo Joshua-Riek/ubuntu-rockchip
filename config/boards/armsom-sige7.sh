@@ -2,6 +2,8 @@
 
 export BOARD_NAME="ArmSoM Sige7"
 export BOARD_MAKER="ArmSoM"
+export BOARD_SOC="Rockchip RK3588"
+export BOARD_CPU="ARM Cortex A76 / A55"
 export UBOOT_PACKAGE="u-boot-radxa-rk3588"
 export UBOOT_RULES_TARGET="armsom-sige7-rk3588"
 
