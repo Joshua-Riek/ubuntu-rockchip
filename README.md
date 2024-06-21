@@ -9,47 +9,20 @@ The supported devices are undergoing continuous development. As a result, you ma
 
 ## Highlights
 
+* Available for both Ubuntu 22.04 LTS (with Rockchip Linux 5.10) and Ubuntu 24.04 LTS (with Rockchip Linux 6.1)
 * Package management via apt using the official Ubuntu repositories
-* Receive kernel, firmware, and bootloader updates through apt
+* Receive all updates and changes through through apt
 * Desktop first-run wizard for user setup and configuration
 * 3D hardware acceleration support via panfork
 * Fully working GNOME desktop using wayland
 * Chromium browser with smooth 4k youtube video playback
 * MPV video player capable of smooth 4k video playback
-* Gstreamer can be used as an alternative 4k video player from the command line
-* Ubuntu 22.04 LTS with Rockchip Linux 5.10
-* Ubuntu 24.04 LTS with Rockchip Linux 6.1
-
-## Supported Boards
-
-* [ArmSoM-Sige7](https://docs.armsom.org/armsom-sige7)
-* [ArmSoM-w3](https://docs.armsom.org/armsom-w3)
-* [Indiedroid Nova](https://indiedroid.us)
-* [ROC-RK3588S-PC](https://en.t-firefly.com/product/industry/rocrk3588spc)
-* [LubanCat 4](https://doc.embedfire.com/products/link/zh/latest/linux/ebf_lubancat.html)
-* [Mixtile Blade 3](https://www.mixtile.com/blade-3)
-* [Mixtile Core 3588E](https://www.mixtile.com/core-3588e/)
-* [NanoPC T6](https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6)
-* [NanoPi R6C](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6C)
-* [NanoPi R6S](https://wiki.friendlyelec.com/wiki/index.php/NanoPi_R6S)
-* [Orange Pi 5 Plus](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-plus.html)
-* [Orange Pi 5 Pro](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Pro.html)
-* [Orange Pi 5B](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5B.html)
-* [Orange Pi 5](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5.html)
-* [Orange Pi 3B](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-3B.html)
-* [Radxa CM5 IO](https://radxa.com/products/compute-module/cm5)
-* [Radxa NX5 IO](https://radxa.com/products/compute-module/nx5)
-* [Radxa ROCK 5 ITX](https://radxa.com/products)
-* [Radxa ROCK 5A](https://radxa.com/products/rock5/5a/)
-* [Radxa ROCK 5B](https://radxa.com/products/rock5/5b/)
-* [Radxa Zero 3](https://radxa.com/products/zeros/zero3w/)
-* [Turing RK1](https://turingpi.com/product/turing-rk1)
 
 ## Installation
 
 Make sure you use a good, reliable, and fast SD card. For example, suppose you encounter boot or stability troubles. Most of the time, this is due to either an insufficient power supply or related to your SD card (bad card, bad card reader, something went wrong when burning the image, or the card is too slow).
 
-Download the Ubuntu image for your specific board from the latest [release](https://github.com/Joshua-Riek/ubuntu-rockchip/releases) on GitHub. Then write the xz compressed image to your SD card using [balenaEtcher](https://www.balena.io/etcher) since, unlike other tools, it can validate burning results, saving you from corrupted SD card contents.
+Download the Ubuntu image for your specific board from the latest [release](https://github.com/Joshua-Riek/ubuntu-rockchip/releases) on GitHub or from the dedicated download [website](https://joshua-riek.github.io/ubuntu-rockchip-download/). Then write the xz compressed image to your SD card using [balenaEtcher](https://www.balena.io/etcher) since, unlike other tools, it can validate burning results, saving you from corrupted SD card contents.
 
 ## Boot the System
 
@@ -57,9 +30,9 @@ Insert your SD card into the slot on the board and power on the device. The firs
 
 ## Login Information
 
-For the server image you will be able to login through HDMI, a serial console connection, or SSH. The predefined user is `ubuntu` and the password is `ubuntu`.
+For Ubuntu Server you will be able to login through HDMI, a serial console connection, or SSH. The predefined user is `ubuntu` and the password is `ubuntu`.
 
-For the desktop image you must connect through HDMI and follow the setup-wizard.
+For Ubuntu Desktop you must connect through HDMI and follow the setup-wizard.
 
 ## Support the Project
 
