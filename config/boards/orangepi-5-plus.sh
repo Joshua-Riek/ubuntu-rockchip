@@ -20,6 +20,9 @@ function config_image_hook__orangepi-5-plus() {
     # Install libmali blobs alongside panfork
     chroot "${rootfs}" apt-get -y install libmali-g610-x11
 
+    # Install the rockchip camera engine
+    chroot "${rootfs}" apt-get -y install camera-engine-rkaiq-rk3588
+
     # Fix WiFi not working when bluetooth enabled for the official RTL8852BE WiFi + BT card
     mkdir -p "${rootfs}"/usr/lib/scripts
     cp "${overlay}/usr/lib/systemd/system/rtl8852be-reload.service" "${rootfs}/usr/lib/systemd/system/rtl8852be-reload.service"

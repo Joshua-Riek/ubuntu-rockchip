@@ -20,6 +20,9 @@ function config_image_hook__orangepi-5-pro() {
     # Install libmali blobs alongside panfork
     chroot "${rootfs}" apt-get -y install libmali-g610-x11
 
+    # Install the rockchip camera engine
+    chroot "${rootfs}" apt-get -y install camera-engine-rkaiq-rk3588
+
     # Enable bluetooth
     cp "${overlay}/usr/bin/brcm_patchram_plus" "${rootfs}/usr/bin/brcm_patchram_plus"
     cp "${overlay}/usr/lib/systemd/system/ap6256-bluetooth.service" "${rootfs}/usr/lib/systemd/system/ap6256-bluetooth.service"
