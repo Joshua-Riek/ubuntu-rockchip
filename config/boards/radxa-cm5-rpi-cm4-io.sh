@@ -20,6 +20,9 @@ function config_image_hook__radxa-cm5-rpi-cm4-io() {
     # Install libmali blobs alongside panfork
     chroot "${rootfs}" apt-get -y install libmali-g610-x11
 
+    # Install the rockchip camera engine
+    chroot "${rootfs}" apt-get -y install camera-engine-rkaiq-rk3588
+
     # Fix and configure audio device
     mkdir -p "${rootfs}/usr/lib/scripts"
     cp "${overlay}/usr/lib/scripts/alsa-audio-config" "${rootfs}/usr/lib/scripts/alsa-audio-config"

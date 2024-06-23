@@ -20,6 +20,9 @@ function config_image_hook__indiedroid-nova() {
     # Install libmali blobs alongside panfork
     chroot "${rootfs}" apt-get -y install libmali-g610-x11
 
+    # Install the rockchip camera engine
+    chroot "${rootfs}" apt-get -y install camera-engine-rkaiq-rk3588
+
     # Enable the on-board WiFi / Bluetooth module RTL8821CS
     cp "${overlay}/usr/bin/rtk_hciattach" "${rootfs}/usr/bin/rtk_hciattach"
     cp "${overlay}/usr/bin/bt_load_rtk_firmware" "${rootfs}/usr/bin/bt_load_rtk_firmware"

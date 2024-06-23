@@ -20,6 +20,9 @@ function config_image_hook__rock-5d() {
     # Install libmali blobs alongside panfork
     chroot "${rootfs}" apt-get -y install libmali-g610-x11
 
+    # Install the rockchip camera engine
+    chroot "${rootfs}" apt-get -y install camera-engine-rkaiq-rk3588
+
     # Install AIC8800 WiFi and Bluetooth DKMS
     chroot "${rootfs}" apt-get -y install dkms aic8800-firmware aic8800-usb-dkms
 
