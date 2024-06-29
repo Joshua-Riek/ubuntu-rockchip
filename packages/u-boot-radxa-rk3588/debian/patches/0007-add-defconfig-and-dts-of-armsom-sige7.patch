@@ -1,20 +1,20 @@
-From 22c85793ca670f0a9437d3f34fab64adf4663d15 Mon Sep 17 00:00:00 2001
+From f682135e5c753a440eebb6ca126465be4a04144a Mon Sep 17 00:00:00 2001
 From: zhouxp <645006021@qq.com>
-Date: Tue, 19 Dec 2023 15:44:30 +0800
-Subject: [PATCH 1/2] add defconfig and dts of armsom-w3
+Date: Tue, 19 Dec 2023 15:46:42 +0800
+Subject: [PATCH 09/18] add defconfig and dts of armsom-sige7
 
 ---
- arch/arm/dts/rk3588-armsom-w3.dts  |  88 ++++++++++++
- configs/armsom-w3-rk3588_defconfig | 217 +++++++++++++++++++++++++++++
- 2 files changed, 305 insertions(+)
- create mode 100755 arch/arm/dts/rk3588-armsom-w3.dts
- create mode 100755 configs/armsom-w3-rk3588_defconfig
+ arch/arm/dts/rk3588-armsom-sige7.dts  |  88 +++++++++++
+ configs/armsom-sige7-rk3588_defconfig | 214 ++++++++++++++++++++++++++
+ 2 files changed, 302 insertions(+)
+ create mode 100755 arch/arm/dts/rk3588-armsom-sige7.dts
+ create mode 100755 configs/armsom-sige7-rk3588_defconfig
 
-diff --git a/arch/arm/dts/rk3588-armsom-w3.dts b/arch/arm/dts/rk3588-armsom-w3.dts
+diff --git a/arch/arm/dts/rk3588-armsom-sige7.dts b/arch/arm/dts/rk3588-armsom-sige7.dts
 new file mode 100755
-index 0000000000..26ec15e75d
+index 00000000000..36183d0415e
 --- /dev/null
-+++ b/arch/arm/dts/rk3588-armsom-w3.dts
++++ b/arch/arm/dts/rk3588-armsom-sige7.dts
 @@ -0,0 +1,88 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
@@ -28,8 +28,8 @@ index 0000000000..26ec15e75d
 +#include <dt-bindings/input/input.h>
 +
 +/ {
-+	model = "ArmSoM W3";
-+	compatible = "armsom,armsom-w3", "rockchip,rk3588";
++	model = "ArmSoM SIGE7";
++	compatible = "armsom,armsom-sige7", "rockchip,rk3588";
 +
 +	vcc12v_dcin: vcc12v-dcin {
 +		u-boot,dm-pre-reloc;
@@ -104,12 +104,12 @@ index 0000000000..26ec15e75d
 +	u-boot,dm-pre-reloc;
 +	status = "okay";
 +};
-diff --git a/configs/armsom-w3-rk3588_defconfig b/configs/armsom-w3-rk3588_defconfig
+diff --git a/configs/armsom-sige7-rk3588_defconfig b/configs/armsom-sige7-rk3588_defconfig
 new file mode 100755
-index 0000000000..7d17b24ced
+index 00000000000..e8ef4232daa
 --- /dev/null
-+++ b/configs/armsom-w3-rk3588_defconfig
-@@ -0,0 +1,217 @@
++++ b/configs/armsom-sige7-rk3588_defconfig
+@@ -0,0 +1,214 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -133,7 +133,7 @@ index 0000000000..7d17b24ced
 +CONFIG_SPL_LIBDISK_SUPPORT=y
 +CONFIG_SPL_SPI_FLASH_SUPPORT=y
 +CONFIG_SPL_SPI_SUPPORT=y
-+CONFIG_DEFAULT_DEVICE_TREE="rk3588-armsom-w3"
++CONFIG_DEFAULT_DEVICE_TREE="rk3588-armsom-sige7"
 +CONFIG_DEBUG_UART=y
 +CONFIG_FIT=y
 +CONFIG_FIT_IMAGE_POST_PROCESS=y
@@ -324,9 +324,6 @@ index 0000000000..7d17b24ced
 +CONFIG_AVB_LIBAVB_ATX=y
 +CONFIG_AVB_LIBAVB_USER=y
 +CONFIG_RK_AVB_LIBAVB_USER=y
-+CONFIG_OPTEE_CLIENT=y
-+CONFIG_OPTEE_V2=y
-+CONFIG_OPTEE_ALWAYS_USE_SECURITY_PARTITION=y
 -- 
 2.25.1
 

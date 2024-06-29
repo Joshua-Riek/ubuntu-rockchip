@@ -1,16 +1,16 @@
-From 4947d99ab33870c7e6d90838fdac21afce2371cc Mon Sep 17 00:00:00 2001
+From dcb5869fb2de8448986ac1fc132a2e7699268aed Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Sun, 25 Jun 2023 14:45:56 -0400
-Subject: [PATCH] add the nanopir6 and nanopct6
+Subject: [PATCH 05/18] add the nanopir6 and nanopct6
 
 ---
- arch/arm/dts/rk3588-nanopc-t6.dts   | 197 ++++++++++++++++++++
- arch/arm/dts/rk3588s-nanopi-r6c.dts | 177 ++++++++++++++++++++++
- arch/arm/dts/rk3588s-nanopi-r6s.dts | 125 ++++++++++++++++
- configs/nanopc-t6-rk3588_defconfig         | 218 ++++++++++++++++++++++++++++
- configs/nanopi-r6c-rk3588s_defconfig        | 218 ++++++++++++++++++++++++++++
- configs/nanopi-r6s-rk3588s_defconfig        | 218 ++++++++++++++++++++++++++++
- 6 files changed, 1117 insertions(+)
+ arch/arm/dts/rk3588-nanopc-t6.dts    | 197 ++++++++++++++++++++++++
+ arch/arm/dts/rk3588s-nanopi-r6c.dts  | 177 ++++++++++++++++++++++
+ arch/arm/dts/rk3588s-nanopi-r6s.dts  | 125 ++++++++++++++++
+ configs/nanopc-t6-rk3588_defconfig   | 215 +++++++++++++++++++++++++++
+ configs/nanopi-r6c-rk3588s_defconfig | 215 +++++++++++++++++++++++++++
+ configs/nanopi-r6s-rk3588s_defconfig | 215 +++++++++++++++++++++++++++
+ 6 files changed, 1144 insertions(+)
  create mode 100644 arch/arm/dts/rk3588-nanopc-t6.dts
  create mode 100644 arch/arm/dts/rk3588s-nanopi-r6c.dts
  create mode 100644 arch/arm/dts/rk3588s-nanopi-r6s.dts
@@ -20,7 +20,7 @@ Subject: [PATCH] add the nanopir6 and nanopct6
 
 diff --git a/arch/arm/dts/rk3588-nanopc-t6.dts b/arch/arm/dts/rk3588-nanopc-t6.dts
 new file mode 100644
-index 0000000000..ee7c7f005c
+index 00000000000..648842ff849
 --- /dev/null
 +++ b/arch/arm/dts/rk3588-nanopc-t6.dts
 @@ -0,0 +1,197 @@
@@ -223,7 +223,7 @@ index 0000000000..ee7c7f005c
 +};
 diff --git a/arch/arm/dts/rk3588s-nanopi-r6c.dts b/arch/arm/dts/rk3588s-nanopi-r6c.dts
 new file mode 100644
-index 0000000000..3c55e0d89a
+index 00000000000..3c55e0d89a2
 --- /dev/null
 +++ b/arch/arm/dts/rk3588s-nanopi-r6c.dts
 @@ -0,0 +1,177 @@
@@ -406,7 +406,7 @@ index 0000000000..3c55e0d89a
 +};
 diff --git a/arch/arm/dts/rk3588s-nanopi-r6s.dts b/arch/arm/dts/rk3588s-nanopi-r6s.dts
 new file mode 100644
-index 0000000000..ac300cd42f
+index 00000000000..ac300cd42fc
 --- /dev/null
 +++ b/arch/arm/dts/rk3588s-nanopi-r6s.dts
 @@ -0,0 +1,125 @@
@@ -537,10 +537,10 @@ index 0000000000..ac300cd42f
 +};
 diff --git a/configs/nanopc-t6-rk3588_defconfig b/configs/nanopc-t6-rk3588_defconfig
 new file mode 100644
-index 0000000000..6915379076
+index 00000000000..6e95a773da3
 --- /dev/null
 +++ b/configs/nanopc-t6-rk3588_defconfig
-@@ -0,0 +1,218 @@
+@@ -0,0 +1,215 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -755,16 +755,13 @@ index 0000000000..6915379076
 +CONFIG_AVB_LIBAVB_ATX=y
 +CONFIG_AVB_LIBAVB_USER=y
 +CONFIG_RK_AVB_LIBAVB_USER=y
-+CONFIG_OPTEE_CLIENT=y
-+CONFIG_OPTEE_V2=y
-+CONFIG_OPTEE_ALWAYS_USE_SECURITY_PARTITION=y
 +CONFIG_PHY_ROCKCHIP_NANENG_COMBOPHY=y
 diff --git a/configs/nanopi-r6c-rk3588s_defconfig b/configs/nanopi-r6c-rk3588s_defconfig
 new file mode 100644
-index 0000000000..876b49ffdd
+index 00000000000..e18f90f17e7
 --- /dev/null
 +++ b/configs/nanopi-r6c-rk3588s_defconfig
-@@ -0,0 +1,218 @@
+@@ -0,0 +1,215 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -979,17 +976,14 @@ index 0000000000..876b49ffdd
 +CONFIG_AVB_LIBAVB_ATX=y
 +CONFIG_AVB_LIBAVB_USER=y
 +CONFIG_RK_AVB_LIBAVB_USER=y
-+CONFIG_OPTEE_CLIENT=y
-+CONFIG_OPTEE_V2=y
-+CONFIG_OPTEE_ALWAYS_USE_SECURITY_PARTITION=y
 +CONFIG_PHY_ROCKCHIP_NANENG_COMBOPHY=y
 \ No newline at end of file
 diff --git a/configs/nanopi-r6s-rk3588s_defconfig b/configs/nanopi-r6s-rk3588s_defconfig
 new file mode 100644
-index 0000000000..0ecac3992b
+index 00000000000..6ea51fe01cb
 --- /dev/null
 +++ b/configs/nanopi-r6s-rk3588s_defconfig
-@@ -0,0 +1,218 @@
+@@ -0,0 +1,215 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -1204,9 +1198,6 @@ index 0000000000..0ecac3992b
 +CONFIG_AVB_LIBAVB_ATX=y
 +CONFIG_AVB_LIBAVB_USER=y
 +CONFIG_RK_AVB_LIBAVB_USER=y
-+CONFIG_OPTEE_CLIENT=y
-+CONFIG_OPTEE_V2=y
-+CONFIG_OPTEE_ALWAYS_USE_SECURITY_PARTITION=y
 +CONFIG_PHY_ROCKCHIP_NANENG_COMBOPHY=y
 -- 
 2.25.1
