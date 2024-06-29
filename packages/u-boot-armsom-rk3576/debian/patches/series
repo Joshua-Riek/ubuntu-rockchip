@@ -1,0 +1,6 @@
+0001-rockchip-allow-passing-of-BL31-location-via.patch
+0002-rockchip-allow-passing-of-BL32-location-via.patch
+0003-fix-srctree-path.patch
+0004-fix-gcc13-compile-error.patch
+0005-fix-noble-compile-error.patch
+0006-add-dts-and-defconfig-of-armsom-sige5.patch

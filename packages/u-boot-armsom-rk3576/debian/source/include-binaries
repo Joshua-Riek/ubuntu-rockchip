@@ -1,0 +1,3 @@
+debian/rkbin/rk3576_bl31_v1.04.elf
+debian/rkbin/rk3576_bl32_v1.01.bin
+debian/rkbin/rk3576_ddr_lp4_2112MHz_lp5_2736MHz_v1.03.bin
