@@ -1,17 +1,17 @@
-From 1dab5a4c87184a21e31fac9bb69e68b2151ab9bb Mon Sep 17 00:00:00 2001
+From c94ad49ab38e58ae425357c8f7dd9ab4792220c7 Mon Sep 17 00:00:00 2001
 From: zouxf <zxf@t-chip.com.cn>
 Date: Thu, 30 Nov 2023 17:38:34 +0800
-Subject: [PATCH] board: add roc-rk3588s-pc support
+Subject: [PATCH 10/18] board: add roc-rk3588s-pc support
 
 ---
- arch/arm/dts/rk3588s-roc-pc.dts       | 261 ++++++++++++++++++
+ arch/arm/dts/rk3588s-roc-pc.dts               | 261 ++++++++++++++++++
  arch/arm/mach-rockchip/rk3588/Kconfig         |  10 +
  board/firefly/roc-rk3588s-pc/Kconfig          |  15 +
  board/firefly/roc-rk3588s-pc/Makefile         |   7 +
  board/firefly/roc-rk3588s-pc/roc-rk3588s-pc.c |  63 +++++
- configs/roc-rk3588s-pc-rk3588s_defconfig      | 238 ++++++++++++++++
+ configs/roc-rk3588s-pc-rk3588s_defconfig      | 236 ++++++++++++++++
  include/configs/roc-rk3588s-pc.h              |  25 ++
- 7 files changed, 619 insertions(+)
+ 7 files changed, 617 insertions(+)
  create mode 100755 arch/arm/dts/rk3588s-roc-pc.dts
  create mode 100644 board/firefly/roc-rk3588s-pc/Kconfig
  create mode 100644 board/firefly/roc-rk3588s-pc/Makefile
@@ -21,7 +21,7 @@ Subject: [PATCH] board: add roc-rk3588s-pc support
 
 diff --git a/arch/arm/dts/rk3588s-roc-pc.dts b/arch/arm/dts/rk3588s-roc-pc.dts
 new file mode 100755
-index 0000000000..e0c66434e9
+index 00000000000..e0c66434e93
 --- /dev/null
 +++ b/arch/arm/dts/rk3588s-roc-pc.dts
 @@ -0,0 +1,261 @@
@@ -287,7 +287,7 @@ index 0000000000..e0c66434e9
 +	};
 +};
 diff --git a/arch/arm/mach-rockchip/rk3588/Kconfig b/arch/arm/mach-rockchip/rk3588/Kconfig
-index dc97fd9ab3..93f58c9391 100644
+index dc97fd9ab38..93f58c93910 100644
 --- a/arch/arm/mach-rockchip/rk3588/Kconfig
 +++ b/arch/arm/mach-rockchip/rk3588/Kconfig
 @@ -6,6 +6,15 @@ config TARGET_EVB_RK3588
@@ -315,7 +315,7 @@ index dc97fd9ab3..93f58c9391 100644
  endif
 diff --git a/board/firefly/roc-rk3588s-pc/Kconfig b/board/firefly/roc-rk3588s-pc/Kconfig
 new file mode 100644
-index 0000000000..1f7e0b7e3f
+index 00000000000..1f7e0b7e3fb
 --- /dev/null
 +++ b/board/firefly/roc-rk3588s-pc/Kconfig
 @@ -0,0 +1,15 @@
@@ -336,7 +336,7 @@ index 0000000000..1f7e0b7e3f
 +endif
 diff --git a/board/firefly/roc-rk3588s-pc/Makefile b/board/firefly/roc-rk3588s-pc/Makefile
 new file mode 100644
-index 0000000000..df5c73635d
+index 00000000000..df5c73635d4
 --- /dev/null
 +++ b/board/firefly/roc-rk3588s-pc/Makefile
 @@ -0,0 +1,7 @@
@@ -349,7 +349,7 @@ index 0000000000..df5c73635d
 +obj-y	+= roc-rk3588s-pc.o
 diff --git a/board/firefly/roc-rk3588s-pc/roc-rk3588s-pc.c b/board/firefly/roc-rk3588s-pc/roc-rk3588s-pc.c
 new file mode 100644
-index 0000000000..0b7c3956f6
+index 00000000000..0b7c3956f67
 --- /dev/null
 +++ b/board/firefly/roc-rk3588s-pc/roc-rk3588s-pc.c
 @@ -0,0 +1,63 @@
@@ -418,10 +418,10 @@ index 0000000000..0b7c3956f6
 +}
 diff --git a/configs/roc-rk3588s-pc-rk3588s_defconfig b/configs/roc-rk3588s-pc-rk3588s_defconfig
 new file mode 100644
-index 0000000000..e89bb0557f
+index 00000000000..14a5d227b2b
 --- /dev/null
 +++ b/configs/roc-rk3588s-pc-rk3588s_defconfig
-@@ -0,0 +1,238 @@
+@@ -0,0 +1,236 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_ROCKCHIP=y
 +CONFIG_SPL_LIBCOMMON_SUPPORT=y
@@ -657,12 +657,10 @@ index 0000000000..e89bb0557f
 +CONFIG_AVB_LIBAVB_ATX=y
 +CONFIG_AVB_LIBAVB_USER=y
 +CONFIG_RK_AVB_LIBAVB_USER=y
-+CONFIG_ROCKCHIP_EARLY_DISTRO_DTB=y
-+CONFIG_ROCKCHIP_EARLY_DISTRO_DTB_PATH="rk-kernel.dtb"
 +CONFIG_CHECK_VERSION_CHOOSE_DTB=y
 diff --git a/include/configs/roc-rk3588s-pc.h b/include/configs/roc-rk3588s-pc.h
 new file mode 100644
-index 0000000000..38b837349a
+index 00000000000..38b837349a7
 --- /dev/null
 +++ b/include/configs/roc-rk3588s-pc.h
 @@ -0,0 +1,25 @@

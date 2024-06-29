@@ -1,7 +1,7 @@
-From 1e158e758b50b5d8d3a9e997413bc307ce55293d Mon Sep 17 00:00:00 2001
+From 6e19b9004b7307f684b4192413a3afafba71c9c5 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Sun, 14 Apr 2024 23:07:55 -0400
-Subject: [PATCH] enable armsom-sige7 early PD negotiation
+Subject: [PATCH 13/18] enable armsom-sige7 early PD negotiation
 
 ---
  arch/arm/dts/rk3588-armsom-sige7.dts          | 73 +++++++++++++++++++
@@ -19,7 +19,7 @@ Subject: [PATCH] enable armsom-sige7 early PD negotiation
  create mode 100644 include/configs/armsom-sige7-rk3588.h
 
 diff --git a/arch/arm/dts/rk3588-armsom-sige7.dts b/arch/arm/dts/rk3588-armsom-sige7.dts
-index 36183d0415..39400da5e7 100755
+index 36183d0415e..39400da5e7e 100755
 --- a/arch/arm/dts/rk3588-armsom-sige7.dts
 +++ b/arch/arm/dts/rk3588-armsom-sige7.dts
 @@ -8,6 +8,7 @@
@@ -110,7 +110,7 @@ index 36183d0415..39400da5e7 100755
  	u-boot,dm-pre-reloc;
  	reset-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
 diff --git a/arch/arm/mach-rockchip/rk3588/Kconfig b/arch/arm/mach-rockchip/rk3588/Kconfig
-index 93f58c9391..9d1477b90a 100644
+index 93f58c93910..9d1477b90aa 100644
 --- a/arch/arm/mach-rockchip/rk3588/Kconfig
 +++ b/arch/arm/mach-rockchip/rk3588/Kconfig
 @@ -15,6 +15,12 @@ config TARGET_ROC_RK3588S_PC
@@ -135,7 +135,7 @@ index 93f58c9391..9d1477b90a 100644
  endif
 diff --git a/board/armsom/armsom-sige7-rk3588/Kconfig b/board/armsom/armsom-sige7-rk3588/Kconfig
 new file mode 100644
-index 0000000000..3bfe46c659
+index 00000000000..3bfe46c6593
 --- /dev/null
 +++ b/board/armsom/armsom-sige7-rk3588/Kconfig
 @@ -0,0 +1,15 @@
@@ -156,7 +156,7 @@ index 0000000000..3bfe46c659
 +endif
 diff --git a/board/armsom/armsom-sige7-rk3588/Makefile b/board/armsom/armsom-sige7-rk3588/Makefile
 new file mode 100644
-index 0000000000..a77e1a0721
+index 00000000000..a77e1a07219
 --- /dev/null
 +++ b/board/armsom/armsom-sige7-rk3588/Makefile
 @@ -0,0 +1,7 @@
@@ -169,7 +169,7 @@ index 0000000000..a77e1a0721
 +obj-y	+= armsom-sige7-rk3588.o
 diff --git a/board/armsom/armsom-sige7-rk3588/armsom-sige7-rk3588.c b/board/armsom/armsom-sige7-rk3588/armsom-sige7-rk3588.c
 new file mode 100644
-index 0000000000..81c5089944
+index 00000000000..81c50899441
 --- /dev/null
 +++ b/board/armsom/armsom-sige7-rk3588/armsom-sige7-rk3588.c
 @@ -0,0 +1,33 @@
@@ -207,7 +207,7 @@ index 0000000000..81c5089944
 +}
 +#endif
 diff --git a/configs/armsom-sige7-rk3588_defconfig b/configs/armsom-sige7-rk3588_defconfig
-index 50bf9b70f8..cc700b05bd 100755
+index e8ef4232daa..9874807e575 100755
 --- a/configs/armsom-sige7-rk3588_defconfig
 +++ b/configs/armsom-sige7-rk3588_defconfig
 @@ -17,7 +17,7 @@ CONFIG_LOADER_INI="RK3588MINIALL.ini"
@@ -256,14 +256,14 @@ index 50bf9b70f8..cc700b05bd 100755
  CONFIG_REGULATOR_PWM=y
  CONFIG_DM_REGULATOR_FIXED=y
  CONFIG_DM_REGULATOR_GPIO=y
-@@ -215,3 +220,5 @@ CONFIG_RK_AVB_LIBAVB_USER=y
- CONFIG_OPTEE_CLIENT=y
- CONFIG_OPTEE_V2=y
- CONFIG_OPTEE_ALWAYS_USE_SECURITY_PARTITION=y
+@@ -212,3 +217,5 @@ CONFIG_AVB_LIBAVB_AB=y
+ CONFIG_AVB_LIBAVB_ATX=y
+ CONFIG_AVB_LIBAVB_USER=y
+ CONFIG_RK_AVB_LIBAVB_USER=y
 +CONFIG_CMD_CHARGE_DISPLAY=y
 +CONFIG_DM_CHARGE_DISPLAY=y
 diff --git a/drivers/power/power_delivery/tcpm.c b/drivers/power/power_delivery/tcpm.c
-index 22334c6230..1b94a40183 100644
+index 22334c6230c..1b94a401836 100644
 --- a/drivers/power/power_delivery/tcpm.c
 +++ b/drivers/power/power_delivery/tcpm.c
 @@ -1390,8 +1390,8 @@ static void tcpm_pd_rx_handler(struct tcpm_port *port,
@@ -279,7 +279,7 @@ index 22334c6230..1b94a40183 100644
  				tcpm_pd_data_request(port, msg);
 diff --git a/include/configs/armsom-sige7-rk3588.h b/include/configs/armsom-sige7-rk3588.h
 new file mode 100644
-index 0000000000..d067c25ddc
+index 00000000000..d067c25ddc6
 --- /dev/null
 +++ b/include/configs/armsom-sige7-rk3588.h
 @@ -0,0 +1,28 @@
