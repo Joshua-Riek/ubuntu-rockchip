@@ -17,7 +17,6 @@ Required arguments:
 Optional arguments:
   -h,  --help            show this help message and exit
   -c,  --clean           clean the build directory
-  -d,  --docker          use docker to build
   -ko, --kernel-only     only compile the kernel
   -uo, --uboot-only      only compile uboot
   -ro, --rootfs-only     only build rootfs
@@ -62,11 +61,6 @@ while [ "$#" -gt 0 ]; do
         -f|--flavor)
             export FLAVOR="${2}"
             shift 2
-            ;;
-        -d|--docker)
-            DOCKER="docker run --privileged --network=host --rm -it -v \"$(pwd)\":/opt -e BOARD -e VENDOR -e LAUNCHPAD -e MAINLINE -e SERVER_ONLY -e DESKTOP_ONLY -e KERNEL_ONLY -e UBOOT_ONLY ubuntu-rockchip-build /bin/bash"
-            docker build -t ubuntu-rockchip-build docker
-            shift
             ;;
         -ko|--kernel-only)
             export KERNEL_ONLY=Y
@@ -180,7 +174,7 @@ if [ "${KERNEL_ONLY}" == "Y" ]; then
         usage
         exit 1
     fi
-    eval "${DOCKER}" ./scripts/build-kernel.sh
+    ./scripts/build-kernel.sh
     exit 0
 fi
 
@@ -189,7 +183,7 @@ if [ "${ROOTFS_ONLY}" == "Y" ]; then
         usage
         exit 1
     fi
-    eval "${DOCKER}" ./scripts/build-rootfs.sh
+    ./scripts/build-rootfs.sh
     exit 0
 fi
 
@@ -198,7 +192,7 @@ if [ "${UBOOT_ONLY}" == "Y" ]; then
         usage
         exit 1
     fi
-    eval "${DOCKER}" ./scripts/build-u-boot.sh
+    ./scripts/build-u-boot.sh
     exit 0
 fi
 
@@ -211,21 +205,21 @@ fi
 # Build the Linux kernel if not found
 if [[ ${LAUNCHPAD} != "Y" ]]; then
     if [[ ! -e "$(find build/linux-image-*.deb | sort | tail -n1)" || ! -e "$(find build/linux-headers-*.deb | sort | tail -n1)" ]]; then
-        eval "${DOCKER}" ./scripts/build-kernel.sh
+        ./scripts/build-kernel.sh
     fi
 fi
 
 # Build U-Boot if not found
 if [[ ${LAUNCHPAD} != "Y" ]]; then
     if [[ ! -e "$(find build/u-boot-"${BOARD}"_*.deb | sort | tail -n1)" ]]; then
-        eval "${DOCKER}" ./scripts/build-u-boot.sh
+        ./scripts/build-u-boot.sh
     fi
 fi
 
 # Create the root filesystem
-eval "${DOCKER}" ./scripts/build-rootfs.sh
+./scripts/build-rootfs.sh
 
 # Create the disk image
-eval "${DOCKER}" ./scripts/config-image.sh
+./scripts/config-image.sh
 
 exit 0
