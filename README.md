@@ -1,7 +1,8 @@
 ## Overview
 
 [![Latest GitHub Release](https://img.shields.io/github/release/Joshua-Riek/ubuntu-rockchip.svg?label=Latest%20Release)](https://github.com/Joshua-Riek/ubuntu-rockchip/releases/latest)
-[![Total Github Downloads](https://img.shields.io/github/downloads/Joshua-Riek/ubuntu-rockchip/total.svg?&color=E95420&label=Total%20Downloads)](https://github.com/Joshua-Riek/ubuntu-rockchip/releases)
+[![Total GitHub Downloads](https://img.shields.io/github/downloads/Joshua-Riek/ubuntu-rockchip/total.svg?&color=E95420&label=Total%20Downloads)](https://github.com/Joshua-Riek/ubuntu-rockchip/releases)
+[![Nightly GitHub Build](https://github.com/Joshua-Riek/ubuntu-rockchip/actions/workflows/nightly.yml/badge.svg)](https://github.com/Joshua-Riek/ubuntu-rockchip/actions/workflows/nightly.yml)
 
 Ubuntu Rockchip is a community project porting Ubuntu to Rockchip hardware with the goal of providing a stable and fully functional environment.
 
