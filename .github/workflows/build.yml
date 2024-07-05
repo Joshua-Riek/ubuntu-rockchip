@@ -136,7 +136,7 @@ jobs:
           - mixtile-core3588e
           - lubancat-4
           - turing-rk1
-          - armsom-sige7
+          - armsom-sige5
           - armsom-w3
         flavor:
           - desktop
@@ -144,6 +144,10 @@ jobs:
         suite:
           - jammy
           - noble
+        exclude:
+          - board: armsom-sige5
+            suite: jammy
+
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
