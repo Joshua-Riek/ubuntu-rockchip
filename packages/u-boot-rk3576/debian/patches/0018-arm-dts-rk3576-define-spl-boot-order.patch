@@ -1,0 +1,25 @@
+From 520557450c3bc8d8bcfe97dc36b8334bbebccc6d Mon Sep 17 00:00:00 2001
+From: Joshua Riek <jjriek@verizon.net>
+Date: Sat, 6 Jul 2024 12:40:51 -0400
+Subject: [PATCH 18/19] arm: dts: rk3576: define spl boot order
+
+---
+ arch/arm/dts/rk3576-u-boot.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/rk3576-u-boot.dtsi b/arch/arm/dts/rk3576-u-boot.dtsi
+index fc7527064a5..21d225c5b5d 100644
+--- a/arch/arm/dts/rk3576-u-boot.dtsi
++++ b/arch/arm/dts/rk3576-u-boot.dtsi
+@@ -14,7 +14,7 @@
+ 
+ 	chosen {
+ 		stdout-path = &uart0;
+-		u-boot,spl-boot-order = &sdmmc, &spi_nand, &spi_nor, "same-as-spl";
++		u-boot,spl-boot-order = &sdmmc, &spi_nor, &sdhci, &spi_nand;
+ 	};
+ 
+ 	secure-otp@2a480000 {
+-- 
+2.25.1
+

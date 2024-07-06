@@ -1,0 +1,25 @@
+From e2d578facfeba7247dd5ed16126081fd6d667ffa Mon Sep 17 00:00:00 2001
+From: Joshua Riek <jjriek@verizon.net>
+Date: Sat, 6 Jul 2024 12:10:30 -0400
+Subject: [PATCH 13/19] rockchip: allow passing of BL32 location via variable
+
+---
+ arch/arm/mach-rockchip/fit_nodes.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-rockchip/fit_nodes.sh b/arch/arm/mach-rockchip/fit_nodes.sh
+index c9cc4669632..cf77e9ea0aa 100755
+--- a/arch/arm/mach-rockchip/fit_nodes.sh
++++ b/arch/arm/mach-rockchip/fit_nodes.sh
+@@ -180,7 +180,7 @@ function gen_bl32_node()
+ 		fi
+ 	fi
+ 
+-	TEE="tee.bin"
++	TEE="${TEE:=tee.bin}"
+ 	echo "		optee {
+ 			description = \"OP-TEE\";
+ 			data = /incbin/(\"${TEE}${SUFFIX}\");
+-- 
+2.25.1
+

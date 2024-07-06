@@ -1,0 +1,240 @@
+From a353abaadb2ddafe6350c4d934bc1ba6953f65e0 Mon Sep 17 00:00:00 2001
+From: Stephen Chen <stephen@radxa.com>
+Date: Fri, 17 Jun 2022 16:40:39 +0800
+Subject: [PATCH 02/19] cmd: pxe: add support for FDT overlays
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This adds support for specifying FDT overlays in an extlinux/pxelinux
+configuration file.
+
+Without this, there is no simple way to apply overlays when the kernel
+and fdt is loaded by the pxe command.
+
+This change adds the 'fdtoverlays' keyword for a label, supporting
+multiple
+overlay files to be applied on top of the fdt specified in the 'fdt' or
+'devicetree' keyword.
+
+Example:
+  label linux
+    kernel /Image
+    fdt /soc-board.dtb
+    fdtoverlays /soc-board-function.dtbo
+    append console=ttyS0,115200 root=/dev/mmcblk0p2 rootwait
+
+This code makes usage of a new variable called fdtoverlay_addr_r used to
+load the overlay files without overwritting anything important.
+
+Cc: Tom Rini <trini@konsulko.com>
+Cc: Andre Heider <a.heider@gmail.com>
+Cc: Jernej Škrabec <jernej.skrabec@siol.net>
+Cc: Jonas Karlman <jonas@kwiboo.se>
+Tested-by: Jernej Škrabec <jernej.skrabec@siol.net>
+Reviewed-by: Jernej Škrabec <jernej.skrabec@siol.net>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+
+The original commit is
+https://github.com/u-boot/u-boot/commit/69076dff2284ed099cc0583e5e64bd8012d1ab5c
+
+Signed-off-by: Stephen Chen <stephen@radxa.com>
+---
+ cmd/pxe.c      | 104 +++++++++++++++++++++++++++++++++++++++++++++++++
+ doc/README.pxe |   9 +++++
+ 2 files changed, 113 insertions(+)
+
+diff --git a/cmd/pxe.c b/cmd/pxe.c
+index 7043ad11fdd..cce48e01e82 100644
+--- a/cmd/pxe.c
++++ b/cmd/pxe.c
+@@ -9,6 +9,8 @@
+ #include <command.h>
+ #include <malloc.h>
+ #include <mapmem.h>
++#include <fdt_support.h>
++#include <linux/libfdt.h>
+ #include <linux/string.h>
+ #include <linux/ctype.h>
+ #include <errno.h>
+@@ -476,6 +478,7 @@ struct pxe_label {
+ 	char *initrd;
+ 	char *fdt;
+ 	char *fdtdir;
++	char *fdtoverlays;
+ 	int ipappend;
+ 	int attempted;
+ 	int localboot;
+@@ -551,6 +554,9 @@ static void label_destroy(struct pxe_label *label)
+ 	if (label->fdtdir)
+ 		free(label->fdtdir);
+ 
++	if (label->fdtoverlays)
++		free(label->fdtoverlays);
++
+ 	free(label);
+ }
+ 
+@@ -598,6 +604,92 @@ static int label_localboot(struct pxe_label *label)
+ 	return run_command_list(localcmd, strlen(localcmd), 0);
+ }
+ 
++/*
++ * Loads fdt overlays specified in 'fdtoverlays'.
++ */
++#ifdef CONFIG_OF_LIBFDT_OVERLAY
++static void label_boot_fdtoverlay(cmd_tbl_t *cmdtp, struct pxe_label *label)
++{
++	char *fdtoverlay = label->fdtoverlays;
++	struct fdt_header *working_fdt;
++	char *fdtoverlay_addr_env;
++	ulong fdtoverlay_addr;
++	ulong fdt_addr;
++	int err;
++
++	/* Get the main fdt and map it */
++	fdt_addr = simple_strtoul(env_get("fdt_addr_r"), NULL, 16);
++	working_fdt = map_sysmem(fdt_addr, 0);
++	err = fdt_check_header(working_fdt);
++	if (err)
++		return;
++
++	/* Get the specific overlay loading address */
++	fdtoverlay_addr_env = env_get("fdtoverlay_addr_r");
++	if (!fdtoverlay_addr_env) {
++		printf("Invalid fdtoverlay_addr_r for loading overlays\n");
++		return;
++	}
++
++	fdtoverlay_addr = simple_strtoul(fdtoverlay_addr_env, NULL, 16);
++
++	/* Cycle over the overlay files and apply them in order */
++	do {
++		struct fdt_header *blob;
++		char *overlayfile;
++		char *end;
++		int len;
++
++		/* Drop leading spaces */
++		while (*fdtoverlay == ' ')
++			++fdtoverlay;
++
++		/* Copy a single filename if multiple provided */
++		end = strstr(fdtoverlay, " ");
++		if (end) {
++			len = (int)(end - fdtoverlay);
++			overlayfile = malloc(len + 1);
++			strncpy(overlayfile, fdtoverlay, len);
++			overlayfile[len] = '\0';
++		} else
++			overlayfile = fdtoverlay;
++
++		if (!strlen(overlayfile))
++			goto skip_overlay;
++
++		/* Load overlay file */
++		err = get_relfile_envaddr(cmdtp, overlayfile,
++					  "fdtoverlay_addr_r");
++		if (err < 0) {
++			printf("Failed loading overlay %s\n", overlayfile);
++			goto skip_overlay;
++		}
++
++		/* Resize main fdt */
++		fdt_shrink_to_minimum(working_fdt, 8192);
++
++		blob = map_sysmem(fdtoverlay_addr, 0);
++		err = fdt_check_header(blob);
++		if (err) {
++			printf("Invalid overlay %s, skipping\n",
++			       overlayfile);
++			goto skip_overlay;
++		}
++
++		err = fdt_overlay_apply_verbose(working_fdt, blob);
++		if (err) {
++			printf("Failed to apply overlay %s, skipping\n",
++			       overlayfile);
++			goto skip_overlay;
++		}
++
++skip_overlay:
++		if (end)
++			free(overlayfile);
++	} while ((fdtoverlay = strstr(fdtoverlay, " ")));
++}
++#endif
++
+ /*
+  * Boot according to the contents of a pxe_label.
+  *
+@@ -775,6 +867,11 @@ static int label_boot(cmd_tbl_t *cmdtp, struct pxe_label *label)
+ 						label->name);
+ 				return 1;
+ 			}
++
++#ifdef CONFIG_OF_LIBFDT_OVERLAY
++			if (label->fdtoverlays)
++				label_boot_fdtoverlay(cmdtp, label);
++#endif
+ 		} else {
+ 			bootm_argv[3] = NULL;
+ 		}
+@@ -828,6 +925,7 @@ enum token_type {
+ 	T_INCLUDE,
+ 	T_FDT,
+ 	T_FDTDIR,
++	T_FDTOVERLAYS,
+ 	T_ONTIMEOUT,
+ 	T_IPAPPEND,
+ 	T_INVALID
+@@ -861,6 +959,7 @@ static const struct token keywords[] = {
+ 	{"fdt", T_FDT},
+ 	{"devicetreedir", T_FDTDIR},
+ 	{"fdtdir", T_FDTDIR},
++	{"fdtoverlays", T_FDTOVERLAYS},
+ 	{"ontimeout", T_ONTIMEOUT,},
+ 	{"ipappend", T_IPAPPEND,},
+ 	{NULL, T_INVALID}
+@@ -1262,6 +1361,11 @@ static int parse_label(char **c, struct pxe_menu *cfg)
+ 				err = parse_sliteral(c, &label->fdtdir);
+ 			break;
+ 
++		case T_FDTOVERLAYS:
++			if (!label->fdtoverlays)
++				err = parse_sliteral(c, &label->fdtoverlays);
++			break;
++
+ 		case T_LOCALBOOT:
+ 			label->localboot = 1;
+ 			err = parse_integer(c, &label->localboot_val);
+diff --git a/doc/README.pxe b/doc/README.pxe
+index db1165838ce..bef936f4107 100644
+--- a/doc/README.pxe
++++ b/doc/README.pxe
+@@ -90,6 +90,9 @@ pxe boot
+      fdt_addr - the location of a fdt blob. 'fdt_addr' will be passed to bootm
+      command if it is set and 'fdt_addr_r' is not passed to bootm command.
+ 
++     fdtoverlay_addr_r - location in RAM at which 'pxe boot' will temporarily store
++     fdt overlay(s) before applying them to the fdt blob stored at 'fdt_addr_r'.
++
+ pxe file format
+ ===============
+ The pxe file format is nearly a subset of the PXELINUX file format; see
+@@ -142,6 +145,12 @@ kernel <path>	    - if this label is chosen, use tftp to retrieve the kernel
+ 		      indicated in the kernel_addr_r environment variable, and
+ 		      that address will be passed to bootm to boot this kernel.
+ 
++fdtoverlays <path> [...] - if this label is chosen, use tftp to retrieve the DT
++                      overlay(s) at <path>. it will be temporarily stored at the
++                      address indicated in the fdtoverlay_addr_r environment variable,
++                      and then applied in the load order to the fdt blob stored at the
++                      address indicated in the fdt_addr_r environment variable.
++
+ append <string>	    - use <string> as the kernel command line when booting this
+ 		      label.
+ 
+-- 
+2.25.1
+

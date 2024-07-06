@@ -1,0 +1,39 @@
+From a355fe0a7722e4bbbca8b9f6f96797db23b62837 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+Date: Thu, 8 Mar 2018 00:26:08 +0100
+Subject: [PATCH 03/19] UPSTREAM: fs: ext4: Do not print mount fail message
+ when not ext4 filesystem
+
+Other filesystem drivers don't do this.
+
+Signed-off-by: Marek Behun <marek.behun@nic.cz>
+(cherry picked from commit 51be47166319dfbf68828182cb57889bae4dc20b)
+Signed-off-by: Stephen Chen <stephen@radxa.com>
+---
+ fs/ext4/ext4_common.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/fs/ext4/ext4_common.c b/fs/ext4/ext4_common.c
+index dac95453650..e3cc30a1e0a 100644
+--- a/fs/ext4/ext4_common.c
++++ b/fs/ext4/ext4_common.c
+@@ -2343,7 +2343,7 @@ int ext4fs_mount(unsigned part_length)
+ 
+ 	/* Make sure this is an ext2 filesystem. */
+ 	if (le16_to_cpu(data->sblock.magic) != EXT2_MAGIC)
+-		goto fail;
++		goto fail_noerr;
+ 
+ 
+ 	if (le32_to_cpu(data->sblock.revision_level) == 0) {
+@@ -2379,6 +2379,7 @@ int ext4fs_mount(unsigned part_length)
+ 	return 1;
+ fail:
+ 	printf("Failed to mount ext2 filesystem...\n");
++fail_noerr:
+ 	free(data);
+ 	ext4fs_root = NULL;
+ 
+-- 
+2.25.1
+

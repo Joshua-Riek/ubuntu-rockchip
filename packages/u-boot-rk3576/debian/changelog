@@ -1,0 +1,5 @@
+u-boot-rk3576 (2017.09+20240622.git6e378f44-1) jammy; urgency=medium
+
+  * Initial packaging.
+
+ -- Joshua Riek <jjriek@verizon.net>  Sat, 06 Jul 2024 12:59:47 -0400

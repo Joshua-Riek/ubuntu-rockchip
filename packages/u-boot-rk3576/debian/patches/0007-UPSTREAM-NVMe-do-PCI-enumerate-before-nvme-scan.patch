@@ -1,0 +1,31 @@
+From 084b3718a59cca73e787082afe762f854682b13c Mon Sep 17 00:00:00 2001
+From: Patrick Wildt <patrick@blueri.se>
+Date: Thu, 3 Oct 2019 11:10:57 +0200
+Subject: [PATCH 07/19] UPSTREAM: NVMe: do PCI enumerate before nvme scan
+
+Make sure that the PCI busses are enumerated before trying to
+find a NVMe device.
+
+Signed-off-by: Patrick Wildt <patrick@blueri.se>
+Reviewed-by: Bin Meng <bmeng.cn@gmail.com>
+(cherry picked from commit 52e1d93c14d0a56651367eb00f8d6b6fe80a2708)
+Signed-off-by: Stephen Chen <stephen@radxa.com>
+---
+ include/config_distro_bootcmd.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/config_distro_bootcmd.h b/include/config_distro_bootcmd.h
+index 8c3181ef0e2..cc2f6368f98 100644
+--- a/include/config_distro_bootcmd.h
++++ b/include/config_distro_bootcmd.h
+@@ -172,6 +172,7 @@
+ 		"fi\0" \
+ 	\
+ 	"nvme_boot=" \
++		BOOTENV_RUN_PCI_ENUM \
+ 		BOOTENV_RUN_NVME_INIT \
+ 		BOOTENV_SHARED_BLKDEV_BODY(nvme)
+ #define BOOTENV_DEV_NVME	BOOTENV_DEV_BLKDEV
+-- 
+2.25.1
+

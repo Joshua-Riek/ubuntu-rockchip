@@ -1,7 +1,7 @@
-From 4ec13c36d1549b587e0cd0dcd122a12bd4e01478 Mon Sep 17 00:00:00 2001
+From d1b0d58b0fd6c3f52cc56725adc2470c8b357b31 Mon Sep 17 00:00:00 2001
 From: amazingfate <liujianfeng1994@gmail.com>
 Date: Tue, 7 May 2024 10:25:11 +0800
-Subject: [PATCH] add dts and defconfig of armsom-sige5
+Subject: [PATCH 19/19] add dts and defconfig of armsom-sige5
 
 ---
  arch/arm/dts/rk3576-armsom-sige5.dts  |  14 ++
@@ -12,7 +12,7 @@ Subject: [PATCH] add dts and defconfig of armsom-sige5
 
 diff --git a/arch/arm/dts/rk3576-armsom-sige5.dts b/arch/arm/dts/rk3576-armsom-sige5.dts
 new file mode 100644
-index 0000000000..8bccf05021
+index 00000000000..8bccf050212
 --- /dev/null
 +++ b/arch/arm/dts/rk3576-armsom-sige5.dts
 @@ -0,0 +1,14 @@
@@ -32,7 +32,7 @@ index 0000000000..8bccf05021
 +};
 diff --git a/configs/armsom-sige5-rk3576_defconfig b/configs/armsom-sige5-rk3576_defconfig
 new file mode 100644
-index 0000000000..8d6e4aa8f8
+index 00000000000..8d6e4aa8f8b
 --- /dev/null
 +++ b/configs/armsom-sige5-rk3576_defconfig
 @@ -0,0 +1,222 @@
@@ -259,4 +259,5 @@ index 0000000000..8d6e4aa8f8
 +CONFIG_OPTEE_CLIENT=y
 +CONFIG_OPTEE_V2=y
 -- 
-2.34.1
+2.25.1
+

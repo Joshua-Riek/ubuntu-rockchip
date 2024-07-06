@@ -1,4 +1,4 @@
-Source: u-boot-armsom-rk3576
+Source: u-boot-rk3576
 Section: admin
 Priority: optional
 Standards-Version: 4.6.0

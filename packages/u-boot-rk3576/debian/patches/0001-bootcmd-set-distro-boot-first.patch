@@ -1,0 +1,30 @@
+From ef055505c2678793173a80645909ba5c6b2332cd Mon Sep 17 00:00:00 2001
+From: Stephen Chen <stephen@radxa.com>
+Date: Tue, 21 Mar 2023 16:22:38 +0800
+Subject: [PATCH 01/19] bootcmd: set distro boot first
+
+Signed-off-by: Stephen Chen <stephen@radxa.com>
+---
+ include/configs/rockchip-common.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/configs/rockchip-common.h b/include/configs/rockchip-common.h
+index d897d8baff1..d806d57c95e 100644
+--- a/include/configs/rockchip-common.h
++++ b/include/configs/rockchip-common.h
+@@ -174,10 +174,10 @@
+ 	"boot_fit;"
+ #else
+ #define RKIMG_BOOTCOMMAND			\
++	"run distro_bootcmd;"			\
+ 	"boot_android ${devtype} ${devnum};"	\
+ 	"boot_fit;"				\
+-	"bootrkp;"				\
+-	"run distro_bootcmd;"
++	"bootrkp;"
+ #endif
+ 
+ #endif /* CONFIG_SPL_BUILD */
+-- 
+2.25.1
+
