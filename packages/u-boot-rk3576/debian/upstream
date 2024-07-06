@@ -1,0 +1,4 @@
+GIT=https://github.com/Joshua-Riek/u-boot-rockchip.git
+COMMIT=6e378f44073480767188ec460c5e3a9b1dfc8b1a
+BRANCH=linux-5.10-gen-rkr8
+VERSION=2017.09+20240622.git6e378f44

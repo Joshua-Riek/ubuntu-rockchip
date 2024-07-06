@@ -1,0 +1,30 @@
+From e12970f8af5ab323a6defc0164c133b06e0e97d1 Mon Sep 17 00:00:00 2001
+From: Stephen Chen <stephen@radxa.com>
+Date: Fri, 19 Apr 2024 20:54:03 +0800
+Subject: [PATCH 10/19] rockchip: Set USB to have a higher boot priority than
+ SD
+
+Signed-off-by: Stephen Chen <stephen@radxa.com>
+---
+ include/configs/rockchip-common.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/rockchip-common.h b/include/configs/rockchip-common.h
+index 205151d3813..1d7b6e1c7c2 100644
+--- a/include/configs/rockchip-common.h
++++ b/include/configs/rockchip-common.h
+@@ -112,10 +112,10 @@
+ #endif
+ 
+ #define BOOT_TARGET_DEVICES(func) \
++	BOOT_TARGET_USB(func) \
+ 	BOOT_TARGET_NVME_MMC(func) \
+ 	BOOT_TARGET_MTD(func) \
+ 	BOOT_TARGET_RKNAND(func) \
+-	BOOT_TARGET_USB(func) \
+ 	BOOT_TARGET_PXE(func) \
+ 	BOOT_TARGET_DHCP(func)
+ 
+-- 
+2.25.1
+

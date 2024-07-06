@@ -1,0 +1,74 @@
+From 1fabf939d4468170c36d2c5d6ab2c3efc25fa5a9 Mon Sep 17 00:00:00 2001
+From: Heinrich Schuchardt <xypron.glpk@gmx.de>
+Date: Fri, 21 Dec 2018 02:18:16 +0100
+Subject: [PATCH 06/19] UPSTREAM: distro_bootcmd: add NVME support
+
+Some boards support NVME drives. We should be able to use them as boot
+devices.
+
+NVME access requires running 'nvme scan'.
+
+Signed-off-by: Heinrich Schuchardt <xypron.glpk@gmx.de>
+Reviewed-by: Simon Glass <sjg@chromium.org>
+Signed-off-by: Alexander Graf <agraf@suse.de>
+(cherry picked from commit 9493e39cd4efef1dcd8420235685b90a0190f752)
+Signed-off-by: Stephen Chen <stephen@radxa.com>
+---
+ include/config_distro_bootcmd.h | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/include/config_distro_bootcmd.h b/include/config_distro_bootcmd.h
+index 9ed6b9892cd..8c3181ef0e2 100644
+--- a/include/config_distro_bootcmd.h
++++ b/include/config_distro_bootcmd.h
+@@ -161,6 +161,31 @@
+ 	BOOT_TARGET_DEVICES_references_SATA_without_CONFIG_SATA
+ #endif
+ 
++#ifdef CONFIG_NVME
++#define BOOTENV_RUN_NVME_INIT "run nvme_init; "
++#define BOOTENV_SET_NVME_NEED_INIT "setenv nvme_need_init; "
++#define BOOTENV_SHARED_NVME \
++	"nvme_init=" \
++		"if ${nvme_need_init}; then " \
++			"setenv nvme_need_init false; " \
++			"nvme scan; " \
++		"fi\0" \
++	\
++	"nvme_boot=" \
++		BOOTENV_RUN_NVME_INIT \
++		BOOTENV_SHARED_BLKDEV_BODY(nvme)
++#define BOOTENV_DEV_NVME	BOOTENV_DEV_BLKDEV
++#define BOOTENV_DEV_NAME_NVME	BOOTENV_DEV_NAME_BLKDEV
++#else
++#define BOOTENV_RUN_NVME_INIT
++#define BOOTENV_SET_NVME_NEED_INIT
++#define BOOTENV_SHARED_NVME
++#define BOOTENV_DEV_NVME \
++	BOOT_TARGET_DEVICES_references_NVME_without_CONFIG_NVME
++#define BOOTENV_DEV_NAME_NVME \
++	BOOT_TARGET_DEVICES_references_NVME_without_CONFIG_NVME
++#endif
++
+ #ifdef CONFIG_SCSI
+ #define BOOTENV_RUN_SCSI_INIT "run scsi_init; "
+ #define BOOTENV_SET_SCSI_NEED_INIT "setenv scsi_need_init; "
+@@ -319,6 +344,7 @@
+ 	BOOTENV_SHARED_USB \
+ 	BOOTENV_SHARED_SATA \
+ 	BOOTENV_SHARED_SCSI \
++	BOOTENV_SHARED_NVME \
+ 	BOOTENV_SHARED_IDE \
+ 	BOOTENV_SHARED_UBIFS \
+ 	BOOTENV_SHARED_EFI \
+@@ -381,6 +407,7 @@
+ 	BOOT_TARGET_DEVICES(BOOTENV_DEV)                                  \
+ 	\
+ 	"distro_bootcmd=" BOOTENV_SET_SCSI_NEED_INIT                      \
++		BOOTENV_SET_NVME_NEED_INIT                                \
+ 		"for target in ${boot_targets}; do "                      \
+ 			"run bootcmd_${target}; "                         \
+ 		"done\0"
+-- 
+2.25.1
+

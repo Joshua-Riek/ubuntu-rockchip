@@ -1,0 +1,73 @@
+From 0cf2bfdc5c7628e2f12b8e751a452f873e3b1edd Mon Sep 17 00:00:00 2001
+From: Eugen Hristev <eugen.hristev@microchip.com>
+Date: Wed, 9 May 2018 16:28:37 +0300
+Subject: [PATCH 04/19] UPSTREAM: fs: ext4: fix crash on ext4ls
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Found a crash while issuing ext4ls with a non-existent directory.
+Crash test:
+
+=> ext4ls mmc 0 1
+** Can not find directory. **
+data abort
+pc : [<3fd7c2ec>]          lr : [<3fd93ed8>]
+reloc pc : [<26f142ec>]    lr : [<26f2bed8>]
+sp : 3f963338  ip : 3fdc3dc4     fp : 3fd6b370
+r10: 00000004  r9 : 3f967ec0     r8 : 3f96db68
+r7 : 3fdc99b4  r6 : 00000000     r5 : 3f96dc88  r4 : 3fdcbc8c
+r3 : fffffffa  r2 : 00000000     r1 : 3f96e0bc  r0 : 00000002
+Flags: nZCv  IRQs off  FIQs off  Mode SVC_32
+Resetting CPU ...
+
+resetting ...
+
+Tested on SAMA5D2_Xplained board (sama5d2_xplained_mmc_defconfig)
+
+Looks like crash is introduced by commit:
+"fa9ca8a" fs/ext4/ext4fs.c: Free dirnode in error path of ext4fs_ls
+
+Issue is that dirnode is not initialized, and then freed if the call
+to ext4_ls fails. ext4_ls will not change the value of dirnode in this case
+thus we have a crash with data abort.
+
+I added initialization and a check for dirname being NULL.
+
+Fixes: "fa9ca8a" fs/ext4/ext4fs.c: Free dirnode in error path of ext4fs_ls
+Cc: Stefan Brüns <stefan.bruens@rwth-aachen.de>
+Cc: Tom Rini <trini@konsulko.com>
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+Reviewed-by: Tom Rini <trini@konsulko.com>
+(cherry picked from commit e71a969cea56eb3e93de3320df5ce44c9e4e1c53)
+Signed-off-by: Stephen Chen <stephen@radxa.com>
+---
+ fs/ext4/ext4fs.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/fs/ext4/ext4fs.c b/fs/ext4/ext4fs.c
+index 9ee2caf2fa1..8b7d012d353 100644
+--- a/fs/ext4/ext4fs.c
++++ b/fs/ext4/ext4fs.c
+@@ -165,7 +165,7 @@ int ext4fs_read_file(struct ext2fs_node *node, loff_t pos,
+ 
+ int ext4fs_ls(const char *dirname)
+ {
+-	struct ext2fs_node *dirnode;
++	struct ext2fs_node *dirnode = NULL;
+ 	int status;
+ 
+ 	if (dirname == NULL)
+@@ -175,7 +175,8 @@ int ext4fs_ls(const char *dirname)
+ 				  FILETYPE_DIRECTORY);
+ 	if (status != 1) {
+ 		printf("** Can not find directory. **\n");
+-		ext4fs_free_node(dirnode, &ext4fs_root->diropen);
++		if (dirnode)
++			ext4fs_free_node(dirnode, &ext4fs_root->diropen);
+ 		return 1;
+ 	}
+ 
+-- 
+2.25.1
+

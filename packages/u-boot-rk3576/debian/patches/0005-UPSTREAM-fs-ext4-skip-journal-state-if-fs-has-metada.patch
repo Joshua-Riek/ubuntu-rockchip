@@ -1,0 +1,45 @@
+From 2136bf1cbc88dd5b78461cf293a246e791b44084 Mon Sep 17 00:00:00 2001
+From: Arnaud Ferraris <arnaud.ferraris@collabora.com>
+Date: Wed, 22 Apr 2020 12:43:44 +0200
+Subject: [PATCH 05/19] UPSTREAM: fs: ext4: skip journal state if fs has
+ metadata_csum
+
+As u-boot doesn't support the metadata_csum feature, writing to a
+filesystem with this feature enabled will fail, as expected. However,
+during the process, a journal state check is performed, which could
+result in:
+  - a fs recovery if the fs wasn't umounted properly
+  - the fs being marked dirty
+
+Both these cases result in a superblock change, leading to a mismatch
+between the superblock checksum and its contents. Therefore, Linux will
+consider the filesystem heavily corrupted and will require e2fsck to be
+run manually to boot.
+
+By bypassing the journal state check, this patch ensures the superblock
+won't be corrupted if the filesystem has metadata_csum feature enabled.
+
+Signed-off-by: Arnaud Ferraris <arnaud.ferraris@collabora.com>
+(cherry picked from commit 7683b11098ded5087138d84e2e85078335a0cb72)
+Signed-off-by: Stephen Chen <stephen@radxa.com>
+---
+ fs/ext4/ext4_journal.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/fs/ext4/ext4_journal.c b/fs/ext4/ext4_journal.c
+index fed6287eac4..d490a5122c5 100644
+--- a/fs/ext4/ext4_journal.c
++++ b/fs/ext4/ext4_journal.c
+@@ -409,6 +409,9 @@ int ext4fs_check_journal_state(int recovery_flag)
+ 	char *temp_buff1 = NULL;
+ 	struct ext_filesystem *fs = get_fs();
+ 
++	if (le32_to_cpu(fs->sb->feature_ro_compat) & EXT4_FEATURE_RO_COMPAT_METADATA_CSUM)
++		return 0;
++
+ 	temp_buff = zalloc(fs->blksz);
+ 	if (!temp_buff)
+ 		return -ENOMEM;
+-- 
+2.25.1
+
