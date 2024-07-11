@@ -4,8 +4,8 @@ export BOARD_NAME="Orange Pi 5 Pro"
 export BOARD_MAKER="Xulong"
 export BOARD_SOC="Rockchip RK3588S"
 export BOARD_CPU="ARM Cortex A76 / A55"
-export UBOOT_PACKAGE="u-boot-orangepi-rk3588"
-export UBOOT_RULES_TARGET="orangepi_5_pro"
+export UBOOT_PACKAGE="u-boot-radxa-rk3588"
+export UBOOT_RULES_TARGET="orangepi-5-pro-rk3588s"
 
 function config_image_hook__orangepi-5-pro() {
     local rootfs="$1"
