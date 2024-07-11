@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# Remove the old u-boot path so we can replace it with a symlink
-path="/usr/lib/u-boot-orangepi-rk3588/"
-if [ -d ${path} ] && [ ! -L ${path} ]; then
-    rm -rf ${path}
-fi
-
-exit 0
