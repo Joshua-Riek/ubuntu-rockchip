@@ -60,7 +60,7 @@ ${u-boot-rockchip_platforms}:
 
 build: ${u-boot-rockchip_platforms}
 
-binary-arch: $(addprefix package-,$(filter-out rock-5a-spi-rk3588s,$(u-boot-rockchip_platforms)))  
+binary-arch: $(addprefix package-,$(filter-out rock-5a-spi-rk3588s,orangepi-5-sata-rk3588s,$(u-boot-rockchip_platforms)))  
 
 binary: binary-arch
 
@@ -74,6 +74,10 @@ package-%:
 	@cp debian/build/$(subst package-,,$@)/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader.img
 	@if [ "rock-5a-rk3588s" = "$(subst package-,,$@)" ]; then \
 		cp debian/build/rock-5a-spi-rk3588s/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader.img; \
+	fi
+	@if [ "orangepi-5-rk3588s" = "$(subst package-,,$@)" ]; then \
+		cp debian/build/orangepi-5-sata-rk3588s/rkspi_loader.img debian/tmp/u-boot/usr/lib/u-boot/rkspi_loader_sata.img; \
+		cp debian/bin/u-boot-install-sata-mtd debian/tmp/u-boot/usr/bin/u-boot-install-sata-mtd; \
 	fi
 	@cp debian/bin/u-boot-install debian/tmp/u-boot/usr/bin/u-boot-install
 	@cp debian/bin/u-boot-install-mtd debian/tmp/u-boot/usr/bin/u-boot-install-mtd
