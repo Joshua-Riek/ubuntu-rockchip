@@ -9,3 +9,5 @@
 0009-fix-gcc13-compile-error.patch
 0010-fix-noble-compile-error.patch
 0011-enable-armsom-sige7-early-PD-negotiation.patch
+0012-Add-support-for-the-Orange-Pi-5-5B.patch
+

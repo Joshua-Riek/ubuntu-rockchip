@@ -95,3 +95,17 @@ u-boot-rockchip_platforms += mixtile-core3588e-rk3588
 mixtile-core3588e-rk3588_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
 mixtile-core3588e-rk3588_bl31 := rk3588_bl31_v1.45.elf
 mixtile-core3588e-rk3588_pkg := mixtile-core3588e
+
+u-boot-rockchip_platforms += orangepi-5-rk3588s
+orangepi-5-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
+orangepi-5-rk3588s_bl31 := rk3588_bl31_v1.45.elf
+orangepi-5-rk3588s_pkg := orangepi-5
+
+u-boot-rockchip_platforms += orangepi-5-sata-rk3588s
+orangepi-5-sata-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
+orangepi-5-sata-rk3588s_bl31 := rk3588_bl31_v1.45.elf
+
+u-boot-rockchip_platforms += orangepi_5b
+orangepi_5b-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
+orangepi_5b-rk3588s_bl31 := rk3588_bl31_v1.45.elf
+orangepi_5b-rk3588s_pkg := orangepi-5b
