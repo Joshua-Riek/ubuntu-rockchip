@@ -105,10 +105,10 @@ u-boot-rockchip_platforms += orangepi-5-sata-rk3588s
 orangepi-5-sata-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
 orangepi-5-sata-rk3588s_bl31 := rk3588_bl31_v1.45.elf
 
-u-boot-rockchip_platforms += orangepi-5b
-orangepi_5b-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
-orangepi_5b-rk3588s_bl31 := rk3588_bl31_v1.45.elf
-orangepi_5b-rk3588s_pkg := orangepi-5b
+u-boot-rockchip_platforms += orangepi-5b-rk3588s
+orangepi-5b-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
+orangepi-5b-rk3588s_bl31 := rk3588_bl31_v1.45.elf
+orangepi-5b-rk3588s_pkg := orangepi-5b
 
 u-boot-rockchip_platforms += orangepi-5-pro-rk3588s
 orangepi-5-pro-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
