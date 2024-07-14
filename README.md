@@ -10,7 +10,7 @@ Ubuntu Rockchip is a community project porting Ubuntu to Rockchip hardware with 
 
 * Available for both Ubuntu 22.04 LTS (with Rockchip Linux 5.10) and Ubuntu 24.04 LTS (with Rockchip Linux 6.1)
 * Package management via apt using the official Ubuntu repositories
-* Receive all updates and changes through through apt
+* Receive all updates and changes through apt
 * Desktop first-run wizard for user setup and configuration
 * 3D hardware acceleration support via panfork
 * Fully working GNOME desktop using wayland
