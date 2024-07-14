@@ -60,7 +60,7 @@ ${u-boot-rockchip_platforms}:
 
 build: ${u-boot-rockchip_platforms}
 
-binary-arch: $(addprefix package-,$(filter-out rock-5a-spi-rk3588s,orangepi-5-sata-rk3588s,$(u-boot-rockchip_platforms)))  
+binary-arch: $(addprefix package-,$(filter-out orangepi-5-sata-rk3588s,$(filter-out rock-5a-spi-rk3588s,$(u-boot-rockchip_platforms))))
 
 binary: binary-arch
 

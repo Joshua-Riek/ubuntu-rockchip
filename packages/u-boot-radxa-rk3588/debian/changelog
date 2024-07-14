@@ -1,3 +1,9 @@
+u-boot-radxa-rk3588 (2017.09+20240626.git5202c429-3) jammy; urgency=medium
+
+  * Fix filter-out makefile rule
+
+ -- Joshua Riek <jjriek@verizon.net>  Sun, 14 Jul 2024 11:26:58 -0400
+
 u-boot-radxa-rk3588 (2017.09+20240626.git5202c429-2) jammy; urgency=medium
 
   * Add support for Orange Pi 5 boards
