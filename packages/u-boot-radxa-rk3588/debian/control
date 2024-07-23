@@ -300,6 +300,20 @@ Description: A boot loader for the Orange Pi 5 Pro.
  supported architectures, including PPC, ARM, MIPS, x86, m68k,
  NIOS, and Microblaze.
 
+Package: u-boot-orangepi-5-max
+Architecture: arm64
+Priority: optional
+Depends: mtd-utils
+Provides: u-boot-orangepi-rk3588, u-boot
+Replaces: u-boot-orangepi-rk3588, u-boot
+Conflicts: u-boot-orangepi-rk3588, u-boot
+Description: A boot loader for the Orange Pi 5 Max.
+ Das U-Boot is a cross-platform bootloader for embedded systems,
+ used as the default boot loader by several board vendors.  It is
+ intended to be easy to port and to debug, and runs on many
+ supported architectures, including PPC, ARM, MIPS, x86, m68k,
+ NIOS, and Microblaze.
+
 Package: u-boot-orangepi-5-plus
 Architecture: arm64
 Priority: optional
@@ -308,6 +322,20 @@ Provides: u-boot-orangepi-rk3588, u-boot
 Replaces: u-boot-orangepi-rk3588, u-boot
 Conflicts: u-boot-orangepi-rk3588, u-boot
 Description: A boot loader for the Orange Pi 5 Plus.
+ Das U-Boot is a cross-platform bootloader for embedded systems,
+ used as the default boot loader by several board vendors.  It is
+ intended to be easy to port and to debug, and runs on many
+ supported architectures, including PPC, ARM, MIPS, x86, m68k,
+ NIOS, and Microblaze.
+
+Package: u-boot-orangepi-cm5
+Architecture: arm64
+Priority: optional
+Depends: mtd-utils
+Provides: u-boot-orangepi-rk3588, u-boot
+Replaces: u-boot-orangepi-rk3588, u-boot
+Conflicts: u-boot-orangepi-rk3588, u-boot
+Description: A boot loader for the Orange Pi 5 CM5.
  Das U-Boot is a cross-platform bootloader for embedded systems,
  used as the default boot loader by several board vendors.  It is
  intended to be easy to port and to debug, and runs on many
