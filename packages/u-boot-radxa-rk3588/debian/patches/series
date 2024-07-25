@@ -10,3 +10,4 @@
 0010-fix-noble-compile-error.patch
 0011-enable-armsom-sige7-early-PD-negotiation.patch
 0012-Add-support-for-the-Orange-Pi-5-boards.patch
+0013-add-support-for-aio-3588l.patch
