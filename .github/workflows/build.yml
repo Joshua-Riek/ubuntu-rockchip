@@ -113,11 +113,13 @@ jobs:
     strategy:
       matrix:
         board:
+          - orangepi-cm5
           - orangepi-3b
           - orangepi-5
           - orangepi-5b
           - orangepi-5-plus
           - orangepi-5-pro
+          - orangepi-5-max
           - rock-5d
           - rock-5c
           - rock-5b-plus
