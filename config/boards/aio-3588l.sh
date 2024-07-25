@@ -6,8 +6,6 @@ export BOARD_SOC="Rockchip RK3588"
 export BOARD_CPU="ARM Cortex A76 / A55"
 export UBOOT_PACKAGE="u-boot-radxa-rk3588"
 export UBOOT_RULES_TARGET="aio-3588l-rk3588"
-#export UBOOT_PACKAGE="u-boot-radxa-rk3588"
-#export UBOOT_RULES_TARGET="roc-rk3588s-pc-rk3588s"
 
 function config_image_hook__aio-3588l() {
     local rootfs="$1"
