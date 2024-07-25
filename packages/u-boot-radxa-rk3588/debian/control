@@ -244,6 +244,21 @@ Description: A boot loader for the Firefly ROC RK3588S PC.
  supported architectures, including PPC, ARM, MIPS, x86, m68k,
  NIOS, and Microblaze.
 
+
+Package: u-boot-aio-3588l
+Architecture: arm64
+Priority: optional
+Depends: mtd-utils
+Provides: u-boot-firefly-rk3588, u-boot
+Replaces: u-boot-firefly-rk3588, u-boot
+Conflicts: u-boot-firefly-rk3588, u-boot
+Description: A boot loader for the Firefly AIO 3588L.
+ Das U-Boot is a cross-platform bootloader for embedded systems,
+ used as the default boot loader by several board vendors.  It is
+ intended to be easy to port and to debug, and runs on many
+ supported architectures, including PPC, ARM, MIPS, x86, m68k,
+ NIOS, and Microblaze.
+
 Package: u-boot-mixtile-core3588e
 Architecture: arm64
 Priority: optional
