@@ -1,3 +1,4 @@
+#!/bin/bash
 # shellcheck shell=bash
 
 export BOARD_NAME="Orange Pi 5 Plus"
