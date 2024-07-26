@@ -66,6 +66,11 @@ nanopc-t6-rk3588_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
 nanopc-t6-rk3588_bl31 := rk3588_bl31_v1.45.elf
 nanopc-t6-rk3588_pkg := nanopc-t6
 
+u-boot-rockchip_platforms += youyeetoo-r1-rk3588s
+youyeetoo-r1-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
+youyeetoo-r1-rk3588s_bl31 := rk3588_bl31_v1.45.elf
+youyeetoo-r1-rk3588s_pkg := youyeetoo-r1
+
 u-boot-rockchip_platforms += lubancat-4-rk3588s
 lubancat-4-rk3588s_ddr := rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
 lubancat-4-rk3588s_bl31 := rk3588_bl31_v1.45.elf

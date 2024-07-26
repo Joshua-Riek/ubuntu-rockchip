@@ -174,6 +174,20 @@ Description: A boot loader for the FriendlyELEC NanoPC T6.
  supported architectures, including PPC, ARM, MIPS, x86, m68k,
  NIOS, and Microblaze.
 
+Package: u-boot-youyeetoo-r1
+Architecture: arm64
+Priority: optional
+Depends: mtd-utils
+Provides: u-boot-youyeetoo-rk3588, u-boot
+Replaces: u-boot-youyeetoo-rk3588, u-boot
+Conflicts: u-boot-youyeetoo-rk3588, u-boot
+Description: A boot loader for the Youyeetoo R1.
+ Das U-Boot is a cross-platform bootloader for embedded systems,
+ used as the default boot loader by several board vendors.  It is
+ intended to be easy to port and to debug, and runs on many
+ supported architectures, including PPC, ARM, MIPS, x86, m68k,
+ NIOS, and Microblaze.
+
 Package: u-boot-lubancat-4
 Architecture: arm64
 Priority: optional
