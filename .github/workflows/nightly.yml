@@ -75,6 +75,7 @@ jobs:
           - rock-5b
           - rock-5a
           - rock-5-itx
+          - radxa-cm5-rpi-cm4-io
           - radxa-cm5-io
           - radxa-nx5-io
           - radxa-zero3

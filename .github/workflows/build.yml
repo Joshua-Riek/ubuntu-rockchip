@@ -140,6 +140,8 @@ jobs:
           - turing-rk1
           - armsom-sige5
           - armsom-w3
+          - armsom-sige7
+          - armsom-aim7
           - aio-3588l
         flavor:
           - desktop
