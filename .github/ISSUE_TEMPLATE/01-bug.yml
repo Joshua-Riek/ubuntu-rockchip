@@ -1,0 +1,52 @@
+name: Bug Report
+description: Create a bug report if there is something not working correctly.
+title: "Bug Report: "
+labels: ["bug"]
+assignees: "Joshua-Riek"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking time to fill out this bug report!
+
+        Please include information about your system such as the kernel version, SBC model, and operating system. Additionally provide a list of steps to reproduce the bug. 
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+  - type: input
+    id: kernel
+    attributes:
+      label: Kernel version
+      description: What version of the Linux kernel are you running? (use `uname -r` to get the version string)
+      placeholder: 6.1.0-1020-rockchip
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: SBC model
+      description: What SBC are you using? (use `cat /proc/device-tree/model` to get the model string)
+      placeholder: Orange Pi 5
+    validations:
+      required: true
+  - type: dropdown
+    id: ubuntu
+    attributes:
+      label: What operating system are you seeing this problem on?
+      multiple: true
+      options:
+        - Ubuntu 22.04 LTS (Jammy Jellyfish)
+        - Ubuntu 24.04 LTS (Noble Nombat)
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Please copy and paste any relevant log output (such as dmesg). This will be automatically formatted into code, so no need for backticks.
+      render: shell
