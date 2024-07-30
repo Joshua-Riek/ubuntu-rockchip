@@ -1,3 +1,9 @@
+u-boot-radxa-rk3588 (2017.09+20240626.git5202c429-4) jammy; urgency=medium
+
+  * Add support for the Orange Pi 5 CM5 and 5 Max
+
+ -- Joshua Riek <jjriek@verizon.net>  Mon, 29 Jul 2024 20:20:44 -0400
+
 u-boot-radxa-rk3588 (2017.09+20240626.git5202c429-3) jammy; urgency=medium
 
   * Fix filter-out makefile rule
