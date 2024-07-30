@@ -113,36 +113,37 @@ jobs:
     strategy:
       matrix:
         board:
-          - orangepi-cm5
-          - orangepi-3b
-          - orangepi-5
-          - orangepi-5b
-          - orangepi-5-plus
-          - orangepi-5-pro
-          - orangepi-5-max
-          - rock-5d
-          - rock-5c
-          - rock-5b-plus
-          - rock-5b
-          - rock-5a
-          - rock-5-itx
-          - radxa-cm5-rpi-cm4-io
-          - radxa-cm5-io
-          - radxa-nx5-io
-          - radxa-zero3
+          - aio-3588l
+          - armsom-aim7
+          - armsom-sige5
+          - armsom-sige7
+          - armsom-w3
+          - indiedroid-nova
+          - lubancat-4
+          - mixtile-blade3
+          - mixtile-core3588e
           - nanopc-t6
           - nanopi-r6c
           - nanopi-r6s
-          - indiedroid-nova
-          - mixtile-blade3
-          - mixtile-core3588e
-          - lubancat-4
+          - orangepi-3b
+          - orangepi-5
+          - orangepi-5-max
+          - orangepi-5-plus
+          - orangepi-5-pro
+          - orangepi-5b
+          - orangepi-cm5
+          - radxa-cm5-io
+          - radxa-cm5-rpi-cm4-io
+          - radxa-nx5-io
+          - radxa-zero3
+          - roc-rk3588s-pc
+          - rock-5-itx
+          - rock-5a
+          - rock-5b
+          - rock-5b-plus
+          - rock-5c
+          - rock-5d
           - turing-rk1
-          - armsom-sige5
-          - armsom-w3
-          - armsom-sige7
-          - armsom-aim7
-          - aio-3588l
         flavor:
           - desktop
           - server
