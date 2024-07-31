@@ -25,8 +25,8 @@ function config_image_hook__orangepi-5-pro() {
 
     # Enable bluetooth
     cp "${overlay}/usr/bin/brcm_patchram_plus" "${rootfs}/usr/bin/brcm_patchram_plus"
-    cp "${overlay}/usr/lib/systemd/system/ap6256-bluetooth.service" "${rootfs}/usr/lib/systemd/system/ap6256-bluetooth.service"
-    chroot "${rootfs}" systemctl enable ap6256-bluetooth
+    cp "${overlay}/usr/lib/systemd/system/ap6256s-bluetooth.service" "${rootfs}/usr/lib/systemd/system/ap6256s-bluetooth.service"
+    chroot "${rootfs}" systemctl enable ap6256s-bluetooth
 
     # Install wiring orangepi package 
     chroot "${rootfs}" apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev

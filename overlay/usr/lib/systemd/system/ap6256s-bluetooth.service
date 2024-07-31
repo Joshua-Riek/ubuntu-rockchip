@@ -1,5 +1,5 @@
 [Unit]
-Description=Bluetooth AP6275P
+Description=Bluetooth AP6256S
 After=bluetooth.target
 
 [Service]
