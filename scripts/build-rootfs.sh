@@ -119,11 +119,7 @@ fi
 ) > config/seeded-snaps
 
 # Generic packages to install
-(
-    echo "rockchip-multimedia-config"
-    echo "software-properties-common"
-    echo "linux-firmware"
-) > config/package-lists/my.list.chroot
+echo "software-properties-common" > config/package-lists/my.list.chroot
 
 if [ "${PROJECT}" == "ubuntu" ]; then
     # Specific packages to install for ubuntu desktop
@@ -132,9 +128,6 @@ if [ "${PROJECT}" == "ubuntu" ]; then
         echo "oem-config-gtk"
         echo "ubiquity-frontend-gtk"
         echo "ubiquity-slideshow-ubuntu"
-        echo "gstreamer1.0-rockchip1"
-        echo "chromium-browser"
-        echo "libv4l-rkmpp"
         echo "localechooser-data"
     ) >> config/package-lists/my.list.chroot
 else
