@@ -6,6 +6,8 @@ export BOARD_SOC="Rockchip RK3588"
 export BOARD_CPU="ARM Cortex A76 / A55"
 export UBOOT_PACKAGE="u-boot-radxa-rk3588"
 export UBOOT_RULES_TARGET="orangepi-cm5-rk3588s"
+export COMPATIBLE_SUITES=("jammy" "noble")
+export COMPATIBLE_FLAVORS=("server" "desktop")
 
 function config_image_hook__orangepi-cm5() {
     local rootfs="$1"

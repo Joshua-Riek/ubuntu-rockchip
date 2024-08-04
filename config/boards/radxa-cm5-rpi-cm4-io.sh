@@ -6,6 +6,8 @@ export BOARD_SOC="Rockchip RK3588S"
 export BOARD_CPU="ARM Cortex A76 / A55"
 export UBOOT_PACKAGE="u-boot-radxa-rk3588"
 export UBOOT_RULES_TARGET="radxa-cm5-rpi-cm4-io-rk3588s"
+export COMPATIBLE_SUITES=("jammy" "noble")
+export COMPATIBLE_FLAVORS=("server" "desktop")
 
 function config_image_hook__radxa-cm5-rpi-cm4-io() {
     local rootfs="$1"

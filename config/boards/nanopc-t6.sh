@@ -6,6 +6,8 @@ export BOARD_SOC="Rockchip RK3588"
 export BOARD_CPU="ARM Cortex A76 / A55"
 export UBOOT_PACKAGE="u-boot-radxa-rk3588"
 export UBOOT_RULES_TARGET="nanopc-t6-rk3588"
+export COMPATIBLE_SUITES=("jammy" "noble" "oracular")
+export COMPATIBLE_FLAVORS=("server" "desktop")
 
 function config_image_hook__nanopc-t6() {
     local rootfs="$1"
