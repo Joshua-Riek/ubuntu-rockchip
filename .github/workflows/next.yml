@@ -102,26 +102,42 @@ jobs:
             name: linux-rockchip-${{ matrix.suite == 'jammy' && '5.10' || matrix.suite == 'noble' && '6.1' || matrix.suite == 'oracular' && '6.11' }}
             path: ./build/linux-*.deb
             if-no-files-found: error
+  prep:
+    runs-on: ubuntu-latest
+    needs: [rootfs, kernel]
+    name: Set matrix
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Parse boards and create matrix
+        id: set-matrix
+        run: |
+            matrix=""
+            for file in config/boards/*; do
+                COMPATIBLE_SUITES=()
+                COMPATIBLE_FLAVORS=()
+                # shellcheck disable=SC1090
+                source "${file}"
+                for suite in "${COMPATIBLE_SUITES[@]}"; do
+                    if [ "${suite}" == "oracular" ]; then
+                        for flavor in "${COMPATIBLE_FLAVORS[@]}"; do
+                            matrix+="{\"board\":\"$(basename "${file%.sh}")\",\"suite\":\"${suite}\",\"flavor\":\"${flavor}\"},"
+                        done
+                    fi
+                done
+            done
+            echo "matrix={\"include\":[${matrix::-1}]}" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-latest
-    needs: [rootfs, kernel]
+    needs: [prep]
     name: Build image 
 
     strategy:
-      matrix:
-        board:
-          - nanopc-t6
-          - orangepi-5
-          - orangepi-5-plus
-          - rock-5a
-          - rock-5b
-          - turing-rk1
-        flavor:
-          - desktop
-          - server
-        suite:
-          - oracular
+        matrix: ${{fromJson(needs.prep.outputs.matrix)}}
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
