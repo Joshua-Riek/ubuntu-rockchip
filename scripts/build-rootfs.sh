@@ -66,7 +66,6 @@ set +e
 export ARCH=arm64
 export IMAGEFORMAT=none
 export IMAGE_TARGETS=none
-export EXTRA_PPAS="jjriek/rockchip jjriek/rockchip-multimedia"
 
 # Populate the configuration directory for live build
 lb config \
@@ -84,7 +83,7 @@ lb config \
     --mirror-binary "http://ports.ubuntu.com" \
     --parent-mirror-binary "http://ports.ubuntu.com" \
     --keyring-packages ubuntu-keyring \
-    --linux-flavours rockchip
+    --linux-flavours "${KERNEL_FLAVOR}"
 
 # Pin rockchip package archives
 (
