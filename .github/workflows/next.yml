@@ -1,0 +1,179 @@
+name: Next
+
+on:
+  workflow_dispatch:
+
+run-name: Next
+
+jobs:
+  rootfs:
+    runs-on: ubuntu-latest
+    name: Build rootfs 
+    strategy:
+        matrix:
+          flavor:
+            - desktop
+            - server
+          suite:
+            - oracular
+    steps:
+      - name: Get more disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout LFS
+        shell: bash
+        run: git lfs fetch && git lfs checkout
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt-get update && apt-get purge needrestart -y && sudo apt-get upgrade -y
+          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
+          qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
+          debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
+          udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
+          python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
+
+      - name: Build
+        shell: bash
+        run: sudo ./build.sh --suite=${{ matrix.suite }} --flavor=${{ matrix.flavor }} --rootfs-only
+
+      - name: Upload
+        uses: actions/upload-artifact@v4.3.3
+        with:
+            name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
+            path: ./build/ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64.rootfs.tar.xz
+            if-no-files-found: error
+
+  kernel:
+    runs-on: ubuntu-latest
+    name: Build kernel 
+    strategy:
+        matrix:
+          suite:
+            - oracular
+    steps:
+      - name: Get more disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout LFS
+        shell: bash
+        run: git lfs fetch && git lfs checkout
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt-get update && apt-get purge needrestart -y && sudo apt-get upgrade -y
+          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
+          qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
+          debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
+          udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
+          python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+
+      - name: Build
+        shell: bash
+        run: sudo ./build.sh --suite=${{ matrix.suite }} --kernel-only
+
+      - name: Upload
+        uses: actions/upload-artifact@v4.3.3
+        with:
+            name: linux-rockchip-${{ matrix.suite == 'jammy' && '5.10' || matrix.suite == 'noble' && '6.1' || matrix.suite == 'oracular' && '6.11' }}
+            path: ./build/linux-*.deb
+            if-no-files-found: error
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [rootfs, kernel]
+    name: Build image 
+
+    strategy:
+      matrix:
+        board:
+          - nanopc-t6
+          - orangepi-5
+          - orangepi-5-plus
+          - rock-5a
+          - rock-5b
+          - turing-rk1
+        flavor:
+          - desktop
+          - server
+        suite:
+          - oracular
+    steps:
+      - name: Get more disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout LFS
+        shell: bash
+        run: git lfs fetch && git lfs checkout
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt-get update && apt-get purge needrestart -y && sudo apt-get upgrade -y
+          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
+          qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
+          debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
+          udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
+          python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
+
+      - name: Checkout rootfs
+        uses: actions/download-artifact@v4.1.2
+        with:
+            name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
+            path: ./build/
+
+      - name: Checkout kernel
+        uses: actions/download-artifact@v4.1.2
+        with:
+            name: linux-rockchip-${{ matrix.suite == 'jammy' && '5.10' || matrix.suite == 'noble' && '6.1' || matrix.suite == 'oracular' && '6.11' }}
+            path: ./build/
+
+      - name: Build
+        shell: bash
+        run: sudo ./build.sh --board=${{ matrix.board }} --suite=${{ matrix.suite }} --flavor=${{ matrix.flavor }}
+
+      - name: Upload
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64-${{ matrix.board }}
+          path: ./images/ubuntu-*-preinstalled-${{ matrix.flavor }}-arm64-${{ matrix.board }}.*
+          if-no-files-found: error
+
+      - name: Clean cache
+        shell: bash
+        run: sync && sudo rm -rf ./images/ ./build/ && sync
