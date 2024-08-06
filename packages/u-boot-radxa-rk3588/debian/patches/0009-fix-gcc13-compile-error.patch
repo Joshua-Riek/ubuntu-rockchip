@@ -1,7 +1,7 @@
-From b421d7708eaa1299a1f89e236fdecaabf6ab3732 Mon Sep 17 00:00:00 2001
+From 4e4bf7efb9af1630dcb2e01ccef555aef3764c8d Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Sun, 11 Feb 2024 20:56:22 -0500
-Subject: [PATCH 11/18] fix gcc13 compile error
+Subject: [PATCH 09/14] fix gcc13 compile error
 
 ---
  arch/arm/mach-rockchip/decode_bl31.py | 2 +-

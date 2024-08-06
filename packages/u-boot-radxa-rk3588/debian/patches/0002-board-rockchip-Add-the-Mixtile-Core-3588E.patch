@@ -1,12 +1,12 @@
-From cfc27760e3a4719091cf0ca6320e33dbb4036a13 Mon Sep 17 00:00:00 2001
+From d27e1e2d2b4d5ba2af2a92dced12f400def100cc Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Sun, 17 Dec 2023 09:41:43 -0500
-Subject: [PATCH 04/18] board: rockchip: Add the Mixtile Core 3588E
+Subject: [PATCH 02/14] board: rockchip: Add the Mixtile Core 3588E
 
 ---
  arch/arm/dts/rk3588-mixtile-core3588e.dts  |  60 ++++++
- configs/mixtile-core3588e-rk3588_defconfig | 233 +++++++++++++++++++++
- 2 files changed, 293 insertions(+)
+ configs/mixtile-core3588e-rk3588_defconfig | 236 +++++++++++++++++++++
+ 2 files changed, 296 insertions(+)
  create mode 100644 arch/arm/dts/rk3588-mixtile-core3588e.dts
  create mode 100644 configs/mixtile-core3588e-rk3588_defconfig
 
@@ -78,10 +78,10 @@ index 00000000000..7b1f46aa686
 +};
 diff --git a/configs/mixtile-core3588e-rk3588_defconfig b/configs/mixtile-core3588e-rk3588_defconfig
 new file mode 100644
-index 00000000000..40b7e151998
+index 00000000000..e455b0b5dca
 --- /dev/null
 +++ b/configs/mixtile-core3588e-rk3588_defconfig
-@@ -0,0 +1,233 @@
+@@ -0,0 +1,236 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_ROCKCHIP=y
 +CONFIG_SPL_GPIO_SUPPORT=y
@@ -90,12 +90,15 @@ index 00000000000..40b7e151998
 +CONFIG_SYS_MALLOC_F_LEN=0x80000
 +CONFIG_SPL_FIT_GENERATOR="arch/arm/mach-rockchip/make_fit_atf.sh"
 +CONFIG_ROCKCHIP_RK3588=y
++CONFIG_ROCKCHIP_BOOTDEV="mmc 0"
++
 +CONFIG_ROCKCHIP_FIT_IMAGE=y
 +CONFIG_ROCKCHIP_HWID_DTB=y
 +CONFIG_ROCKCHIP_VENDOR_PARTITION=y
 +CONFIG_USING_KERNEL_DTB_V2=y
 +CONFIG_ROCKCHIP_FIT_IMAGE_PACK=y
 +CONFIG_ROCKCHIP_NEW_IDB=y
++CONFIG_ROCKCHIP_EMMC_IOMUX=y
 +CONFIG_SPL_SERIAL_SUPPORT=y
 +CONFIG_SPL_DRIVERS_MISC_SUPPORT=y
 +CONFIG_TARGET_EVB_RK3588=y

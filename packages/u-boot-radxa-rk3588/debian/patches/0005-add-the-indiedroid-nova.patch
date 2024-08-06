@@ -1,7 +1,7 @@
-From 8cb782cbce6ac18093a39f779bda39dcfc434c8e Mon Sep 17 00:00:00 2001
+From cc244b4336d76e3287160dde54fc28d8200addec Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Sat, 23 Dec 2023 12:47:15 -0500
-Subject: [PATCH 07/18] add the indiedroid nova
+Subject: [PATCH 05/14] add the indiedroid nova
 
 ---
  arch/arm/dts/rk3588s-indiedroid-nova.dts  | 330 ++++++++++++++++++++++

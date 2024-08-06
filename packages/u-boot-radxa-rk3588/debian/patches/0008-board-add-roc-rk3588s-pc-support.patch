@@ -1,7 +1,7 @@
-From c94ad49ab38e58ae425357c8f7dd9ab4792220c7 Mon Sep 17 00:00:00 2001
+From 68a88168a42b9cdf7d1092ed85e4dee49a423e02 Mon Sep 17 00:00:00 2001
 From: zouxf <zxf@t-chip.com.cn>
 Date: Thu, 30 Nov 2023 17:38:34 +0800
-Subject: [PATCH 10/18] board: add roc-rk3588s-pc support
+Subject: [PATCH 08/14] board: add roc-rk3588s-pc support
 
 ---
  arch/arm/dts/rk3588s-roc-pc.dts               | 261 ++++++++++++++++++

@@ -1,12 +1,12 @@
-From 86334392a9439420fe12191f472f6b495c0c0ced Mon Sep 17 00:00:00 2001
+From e054026f17dafcdcdf7d7dfd08d5d06a979c61a6 Mon Sep 17 00:00:00 2001
 From: zhouxp <645006021@qq.com>
 Date: Tue, 19 Dec 2023 15:44:30 +0800
-Subject: [PATCH 08/18] add defconfig and dts of armsom-w3
+Subject: [PATCH 06/14] add defconfig and dts of armsom-w3
 
 ---
  arch/arm/dts/rk3588-armsom-w3.dts  |  88 ++++++++++++
- configs/armsom-w3-rk3588_defconfig | 214 +++++++++++++++++++++++++++++
- 2 files changed, 302 insertions(+)
+ configs/armsom-w3-rk3588_defconfig | 216 +++++++++++++++++++++++++++++
+ 2 files changed, 304 insertions(+)
  create mode 100755 arch/arm/dts/rk3588-armsom-w3.dts
  create mode 100755 configs/armsom-w3-rk3588_defconfig
 
@@ -106,10 +106,10 @@ index 00000000000..26ec15e75de
 +};
 diff --git a/configs/armsom-w3-rk3588_defconfig b/configs/armsom-w3-rk3588_defconfig
 new file mode 100755
-index 00000000000..9f1ae340b21
+index 00000000000..1aa7217ad62
 --- /dev/null
 +++ b/configs/armsom-w3-rk3588_defconfig
-@@ -0,0 +1,214 @@
+@@ -0,0 +1,216 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -119,12 +119,14 @@ index 00000000000..9f1ae340b21
 +CONFIG_SYS_MALLOC_F_LEN=0x80000
 +CONFIG_SPL_FIT_GENERATOR="arch/arm/mach-rockchip/make_fit_atf.sh"
 +CONFIG_ROCKCHIP_RK3588=y
++CONFIG_ROCKCHIP_BOOTDEV="mmc 0"
 +CONFIG_ROCKCHIP_FIT_IMAGE=y
 +CONFIG_ROCKCHIP_HWID_DTB=y
 +CONFIG_ROCKCHIP_VENDOR_PARTITION=y
 +CONFIG_USING_KERNEL_DTB_V2=y
 +CONFIG_ROCKCHIP_FIT_IMAGE_PACK=y
 +CONFIG_ROCKCHIP_NEW_IDB=y
++CONFIG_ROCKCHIP_EMMC_IOMUX=y
 +CONFIG_LOADER_INI="RK3588MINIALL.ini"
 +CONFIG_TRUST_INI="RK3588TRUST.ini"
 +CONFIG_SPL_SERIAL_SUPPORT=y

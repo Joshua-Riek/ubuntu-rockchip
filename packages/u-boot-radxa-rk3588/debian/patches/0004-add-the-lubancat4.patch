@@ -1,7 +1,7 @@
-From 59677773b576ee194529e688fac9d7dbe729b6a4 Mon Sep 17 00:00:00 2001
+From 59153bb46418d5ca7559fea0d9e40c9d2672834d Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?=E4=BA=91=E5=B9=95?= <cancet@embedfire.com>
 Date: Fri, 25 Aug 2023 01:59:30 +0000
-Subject: [PATCH 06/18] add the lubancat4
+Subject: [PATCH 04/14] add the lubancat4
 
 ---
  arch/arm/dts/rk3588s-lubancat-4.dts  | 193 ++++++++++++++++++++++

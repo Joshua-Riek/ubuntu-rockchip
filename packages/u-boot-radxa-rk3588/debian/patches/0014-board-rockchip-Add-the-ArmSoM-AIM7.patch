@@ -1,18 +1,18 @@
-From cfc27760e3a4719091cf0ca6320e33dbb4036a13 Mon Sep 17 00:00:00 2001
+From bcb031b538d53fbde497703db5e1689bd03a3fe2 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Sun, 17 Dec 2023 09:41:43 -0500
-Subject: [PATCH 04/18] board: rockchip: Add the ArmSoM AIM7
+Subject: [PATCH 14/14] board: rockchip: Add the ArmSoM AIM7
 
 ---
- arch/arm/dts/rk3588-armsom-aim7.dts  |  60 ++++++
- configs/armsom-aim7-rk3588_defconfig | 233 +++++++++++++++++++++
+ arch/arm/dts/rk3588-armsom-aim7.dts  |  60 +++++++
+ configs/armsom-aim7-rk3588_defconfig | 233 +++++++++++++++++++++++++++
  2 files changed, 293 insertions(+)
  create mode 100644 arch/arm/dts/rk3588-armsom-aim7.dts
  create mode 100644 configs/armsom-aim7-rk3588_defconfig
 
 diff --git a/arch/arm/dts/rk3588-armsom-aim7.dts b/arch/arm/dts/rk3588-armsom-aim7.dts
 new file mode 100644
-index 00000000000..7b1f46aa686
+index 00000000000..385684153d3
 --- /dev/null
 +++ b/arch/arm/dts/rk3588-armsom-aim7.dts
 @@ -0,0 +1,60 @@
@@ -78,7 +78,7 @@ index 00000000000..7b1f46aa686
 +};
 diff --git a/configs/armsom-aim7-rk3588_defconfig b/configs/armsom-aim7-rk3588_defconfig
 new file mode 100644
-index 00000000000..40b7e151998
+index 00000000000..c1222c3dd00
 --- /dev/null
 +++ b/configs/armsom-aim7-rk3588_defconfig
 @@ -0,0 +1,233 @@

@@ -1,7 +1,7 @@
-From ca95d72a0904a24c53a49055b8201a1743cc5e2f Mon Sep 17 00:00:00 2001
+From e688f798b8f3e5682a8ce58325cc5d3514334d8b Mon Sep 17 00:00:00 2001
 From: Serwan Jassim <serwan.jassim@gmail.com>
 Date: Sat, 20 Jul 2024 16:11:38 +0000
-Subject: [PATCH] add support for aio-3588l
+Subject: [PATCH 13/14] add support for aio-3588l
 
 ---
  arch/arm/dts/rk3588-aio-3588l.dts  | 261 +++++++++++++++++++++++++++++
@@ -12,7 +12,7 @@ Subject: [PATCH] add support for aio-3588l
 
 diff --git a/arch/arm/dts/rk3588-aio-3588l.dts b/arch/arm/dts/rk3588-aio-3588l.dts
 new file mode 100755
-index 0000000000..e0c66434e9
+index 00000000000..e0c66434e93
 --- /dev/null
 +++ b/arch/arm/dts/rk3588-aio-3588l.dts
 @@ -0,0 +1,261 @@
@@ -279,7 +279,7 @@ index 0000000000..e0c66434e9
 +};
 diff --git a/configs/aio-3588l-rk3588_defconfig b/configs/aio-3588l-rk3588_defconfig
 new file mode 100644
-index 0000000000..3eaa7518db
+index 00000000000..3eaa7518db7
 --- /dev/null
 +++ b/configs/aio-3588l-rk3588_defconfig
 @@ -0,0 +1,236 @@

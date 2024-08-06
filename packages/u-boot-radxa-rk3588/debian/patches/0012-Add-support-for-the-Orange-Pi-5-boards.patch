@@ -1,7 +1,7 @@
-From a0e5dfe8f61bf48a11a944f5dab3fb9d5b3eb615 Mon Sep 17 00:00:00 2001
+From 1d226a6fed6723cb8aa087226bf145f4857c3c77 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Tue, 23 Jul 2024 18:14:50 -0400
-Subject: [PATCH] Add support for the Orange Pi 5 boards
+Subject: [PATCH 12/14] Add support for the Orange Pi 5 boards
 
 ---
  arch/arm/dts/rk3588-orangepi-5-max.dts    | 145 +++++++++++
@@ -11,14 +11,14 @@ Subject: [PATCH] Add support for the Orange Pi 5 boards
  arch/arm/dts/rk3588s-orangepi-5.dts       | 188 ++++++++++++++
  arch/arm/dts/rk3588s-orangepi-5b.dts      |  25 ++
  arch/arm/dts/rk3588s-orangepi-cm5.dts     |  46 ++++
- configs/orangepi-5-max-rk3588_defconfig   | 255 +++++++++++++++++++
- configs/orangepi-5-plus-rk3588_defconfig  | 255 +++++++++++++++++++
- configs/orangepi-5-pro-rk3588s_defconfig  | 254 +++++++++++++++++++
- configs/orangepi-5-rk3588s_defconfig      | 254 +++++++++++++++++++
- configs/orangepi-5-sata-rk3588s_defconfig | 254 +++++++++++++++++++
- configs/orangepi-5b-rk3588s_defconfig     | 254 +++++++++++++++++++
- configs/orangepi-cm5-rk3588s_defconfig    | 254 +++++++++++++++++++
- 14 files changed, 2630 insertions(+)
+ configs/orangepi-5-max-rk3588_defconfig   | 257 +++++++++++++++++++
+ configs/orangepi-5-plus-rk3588_defconfig  | 257 +++++++++++++++++++
+ configs/orangepi-5-pro-rk3588s_defconfig  | 256 +++++++++++++++++++
+ configs/orangepi-5-rk3588s_defconfig      | 256 +++++++++++++++++++
+ configs/orangepi-5-sata-rk3588s_defconfig | 256 +++++++++++++++++++
+ configs/orangepi-5b-rk3588s_defconfig     | 256 +++++++++++++++++++
+ configs/orangepi-cm5-rk3588s_defconfig    | 256 +++++++++++++++++++
+ 14 files changed, 2644 insertions(+)
  create mode 100644 arch/arm/dts/rk3588-orangepi-5-max.dts
  create mode 100644 arch/arm/dts/rk3588-orangepi-5-plus.dts
  create mode 100644 arch/arm/dts/rk3588s-orangepi-5-pro.dts
@@ -928,10 +928,10 @@ index 00000000000..189c68dda8d
 +};
 diff --git a/configs/orangepi-5-max-rk3588_defconfig b/configs/orangepi-5-max-rk3588_defconfig
 new file mode 100644
-index 00000000000..86cb4ef1a1b
+index 00000000000..bcc1bb1dae1
 --- /dev/null
 +++ b/configs/orangepi-5-max-rk3588_defconfig
-@@ -0,0 +1,255 @@
+@@ -0,0 +1,257 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -941,6 +941,7 @@ index 00000000000..86cb4ef1a1b
 +CONFIG_SYS_MALLOC_F_LEN=0x80000
 +CONFIG_SPL_FIT_GENERATOR="arch/arm/mach-rockchip/make_fit_atf.sh"
 +CONFIG_ROCKCHIP_RK3588=y
++CONFIG_ROCKCHIP_BOOTDEV="mmc 0"
 +CONFIG_ROCKCHIP_USB_BOOT=y
 +CONFIG_ROCKCHIP_FIT_IMAGE=y
 +CONFIG_ROCKCHIP_HWID_DTB=y
@@ -948,6 +949,7 @@ index 00000000000..86cb4ef1a1b
 +CONFIG_ROCKCHIP_VENDOR_PARTITION=y
 +CONFIG_ROCKCHIP_FIT_IMAGE_PACK=y
 +CONFIG_ROCKCHIP_NEW_IDB=y
++CONFIG_ROCKCHIP_EMMC_IOMUX=y
 +CONFIG_LOADER_INI="RK3588MINIALL.ini"
 +CONFIG_TRUST_INI="RK3588TRUST.ini"
 +CONFIG_PSTORE=y
@@ -1190,10 +1192,10 @@ index 00000000000..86cb4ef1a1b
 \ No newline at end of file
 diff --git a/configs/orangepi-5-plus-rk3588_defconfig b/configs/orangepi-5-plus-rk3588_defconfig
 new file mode 100644
-index 00000000000..1d221c7efb1
+index 00000000000..99e1ab38b5f
 --- /dev/null
 +++ b/configs/orangepi-5-plus-rk3588_defconfig
-@@ -0,0 +1,255 @@
+@@ -0,0 +1,257 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -1203,6 +1205,7 @@ index 00000000000..1d221c7efb1
 +CONFIG_SYS_MALLOC_F_LEN=0x80000
 +CONFIG_SPL_FIT_GENERATOR="arch/arm/mach-rockchip/make_fit_atf.sh"
 +CONFIG_ROCKCHIP_RK3588=y
++CONFIG_ROCKCHIP_BOOTDEV="mmc 0"
 +CONFIG_ROCKCHIP_USB_BOOT=y
 +CONFIG_ROCKCHIP_FIT_IMAGE=y
 +CONFIG_ROCKCHIP_HWID_DTB=y
@@ -1210,6 +1213,7 @@ index 00000000000..1d221c7efb1
 +CONFIG_ROCKCHIP_VENDOR_PARTITION=y
 +CONFIG_ROCKCHIP_FIT_IMAGE_PACK=y
 +CONFIG_ROCKCHIP_NEW_IDB=y
++CONFIG_ROCKCHIP_EMMC_IOMUX=y
 +CONFIG_LOADER_INI="RK3588MINIALL.ini"
 +CONFIG_TRUST_INI="RK3588TRUST.ini"
 +CONFIG_PSTORE=y
@@ -1451,10 +1455,10 @@ index 00000000000..1d221c7efb1
 +CONFIG_OPTEE_V2=y
 diff --git a/configs/orangepi-5-pro-rk3588s_defconfig b/configs/orangepi-5-pro-rk3588s_defconfig
 new file mode 100644
-index 00000000000..712723fe67a
+index 00000000000..23e62c9097d
 --- /dev/null
 +++ b/configs/orangepi-5-pro-rk3588s_defconfig
-@@ -0,0 +1,254 @@
+@@ -0,0 +1,256 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -1464,6 +1468,7 @@ index 00000000000..712723fe67a
 +CONFIG_SYS_MALLOC_F_LEN=0x80000
 +CONFIG_SPL_FIT_GENERATOR="arch/arm/mach-rockchip/make_fit_atf.sh"
 +CONFIG_ROCKCHIP_RK3588=y
++CONFIG_ROCKCHIP_BOOTDEV="mmc 0"
 +CONFIG_ROCKCHIP_USB_BOOT=y
 +CONFIG_ROCKCHIP_FIT_IMAGE=y
 +CONFIG_ROCKCHIP_HWID_DTB=y
@@ -1471,6 +1476,7 @@ index 00000000000..712723fe67a
 +CONFIG_ROCKCHIP_VENDOR_PARTITION=y
 +CONFIG_ROCKCHIP_FIT_IMAGE_PACK=y
 +CONFIG_ROCKCHIP_NEW_IDB=y
++CONFIG_ROCKCHIP_EMMC_IOMUX=y
 +CONFIG_LOADER_INI="RK3588MINIALL.ini"
 +CONFIG_TRUST_INI="RK3588TRUST.ini"
 +CONFIG_PSTORE=y
@@ -1711,10 +1717,10 @@ index 00000000000..712723fe67a
 +CONFIG_OPTEE_V2=y
 diff --git a/configs/orangepi-5-rk3588s_defconfig b/configs/orangepi-5-rk3588s_defconfig
 new file mode 100644
-index 00000000000..c7e5e86fc4c
+index 00000000000..4c826fe2053
 --- /dev/null
 +++ b/configs/orangepi-5-rk3588s_defconfig
-@@ -0,0 +1,254 @@
+@@ -0,0 +1,256 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -1724,6 +1730,7 @@ index 00000000000..c7e5e86fc4c
 +CONFIG_SYS_MALLOC_F_LEN=0x80000
 +CONFIG_SPL_FIT_GENERATOR="arch/arm/mach-rockchip/make_fit_atf.sh"
 +CONFIG_ROCKCHIP_RK3588=y
++CONFIG_ROCKCHIP_BOOTDEV="mmc 0"
 +CONFIG_ROCKCHIP_USB_BOOT=y
 +CONFIG_ROCKCHIP_FIT_IMAGE=y
 +CONFIG_ROCKCHIP_HWID_DTB=y
@@ -1731,6 +1738,7 @@ index 00000000000..c7e5e86fc4c
 +CONFIG_ROCKCHIP_VENDOR_PARTITION=y
 +CONFIG_ROCKCHIP_FIT_IMAGE_PACK=y
 +CONFIG_ROCKCHIP_NEW_IDB=y
++CONFIG_ROCKCHIP_EMMC_IOMUX=y
 +CONFIG_LOADER_INI="RK3588MINIALL.ini"
 +CONFIG_TRUST_INI="RK3588TRUST.ini"
 +CONFIG_PSTORE=y
@@ -1971,10 +1979,10 @@ index 00000000000..c7e5e86fc4c
 +CONFIG_OPTEE_V2=y
 diff --git a/configs/orangepi-5-sata-rk3588s_defconfig b/configs/orangepi-5-sata-rk3588s_defconfig
 new file mode 100644
-index 00000000000..5374c4cb113
+index 00000000000..1101efd77f1
 --- /dev/null
 +++ b/configs/orangepi-5-sata-rk3588s_defconfig
-@@ -0,0 +1,254 @@
+@@ -0,0 +1,256 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -1984,6 +1992,7 @@ index 00000000000..5374c4cb113
 +CONFIG_SYS_MALLOC_F_LEN=0x80000
 +CONFIG_SPL_FIT_GENERATOR="arch/arm/mach-rockchip/make_fit_atf.sh"
 +CONFIG_ROCKCHIP_RK3588=y
++CONFIG_ROCKCHIP_BOOTDEV="mmc 0"
 +CONFIG_ROCKCHIP_USB_BOOT=y
 +CONFIG_ROCKCHIP_FIT_IMAGE=y
 +CONFIG_ROCKCHIP_HWID_DTB=y
@@ -1991,6 +2000,7 @@ index 00000000000..5374c4cb113
 +CONFIG_ROCKCHIP_VENDOR_PARTITION=y
 +CONFIG_ROCKCHIP_FIT_IMAGE_PACK=y
 +CONFIG_ROCKCHIP_NEW_IDB=y
++CONFIG_ROCKCHIP_EMMC_IOMUX=y
 +CONFIG_LOADER_INI="RK3588MINIALL.ini"
 +CONFIG_TRUST_INI="RK3588TRUST.ini"
 +CONFIG_PSTORE=y
@@ -2231,10 +2241,10 @@ index 00000000000..5374c4cb113
 +CONFIG_OPTEE_V2=y
 diff --git a/configs/orangepi-5b-rk3588s_defconfig b/configs/orangepi-5b-rk3588s_defconfig
 new file mode 100644
-index 00000000000..dd2c9457fb7
+index 00000000000..bb9fcb5214d
 --- /dev/null
 +++ b/configs/orangepi-5b-rk3588s_defconfig
-@@ -0,0 +1,254 @@
+@@ -0,0 +1,256 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -2244,6 +2254,7 @@ index 00000000000..dd2c9457fb7
 +CONFIG_SYS_MALLOC_F_LEN=0x80000
 +CONFIG_SPL_FIT_GENERATOR="arch/arm/mach-rockchip/make_fit_atf.sh"
 +CONFIG_ROCKCHIP_RK3588=y
++CONFIG_ROCKCHIP_BOOTDEV="mmc 0"
 +CONFIG_ROCKCHIP_USB_BOOT=y
 +CONFIG_ROCKCHIP_FIT_IMAGE=y
 +CONFIG_ROCKCHIP_HWID_DTB=y
@@ -2251,6 +2262,7 @@ index 00000000000..dd2c9457fb7
 +CONFIG_ROCKCHIP_VENDOR_PARTITION=y
 +CONFIG_ROCKCHIP_FIT_IMAGE_PACK=y
 +CONFIG_ROCKCHIP_NEW_IDB=y
++CONFIG_ROCKCHIP_EMMC_IOMUX=y
 +CONFIG_LOADER_INI="RK3588MINIALL.ini"
 +CONFIG_TRUST_INI="RK3588TRUST.ini"
 +CONFIG_PSTORE=y
@@ -2491,10 +2503,10 @@ index 00000000000..dd2c9457fb7
 +CONFIG_OPTEE_V2=y
 diff --git a/configs/orangepi-cm5-rk3588s_defconfig b/configs/orangepi-cm5-rk3588s_defconfig
 new file mode 100644
-index 00000000000..a9744caa934
+index 00000000000..7d97772443f
 --- /dev/null
 +++ b/configs/orangepi-cm5-rk3588s_defconfig
-@@ -0,0 +1,254 @@
+@@ -0,0 +1,256 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_CPU_SUSPEND=y
 +CONFIG_ARCH_ROCKCHIP=y
@@ -2504,6 +2516,7 @@ index 00000000000..a9744caa934
 +CONFIG_SYS_MALLOC_F_LEN=0x80000
 +CONFIG_SPL_FIT_GENERATOR="arch/arm/mach-rockchip/make_fit_atf.sh"
 +CONFIG_ROCKCHIP_RK3588=y
++CONFIG_ROCKCHIP_BOOTDEV="mmc 0"
 +CONFIG_ROCKCHIP_USB_BOOT=y
 +CONFIG_ROCKCHIP_FIT_IMAGE=y
 +CONFIG_ROCKCHIP_HWID_DTB=y
@@ -2511,6 +2524,7 @@ index 00000000000..a9744caa934
 +CONFIG_ROCKCHIP_VENDOR_PARTITION=y
 +CONFIG_ROCKCHIP_FIT_IMAGE_PACK=y
 +CONFIG_ROCKCHIP_NEW_IDB=y
++CONFIG_ROCKCHIP_EMMC_IOMUX=y
 +CONFIG_LOADER_INI="RK3588MINIALL.ini"
 +CONFIG_TRUST_INI="RK3588TRUST.ini"
 +CONFIG_PSTORE=y
