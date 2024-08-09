@@ -5,9 +5,39 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
+
+  config:
+    runs-on: ubuntu-latest
+    name: Configure build martrix
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Parse boards and create matrix
+        id: set-matrix
+        run: |
+            matrix=""
+            for file in config/boards/*; do
+                COMPATIBLE_SUITES=()
+                COMPATIBLE_FLAVORS=()
+                # shellcheck disable=SC1090
+                source "${file}"
+                for suite in "${COMPATIBLE_SUITES[@]}"; do
+                    if [ "${suite}" == "oracular" ]; then
+                        for flavor in "${COMPATIBLE_FLAVORS[@]}"; do
+                            matrix+="{\"board\":\"$(basename "${file%.sh}")\",\"suite\":\"${suite}\",\"flavor\":\"${flavor}\"},"
+                        done
+                    fi
+                done
+            done
+            echo "matrix={\"include\":[${matrix::-1}]}" >> $GITHUB_OUTPUT
+
   rootfs:
     runs-on: ubuntu-latest
     name: Build rootfs 
+    needs: [config]
     strategy:
         matrix:
           flavor:
@@ -16,6 +46,7 @@ jobs:
           suite:
             - jammy
             - noble
+            - oracular
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
@@ -52,59 +83,16 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4.3.3
         with:
-            name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
-            path: ./build/ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' }}-preinstalled-${{ matrix.flavor }}-arm64.rootfs.tar.xz
+            name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
+            path: ./build/ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64.rootfs.tar.xz
             if-no-files-found: error
 
   build:
     runs-on: ubuntu-latest
-    needs: [rootfs]
+    needs: [rootfs, config]
     name: Build image 
-
     strategy:
-      matrix:
-        board:
-          - aio-3588l
-          - armsom-aim7
-          - armsom-sige5
-          - armsom-sige7
-          - armsom-w3
-          - indiedroid-nova
-          - lubancat-4
-          - mixtile-blade3
-          - mixtile-core3588e
-          - nanopc-t6
-          - nanopi-r6c
-          - nanopi-r6s
-          - orangepi-3b
-          - orangepi-5
-          - orangepi-5-max
-          - orangepi-5-plus
-          - orangepi-5-pro
-          - orangepi-5b
-          - orangepi-cm5
-          - radxa-cm5-io
-          - radxa-cm5-rpi-cm4-io
-          - radxa-nx5-io
-          - radxa-zero3
-          - roc-rk3588s-pc
-          - rock-5-itx
-          - rock-5a
-          - rock-5b
-          - rock-5b-plus
-          - rock-5c
-          - rock-5d
-          - turing-rk1
-        flavor:
-          - desktop
-          - server
-        suite:
-          - jammy
-          - noble
-        exclude:
-          - board: armsom-sige5
-            suite: jammy
-
+        matrix: ${{fromJson(needs.config.outputs.matrix)}}
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
@@ -126,7 +114,7 @@ jobs:
       - name: Checkout rootfs
         uses: actions/download-artifact@v4.1.2
         with:
-            name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
+            name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
             path: ./build/
 
       - name: Install dependencies
@@ -147,7 +135,7 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4.3.3
         with:
-          name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' }}-preinstalled-${{ matrix.flavor }}-arm64-${{ matrix.board }}
+          name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64-${{ matrix.board }}
           path: ./images/ubuntu-*-preinstalled-${{ matrix.flavor }}-arm64-${{ matrix.board }}.*
           if-no-files-found: error
 

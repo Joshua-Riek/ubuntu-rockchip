@@ -1,3 +1,10 @@
+u-boot-orangepi-rk3588 (2017.09+20240401.git7f7ff61a-7) jammy; urgency=medium
+
+  * Fix booting from SPI NOR on the Orange Pi 5
+  * Fix eMMC not detected in SPL when booting from SPI NOR
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 08 Aug 2024 23:05:37 -0400
+
 u-boot-orangepi-rk3588 (2017.09+20240401.git7f7ff61a-6) jammy; urgency=medium
 
   * Update ddr and bl31 blobs for the Orange Pi 5, 5B, and 5 Pro
