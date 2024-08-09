@@ -28,6 +28,8 @@ function config_image_hook__turing-rk1() {
 
         # The RK1 uses UART9 for console output
         sed -i 's/console=ttyS2,1500000/console=ttyS9,115200/g' "${rootfs}/etc/kernel/cmdline"
+    elif [ "${suite}" == "oracular" ]; then
+        sed -i 's/console=ttyS0,1500000/console=ttyS9,115200/g' "${rootfs}/etc/kernel/cmdline"
     fi
 
     return 0
