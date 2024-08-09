@@ -1,3 +1,10 @@
+u-boot-radxa-rk3588 (2017.09+20240626.git5202c429-5) jammy; urgency=medium
+
+  * Fix booting from SPI NOR on the Orange Pi 5
+  * Fix eMMC not detected in SPL when booting from SPI NOR
+
+ -- Joshua Riek <jjriek@verizon.net>  Thu, 08 Aug 2024 23:07:36 -0400
+
 u-boot-radxa-rk3588 (2017.09+20240626.git5202c429-4) jammy; urgency=medium
 
   * Add support for the Orange Pi 5 CM5 and 5 Max
