@@ -1,14 +1,14 @@
-From 1d226a6fed6723cb8aa087226bf145f4857c3c77 Mon Sep 17 00:00:00 2001
+From 5fa9757fc4de63bebdb9d0d3c902edfae1ae7e13 Mon Sep 17 00:00:00 2001
 From: Joshua Riek <jjriek@verizon.net>
 Date: Tue, 23 Jul 2024 18:14:50 -0400
-Subject: [PATCH 12/14] Add support for the Orange Pi 5 boards
+Subject: [PATCH] Add support for the Orange Pi 5 boards
 
 ---
  arch/arm/dts/rk3588-orangepi-5-max.dts    | 145 +++++++++++
  arch/arm/dts/rk3588-orangepi-5-plus.dts   | 290 ++++++++++++++++++++++
  arch/arm/dts/rk3588s-orangepi-5-pro.dts   | 126 ++++++++++
  arch/arm/dts/rk3588s-orangepi-5-sata.dts  |  30 +++
- arch/arm/dts/rk3588s-orangepi-5.dts       | 188 ++++++++++++++
+ arch/arm/dts/rk3588s-orangepi-5.dts       | 221 +++++++++++++++++
  arch/arm/dts/rk3588s-orangepi-5b.dts      |  25 ++
  arch/arm/dts/rk3588s-orangepi-cm5.dts     |  46 ++++
  configs/orangepi-5-max-rk3588_defconfig   | 257 +++++++++++++++++++
@@ -18,7 +18,7 @@ Subject: [PATCH 12/14] Add support for the Orange Pi 5 boards
  configs/orangepi-5-sata-rk3588s_defconfig | 256 +++++++++++++++++++
  configs/orangepi-5b-rk3588s_defconfig     | 256 +++++++++++++++++++
  configs/orangepi-cm5-rk3588s_defconfig    | 256 +++++++++++++++++++
- 14 files changed, 2644 insertions(+)
+ 14 files changed, 2677 insertions(+)
  create mode 100644 arch/arm/dts/rk3588-orangepi-5-max.dts
  create mode 100644 arch/arm/dts/rk3588-orangepi-5-plus.dts
  create mode 100644 arch/arm/dts/rk3588s-orangepi-5-pro.dts
@@ -651,10 +651,10 @@ index 00000000000..13c98d99f6d
 +};
 diff --git a/arch/arm/dts/rk3588s-orangepi-5.dts b/arch/arm/dts/rk3588s-orangepi-5.dts
 new file mode 100644
-index 00000000000..4599088d3fe
+index 00000000000..91b553d5e13
 --- /dev/null
 +++ b/arch/arm/dts/rk3588s-orangepi-5.dts
-@@ -0,0 +1,188 @@
+@@ -0,0 +1,221 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2021 Rockchip Electronics Co., Ltd
@@ -834,7 +834,40 @@ index 00000000000..4599088d3fe
 +	status = "okay";
 +};
 +
++&sfc {
++	u-boot,dm-pre-reloc;
++	pinctrl-names = "default";
++	pinctrl-0 = <&fspim0_pins>;
++	status = "okay";
++};
++
++&spi_nor {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
 +&pinctrl {
++	/delete-node/ fspi;
++	fspi {
++		u-boot,dm-spl;
++		fspim0_pins: fspim0-pins {
++			u-boot,dm-spl;
++			rockchip,pins =
++				/* fspi_clk_m0 */
++				<2 RK_PA0 2 &pcfg_pull_none>,
++				/* fspi_cs0n_m0 */
++				<2 RK_PD6 2 &pcfg_pull_none>,
++				/* fspi_d0_m0 */
++				<2 RK_PD0 2 &pcfg_pull_none>,
++				/* fspi_d1_m0 */
++				<2 RK_PD1 2 &pcfg_pull_none>,
++				/* fspi_d2_m0 */
++				<2 RK_PD2 2 &pcfg_pull_none>,
++				/* fspi_d3_m0 */
++				<2 RK_PD3 2 &pcfg_pull_none>;
++		};
++	};
++
 +	usb {
 +		u-boot,dm-pre-reloc;
 +		typec5v_pwren: typec5v-pwren {
