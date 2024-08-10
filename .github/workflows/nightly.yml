@@ -8,17 +8,18 @@ jobs:
 
   config:
     runs-on: ubuntu-latest
-    name: Configure build martrix
+    name: Create martrix
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      build_matrix: ${{ steps.build.outputs.build_matrix }}
+      rootfs_matrix: ${{ steps.rootfs.outputs.rootfs_matrix }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Parse boards and create matrix
-        id: set-matrix
+      - name: Create build matrix
+        id: build
         run: |
-            matrix=""
+            build_matrix=""
             for file in config/boards/*; do
                 COMPATIBLE_SUITES=()
                 COMPATIBLE_FLAVORS=()
@@ -26,25 +27,29 @@ jobs:
                 source "${file}"
                 for suite in "${COMPATIBLE_SUITES[@]}"; do
                     for flavor in "${COMPATIBLE_FLAVORS[@]}"; do
-                        matrix+="{\"board\":\"$(basename "${file%.sh}")\",\"suite\":\"${suite}\",\"flavor\":\"${flavor}\"},"
+                    build_matrix+="{\"board\":\"$(basename "${file%.sh}")\",\"suite\":\"${suite}\",\"flavor\":\"${flavor}\"},"
                     done
                 done
             done
-            echo "matrix={\"include\":[${matrix::-1}]}" >> $GITHUB_OUTPUT
+            echo "build_matrix={\"include\":[${build_matrix::-1}]}" >> $GITHUB_OUTPUT
+
+      - name: Create rootfs matrix
+        id: rootfs
+        run: |
+            rootfs_matrix=""
+            for suite in config/suites/*; do
+                for flavor in config/flavors/*; do
+                    rootfs_matrix+="{\"suite\":\"$(basename "${suite%.sh}")\",\"flavor\":\"$(basename "${flavor%.sh}")\"},"
+                done
+            done
+            echo "rootfs_matrix={\"include\":[${rootfs_matrix::-1}]}" >> $GITHUB_OUTPUT
 
   rootfs:
     runs-on: ubuntu-latest
     name: Build rootfs 
     needs: [config]
     strategy:
-        matrix:
-          flavor:
-            - desktop
-            - server
-          suite:
-            - jammy
-            - noble
-            - oracular
+        matrix: ${{ fromJson(needs.config.outputs.rootfs_matrix) }}
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
@@ -62,6 +67,12 @@ jobs:
       - name: Checkout LFS
         shell: bash
         run: git lfs fetch && git lfs checkout
+
+      - name: Set environment variables
+        id: vars
+        run: |
+          source config/suites/${{ matrix.suite }}.sh
+          echo "suite_version=$RELASE_VERSION" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         shell: bash
@@ -81,8 +92,8 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4.3.3
         with:
-            name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
-            path: ./build/ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64.rootfs.tar.xz
+            name: ubuntu-${{ steps.vars.outputs.suite_version }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
+            path: ./build/ubuntu-${{ steps.vars.outputs.suite_version }}-preinstalled-${{ matrix.flavor }}-arm64.rootfs.tar.xz
             if-no-files-found: error
 
   build:
@@ -90,7 +101,7 @@ jobs:
     needs: [rootfs, config]
     name: Build image 
     strategy:
-        matrix: ${{fromJson(needs.config.outputs.matrix)}}
+        matrix: ${{ fromJson(needs.config.outputs.build_matrix) }}
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
@@ -109,10 +120,16 @@ jobs:
         shell: bash
         run: git lfs fetch && git lfs checkout
 
+      - name: Set environment variables
+        id: vars
+        run: |
+          source config/suites/${{ matrix.suite }}.sh
+          echo "suite_version=$RELASE_VERSION" >> $GITHUB_OUTPUT
+
       - name: Checkout rootfs
         uses: actions/download-artifact@v4.1.2
         with:
-            name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
+            name: ubuntu-${{ steps.vars.outputs.suite_version }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
             path: ./build/
 
       - name: Install dependencies
@@ -133,7 +150,7 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4.3.3
         with:
-          name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64-${{ matrix.board }}
+          name: ubuntu-${{ steps.vars.outputs.suite_version }}-preinstalled-${{ matrix.flavor }}-arm64-${{ matrix.board }}
           path: ./images/ubuntu-*-preinstalled-${{ matrix.flavor }}-arm64-${{ matrix.board }}.*
           if-no-files-found: error
 
