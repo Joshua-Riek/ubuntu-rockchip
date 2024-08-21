@@ -1,3 +1,18 @@
+u-boot-radxa-rk3588 (2017.09+20240806.gitf73b1eed-1) jammy; urgency=medium
+
+  * configs: e25: change CONFIG_BAUDRATE 1500000 to 115200
+  * dts: radxa-e25: add blue led node
+  * radxa-e25: blue light on when entering loader mode
+  * BACKPORT: distro/pxeboot: Handle prompt variable
+  * board: rockchip: evb_rk3528: Add hardware ID recognition for mEdge-RK3528A IO
+  * arm: dts: add radxa-e52c
+  * configs: add radxa-e52c-rk3588s_defconfig
+  * common: fix type of cmd_process for -Werror=enum-int-mismatch
+  * edid: add_cea_modes: fix build with -Werror=maybe-uninitialized
+  * dts: rock5b+: enable pcie3x2
+
+ -- Joshua Riek <jjriek@verizon.net>  Tue, 20 Aug 2024 20:28:47 -0400
+
 u-boot-radxa-rk3588 (2017.09+20240626.git5202c429-5) jammy; urgency=medium
 
   * Fix booting from SPI NOR on the Orange Pi 5
