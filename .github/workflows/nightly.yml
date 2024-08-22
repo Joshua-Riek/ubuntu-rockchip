@@ -64,10 +64,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Checkout LFS
-        shell: bash
-        run: git lfs fetch && git lfs checkout
-
       - name: Set environment variables
         id: vars
         run: |
@@ -115,10 +111,6 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Checkout LFS
-        shell: bash
-        run: git lfs fetch && git lfs checkout
 
       - name: Set environment variables
         id: vars
