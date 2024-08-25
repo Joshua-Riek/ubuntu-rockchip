@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 
-export BOARD_NAME="ROCK 5C"
+export BOARD_NAME="Radxa ROCK 5C"
 export BOARD_MAKER="Radxa"
 export BOARD_SOC="Rockchip RK3588S2"
 export BOARD_CPU="ARM Cortex A76 / A55"
