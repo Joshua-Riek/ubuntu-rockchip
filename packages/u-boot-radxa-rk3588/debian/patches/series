@@ -12,3 +12,4 @@
 0012-Add-support-for-the-Orange-Pi-5-boards.patch
 0013-add-support-for-aio-3588l.patch
 0014-board-rockchip-Add-the-ArmSoM-AIM7.patch
+0015-Revert-rockchip-resource-Add-avb-verify.patch

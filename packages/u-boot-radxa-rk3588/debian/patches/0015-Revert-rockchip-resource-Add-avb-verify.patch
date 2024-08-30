@@ -1,0 +1,50 @@
+From 5d9ce86735c7a367e37ee1850c11e9856ad889a4 Mon Sep 17 00:00:00 2001
+From: Joshua Riek <jjriek@verizon.net>
+Date: Fri, 30 Aug 2024 13:26:18 -0400
+Subject: [PATCH] Revert "rockchip: resource: Add avb verify"
+
+This reverts commit 77cf005eced04e4533589909d5fe399123490d7e.
+---
+ arch/arm/mach-rockchip/resource_img.c | 26 --------------------------
+ 1 file changed, 26 deletions(-)
+
+diff --git a/arch/arm/mach-rockchip/resource_img.c b/arch/arm/mach-rockchip/resource_img.c
+index c2f09890863..9b87bb76866 100644
+--- a/arch/arm/mach-rockchip/resource_img.c
++++ b/arch/arm/mach-rockchip/resource_img.c
+@@ -310,32 +310,6 @@ static int resource_init(struct blk_desc *desc,
+ {
+ 	printf("RESC: '%s', blk@0x%08lx\n", part->name, part->start + blk_offset);
+ 
+-#ifdef CONFIG_ANDROID_AVB
+-	char hdr[512];
+-	ulong resc_buf = 0;
+-	int ret;
+-
+-	if (blk_dread(desc, part->start, 1, hdr) != 1)
+-		return -EIO;
+-
+-	/* only handle android boot/recovery.img and resource.img, ignore fit */
+-	if (!android_image_check_header((void *)hdr) ||
+-	    !resource_check_header((void *)hdr)) {
+-		ret = android_image_verify_resource((const char *)part->name, &resc_buf);
+-		if (ret) {
+-			printf("RESC: '%s', avb verify fail: %d\n", part->name, ret);
+-			return ret;
+-		}
+-
+-		/*
+-		 * unlock=0: resc_buf is valid and file was already full load in ram.
+-		 * unlock=1: resc_buf is 0.
+-		 */
+-		if (resc_buf && !resource_check_header((void *)resc_buf))
+-			return resource_setup_ram_list(desc, (void *)resc_buf);
+-	}
+-#endif
+-
+ 	return resource_setup_blk_list(desc, part->start + blk_offset);
+ }
+ 
+-- 
+2.25.1
+
