@@ -1,3 +1,9 @@
+u-boot-radxa-rk3588 (2017.09+20240806.gitf73b1eed-2) jammy; urgency=medium
+
+  * Revert "rockchip: resource: Add avb verify"
+
+ -- Joshua Riek <jjriek@verizon.net>  Fri, 30 Aug 2024 17:17:30 -0400
+
 u-boot-radxa-rk3588 (2017.09+20240806.gitf73b1eed-1) jammy; urgency=medium
 
   * configs: e25: change CONFIG_BAUDRATE 1500000 to 115200
