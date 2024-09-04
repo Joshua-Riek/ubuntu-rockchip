@@ -32,6 +32,10 @@ function config_image_hook__orangepi-5-pro() {
         cp "${overlay}/usr/lib/systemd/system/ap6256s-bluetooth.service" "${rootfs}/usr/lib/systemd/system/ap6256s-bluetooth.service"
         chroot "${rootfs}" systemctl enable ap6256s-bluetooth
 
+        # Unbind SDIO device before reboot
+        cp "${overlay}/usr/lib/systemd/system/ap6256-reboot.service" "${rootfs}/usr/lib/systemd/system/ap6256-reboot.service"
+        chroot "${rootfs}" systemctl enable ap6256-reboot.service
+
         # Install wiring orangepi package 
         chroot "${rootfs}" apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev
         echo "BOARD=orangepi5pro" > "${rootfs}/etc/orangepi-release"

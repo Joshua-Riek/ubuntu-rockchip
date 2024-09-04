@@ -1,0 +1,11 @@
+[Unit]
+Description=AP6275P pre-reboot service
+DefaultDependencies=no
+Before=reboot.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash -c 'echo "mmc2:0001:1" > /sys/bus/sdio/drivers/brcmfmac/unbind'
+
+[Install]
+WantedBy=reboot.target
