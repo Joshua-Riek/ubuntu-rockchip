@@ -85,16 +85,18 @@ lb config \
     --keyring-packages ubuntu-keyring \
     --linux-flavours "${KERNEL_FLAVOR}"
 
-# Pin rockchip package archives
-(
-    echo "Package: *"
-    echo "Pin: release o=LP-PPA-jjriek-rockchip"
-    echo "Pin-Priority: 1001"
-    echo ""
-    echo "Package: *"
-    echo "Pin: release o=LP-PPA-jjriek-rockchip-multimedia"
-    echo "Pin-Priority: 1001"
-) > config/archives/extra-ppas.pref.chroot
+if [ "${SUITE}" == "noble" ] || [ "${SUITE}" == "jammy" ]; then
+    # Pin rockchip package archives
+    (
+        echo "Package: *"
+        echo "Pin: release o=LP-PPA-jjriek-rockchip"
+        echo "Pin-Priority: 1001"
+        echo ""
+        echo "Package: *"
+        echo "Pin: release o=LP-PPA-jjriek-rockchip-multimedia"
+        echo "Pin-Priority: 1001"
+    ) > config/archives/extra-ppas.pref.chroot
+fi
 
 if [ "${SUITE}" == "noble" ]; then
     # Ignore custom ubiquity package (mistake i made, uploaded to wrong ppa)
