@@ -118,7 +118,7 @@ if [ -n "${SUITE}" ]; then
 fi
 
 if [ "${FLAVOR}" == "help" ]; then
-    for file in config/suites/*; do
+    for file in config/flavors/*; do
         basename "${file%.sh}"
     done
     exit 0
