@@ -18,25 +18,57 @@ jobs:
         id: release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v2.3.2
+          tag_name: v2.4.2
           token: ${{ secrets.GITHUB_TOKEN }}
           target_commitish: main
           draft: true
     outputs:
       release_id: ${{ steps.release.outputs.id }}
 
+  config:
+    runs-on: ubuntu-latest
+    name: Create martrix
+    outputs:
+      build_matrix: ${{ steps.build.outputs.build_matrix }}
+      rootfs_matrix: ${{ steps.rootfs.outputs.rootfs_matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create build matrix
+        id: build
+        run: |
+            build_matrix=""
+            for file in config/boards/*; do
+                COMPATIBLE_SUITES=()
+                COMPATIBLE_FLAVORS=()
+                # shellcheck disable=SC1090
+                source "${file}"
+                for suite in "${COMPATIBLE_SUITES[@]}"; do
+                    for flavor in "${COMPATIBLE_FLAVORS[@]}"; do
+                    build_matrix+="{\"board\":\"$(basename "${file%.sh}")\",\"suite\":\"${suite}\",\"flavor\":\"${flavor}\"},"
+                    done
+                done
+            done
+            echo "build_matrix={\"include\":[${build_matrix::-1}]}" >> $GITHUB_OUTPUT
+
+      - name: Create rootfs matrix
+        id: rootfs
+        run: |
+            rootfs_matrix=""
+            for suite in config/suites/*; do
+                for flavor in config/flavors/*; do
+                    rootfs_matrix+="{\"suite\":\"$(basename "${suite%.sh}")\",\"flavor\":\"$(basename "${flavor%.sh}")\"},"
+                done
+            done
+            echo "rootfs_matrix={\"include\":[${rootfs_matrix::-1}]}" >> $GITHUB_OUTPUT
+
   rootfs:
     runs-on: ubuntu-latest
-    needs: [prepare_release]
     name: Build rootfs 
+    needs: [prepare_release, config]
     strategy:
-        matrix:
-          flavor:
-            - desktop
-            - server
-          suite:
-            - jammy
-            - noble
+        matrix: ${{ fromJson(needs.config.outputs.rootfs_matrix) }}
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
@@ -51,9 +83,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Checkout LFS
-        shell: bash
-        run: git lfs fetch && git lfs checkout
+      - name: Set environment variables
+        id: vars
+        run: |
+          source config/suites/${{ matrix.suite }}.sh
+          echo "suite_version=$RELASE_VERSION" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         shell: bash
@@ -73,58 +107,16 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4.3.3
         with:
-            name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
-            path: ./build/ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' }}-preinstalled-${{ matrix.flavor }}-arm64.rootfs.tar.xz
+            name: ubuntu-${{ steps.vars.outputs.suite_version }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
+            path: ./build/ubuntu-${{ steps.vars.outputs.suite_version }}-preinstalled-${{ matrix.flavor }}-arm64.rootfs.tar.xz
             if-no-files-found: error
 
   build:
     runs-on: ubuntu-latest
-    needs: [rootfs, prepare_release]
+    needs: [rootfs, prepare_release, config]
     name: Build image 
-
     strategy:
-      matrix:
-        board:
-          - aio-3588l
-          - armsom-aim7
-          - armsom-sige5
-          - armsom-sige7
-          - armsom-w3
-          - indiedroid-nova
-          - lubancat-4
-          - mixtile-blade3
-          - mixtile-core3588e
-          - nanopc-t6
-          - nanopi-r6c
-          - nanopi-r6s
-          - orangepi-3b
-          - orangepi-5
-          - orangepi-5-max
-          - orangepi-5-plus
-          - orangepi-5-pro
-          - orangepi-5b
-          - orangepi-cm5
-          - radxa-cm5-io
-          - radxa-cm5-rpi-cm4-io
-          - radxa-nx5-io
-          - radxa-zero3
-          - roc-rk3588s-pc
-          - rock-5-itx
-          - rock-5a
-          - rock-5b
-          - rock-5b-plus
-          - rock-5c
-          - rock-5d
-          - turing-rk1
-        flavor:
-          - desktop
-          - server
-        suite:
-          - jammy
-          - noble
-        exclude:
-          - board: armsom-sige5
-            suite: jammy
+        matrix: ${{ fromJson(needs.config.outputs.build_matrix) }}
     steps:
       - name: Get more disk space
         uses: jlumbroso/free-disk-space@main
@@ -139,14 +131,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Checkout LFS
-        shell: bash
-        run: git lfs fetch && git lfs checkout
+      - name: Set environment variables
+        id: vars
+        run: |
+          source config/suites/${{ matrix.suite }}.sh
+          echo "suite_version=$RELASE_VERSION" >> $GITHUB_OUTPUT
 
       - name: Checkout rootfs
         uses: actions/download-artifact@v4.1.2
         with:
-            name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
+            name: ubuntu-${{ steps.vars.outputs.suite_version }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
             path: ./build/
 
       - name: Install dependencies
