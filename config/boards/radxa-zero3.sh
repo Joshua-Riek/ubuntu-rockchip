@@ -34,6 +34,9 @@ function config_image_hook__radxa-zero3() {
         cp "${overlay}/usr/lib/scripts/aic8800-bluetooth.sh" "${rootfs}/usr/lib/scripts/aic8800-bluetooth.sh"
         cp "${overlay}/usr/lib/systemd/system/aic8800-bluetooth.service" "${rootfs}/usr/lib/systemd/system/aic8800-bluetooth.service"
         chroot "${rootfs}" systemctl enable aic8800-bluetooth
+
+        # Deactivate the Qualcomm PD mapper service, because we are on a Rockchip.
+        chroot "${rootfs}" systemctl disable pd-mapper.service
     fi
 
     return 0

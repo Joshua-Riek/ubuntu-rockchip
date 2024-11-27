@@ -36,6 +36,9 @@ function config_image_hook__orangepi-5-plus() {
         # Install wiring orangepi package 
         chroot "${rootfs}" apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev
         echo "BOARD=orangepi5plus" > "${rootfs}/etc/orangepi-release"
+
+        # Deactivate the Qualcomm PD mapper service, because we are on a Rockchip.
+        chroot "${rootfs}" systemctl disable pd-mapper.service
     fi
 
     return 0

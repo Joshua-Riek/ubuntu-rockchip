@@ -28,8 +28,14 @@ function config_image_hook__turing-rk1() {
 
         # The RK1 uses UART9 for console output
         sed -i 's/console=ttyS2,1500000/console=ttyS9,115200/g' "${rootfs}/etc/kernel/cmdline"
+
+        # Deactivate the Qualcomm PD mapper service, because we are on a Rockchip.
+        chroot "${rootfs}" systemctl disable pd-mapper.service
     elif [ "${suite}" == "oracular" ]; then
         sed -i 's/console=ttyS2,1500000/console=ttyS0,115200/g' "${rootfs}/etc/kernel/cmdline"
+
+        # Deactivate the Qualcomm PD mapper service, because we are on a Rockchip.
+        chroot "${rootfs}" systemctl disable pd-mapper.service
     fi
 
     return 0

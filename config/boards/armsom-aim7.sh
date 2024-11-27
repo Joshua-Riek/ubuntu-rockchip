@@ -25,6 +25,9 @@ function config_image_hook__armsom-aim7() {
 
         # Install the rockchip camera engine
         chroot "${rootfs}" apt-get -y install camera-engine-rkaiq-rk3588
+
+        # Deactivate the Qualcomm PD mapper service, because we are on a Rockchip.
+        chroot "${rootfs}" systemctl disable pd-mapper.service
     fi
 
     return 0

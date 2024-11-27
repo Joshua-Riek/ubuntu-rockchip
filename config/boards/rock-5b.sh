@@ -36,6 +36,9 @@ function config_image_hook__rock-5b() {
         cp "${overlay}/usr/lib/scripts/alsa-audio-config" "${rootfs}/usr/lib/scripts/alsa-audio-config"
         cp "${overlay}/usr/lib/systemd/system/alsa-audio-config.service" "${rootfs}/usr/lib/systemd/system/alsa-audio-config.service"
         chroot "${rootfs}" systemctl enable alsa-audio-config
+
+        # Deactivate the Qualcomm PD mapper service, because we are on a Rockchip.
+        chroot "${rootfs}" systemctl disable pd-mapper.service
     fi
 
     return 0

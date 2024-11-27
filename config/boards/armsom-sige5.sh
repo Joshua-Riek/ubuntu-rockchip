@@ -15,5 +15,8 @@ function config_image_hook__armsom-sige5() {
     # Kernel modules to blacklist
     echo "blacklist panfrost" > "${rootfs}/etc/modprobe.d/panfrost.conf"
 
+    # Deactivate the Qualcomm PD mapper service, because we are on a Rockchip.
+    chroot "${rootfs}" systemctl disable pd-mapper.service
+
     return 0
 }

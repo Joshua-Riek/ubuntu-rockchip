@@ -32,6 +32,9 @@ function config_image_hook__indiedroid-nova() {
         cp "${overlay}/usr/bin/bt_load_rtk_firmware" "${rootfs}/usr/bin/bt_load_rtk_firmware"
         cp "${overlay}/usr/lib/systemd/system/rtl8821cs-bluetooth.service" "${rootfs}/usr/lib/systemd/system/rtl8821cs-bluetooth.service"
         chroot "${rootfs}" systemctl enable rtl8821cs-bluetooth
+
+        # Deactivate the Qualcomm PD mapper service, because we are on a Rockchip.
+        chroot "${rootfs}" systemctl disable pd-mapper.service
     fi
 
     return 0
