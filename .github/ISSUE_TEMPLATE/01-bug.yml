@@ -1,3 +1,4 @@
+---
 name: Bug Report
 description: Create a bug report if there is something not working correctly.
 title: "Bug Report: "
@@ -8,7 +9,7 @@ body:
       value: |
         Thanks for taking time to fill out this bug report!
 
-        Please include information about your system such as the kernel version, SBC model, and operating system. Additionally provide a list of steps to reproduce the bug. 
+        Please include information about your system such as the kernel version, SBC model, and operating system. Additionally provide a list of steps to reproduce the bug.
   - type: textarea
     id: what-happened
     attributes:
@@ -41,6 +42,7 @@ body:
       options:
         - Ubuntu 22.04 LTS (Jammy Jellyfish)
         - Ubuntu 24.04 LTS (Noble Nombat)
+        - Ubuntu 24.10 (Oracular Oriole)
     validations:
       required: true
   - type: textarea
