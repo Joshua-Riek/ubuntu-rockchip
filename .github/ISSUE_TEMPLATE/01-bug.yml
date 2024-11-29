@@ -2,7 +2,6 @@ name: Bug Report
 description: Create a bug report if there is something not working correctly.
 title: "Bug Report: "
 labels: ["bug"]
-assignees: "Joshua-Riek"
 body:
   - type: markdown
     attributes:
