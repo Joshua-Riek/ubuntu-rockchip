@@ -113,38 +113,8 @@ jobs:
     strategy:
       matrix:
         board:
-          - aio-3588l
-          - armsom-aim7
-          - armsom-sige5
-          - armsom-sige7
-          - armsom-w3
           - h96max-v56
-          - indiedroid-nova
-          - lubancat-4
-          - mixtile-blade3
-          - mixtile-core3588e
-          - nanopc-t6
-          - nanopi-r6c
-          - nanopi-r6s
           - orangepi-3b
-          - orangepi-5
-          - orangepi-5-max
-          - orangepi-5-plus
-          - orangepi-5-pro
-          - orangepi-5b
-          - orangepi-cm5
-          - radxa-cm5-io
-          - radxa-cm5-rpi-cm4-io
-          - radxa-nx5-io
-          - radxa-zero3
-          - roc-rk3588s-pc
-          - rock-5-itx
-          - rock-5a
-          - rock-5b
-          - rock-5b-plus
-          - rock-5c
-          - rock-5d
-          - turing-rk1
         flavor:
           - desktop
           - server
@@ -185,13 +155,13 @@ jobs:
           python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
       - name: Checkout rootfs
-        uses: actions/download-artifact@v4.1.2
+        uses: actions/download-artifact@v4.1.8
         with:
             name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
             path: ./build/
 
       - name: Checkout kernel
-        uses: actions/download-artifact@v4.1.2
+        uses: actions/download-artifact@v4.1.8
         with:
             name: linux-rockchip-${{ matrix.suite == 'jammy' && '5.10' || matrix.suite == 'noble' && '6.1' }}
             path: ./build/

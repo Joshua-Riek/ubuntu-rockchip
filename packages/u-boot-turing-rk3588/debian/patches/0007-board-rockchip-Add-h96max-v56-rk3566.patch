@@ -1,5 +1,5 @@
 From a559e2704c21f78f9f3350524caee0c86933815c Mon Sep 17 00:00:00 2001
-From: Ricardo Pardini <ricardo@pardini.net>
+From: Nicolas Pereira <nicolas@nicolas.net>
 Date: Sun, 24 Sep 2023 11:19:03 +0200
 Subject: [PATCH] board: rockchip: Add h96max v56 
 
@@ -13,7 +13,7 @@ Tested with a v56 4GB v1.1:
 - PCIe/NVMe
 - USB is untested
 
-Signed-off-by: Ricardo Pardini <ricardo@pardini.net>
+Signed-off-by: Nicolas Pereira <nicolas@nicolas.net>
 ---
  arch/arm/dts/Makefile                       |   1 +
  arch/arm/dts/rk3566-h96max-v56-u-boot.dtsi  |   9 +

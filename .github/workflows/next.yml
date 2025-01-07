@@ -168,13 +168,13 @@ jobs:
           python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
       - name: Checkout rootfs
-        uses: actions/download-artifact@v4.1.2
+        uses: actions/download-artifact@v4.1.8
         with:
             name: ubuntu-${{ matrix.suite == 'jammy' && '22.04' || matrix.suite == 'noble' && '24.04' || matrix.suite == 'oracular' && '24.10' }}-preinstalled-${{ matrix.flavor }}-arm64-rootfs
             path: ./build/
 
       - name: Checkout kernel
-        uses: actions/download-artifact@v4.1.2
+        uses: actions/download-artifact@v4.1.8
         with:
             name: linux-rockchip-${{ matrix.suite == 'jammy' && '5.10' || matrix.suite == 'noble' && '6.1' || matrix.suite == 'oracular' && '6.11' }}
             path: ./build/
