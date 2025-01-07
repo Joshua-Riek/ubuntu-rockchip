@@ -113,7 +113,6 @@ jobs:
     strategy:
       matrix:
         board:
-          - h96max-v56
           - orangepi-3b
         flavor:
           - desktop
