@@ -1,5 +1,5 @@
 From a559e2704c21f78f9f3350524caee0c86933815c Mon Sep 17 00:00:00 2001
-From: Nicolas Pereira <hqnicolas@acodes.com.br>
+From: Nicolas Pereira <nicolas@nicolas.net>
 Date: Sun, 24 Sep 2023 11:19:03 +0200
 Subject: [PATCH] board: rockchip: Add h96max v56 
 
@@ -13,13 +13,13 @@ Tested with a v56 4GB v1.1:
 - PCIe/NVMe
 - USB is untested
 
-Signed-off-by: Nicolas Pereira <hqnicolas@acodes.com.br>
+Signed-off-by: Nicolas Pereira <nicolas@nicolas.net>
 ---
  arch/arm/dts/Makefile                       |   1 +
  arch/arm/dts/rk3566-h96max-v56-u-boot.dtsi  |  26 +
- arch/arm/dts/rk3566-h96max-v56.dts          | 890 ++++++++++++++++++++
- configs/h96max-v56-rk3566_defconfig         | 153 +++
- 4 files changed, 1070 insertions(+)
+ arch/arm/dts/rk3566-h96max-v56.dts          | 821 ++++++++++++++++++++
+ configs/h96max-v56-rk3566_defconfig         | 137 +++
+ 4 files changed, 985 insertions(+)
  create mode 100644 arch/arm/dts/rk3566-h96max-v56-u-boot.dtsi
  create mode 100644 arch/arm/dts/rk3566-h96max-v56.dts
  create mode 100644 configs/h96max-v56-rk3566_defconfig
@@ -73,7 +73,7 @@ new file mode 100644
 index 00000000000..319236efc25
 --- /dev/null
 +++ b/arch/arm/dts/rk3566-h96max-v56.dts
-@@ -0,0 +1,890 @@
+@@ -0,0 +1,821 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2020 Rockchip Electronics Co., Ltd.
@@ -100,40 +100,6 @@ index 00000000000..319236efc25
 +
 +	chosen: chosen {
 +		stdout-path = "serial2:1500000n8";
-+	};
-+
-+	reserved_memory: reserved-memory {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		cmd: cma {
-+			compatible = "shared-dma-pool";
-+			reusable;
-+			size = <0x00 0x2000000>;
-+			linux,cma-default;
-+		};
-+
-+		rknpu_reserved: rknpu {
-+			compatible = "shared-dma-pool";
-+			inactive;
-+			reusable;
-+			size = <0x0 0x20000000>;
-+			alignment = <0x0 0x1000>;
-+			status = "okay";
-+		};
-+
-+		ramoops: ramoops@110000 {
-+			compatible = "ramoops";
-+			/* 0x110000 to 0x1f0000 is for ramoops */
-+			reg = <0x0 0x110000 0x0 0xe0000>;
-+			boot-log-size = <0x8000>;	/* do not change */
-+			boot-log-count = <0x1>;		/* do not change */
-+			console-size = <0x80000>;
-+			pmsg-size = <0x30000>;
-+			ftrace-size = <0x00000>;
-+			record-size = <0x14000>;
-+		};
 +	};
 +
 +	hdmi-con {
@@ -431,41 +397,6 @@ index 00000000000..319236efc25
 +	status = "okay";
 +};
 +
-+&reserved_memory {
-+	ramoops: ramoops@110000 {
-+		compatible = "ramoops";
-+		reg = <0x0 0x110000 0x0 0xf0000>;
-+		record-size = <0x20000>;
-+		console-size = <0x80000>;
-+		ftrace-size = <0x00000>;
-+		pmsg-size = <0x50000>;
-+	};
-+	cma {
-+		compatible = "shared-dma-pool";
-+		reusable;
-+		size = <0x0 0x00800000>;
-+		linux,cma-default;
-+	};
-+
-+	drm_logo: drm-logo@0 {
-+		compatible = "rockchip,drm-logo";
-+		reg = <0x0 0x0 0x0 0x0>;
-+	};
-+
-+	drm_cubic_lut: drm-cubic-lut@0 {
-+		compatible = "rockchip,drm-cubic-lut";
-+		reg = <0x0 0x0 0x0 0x0>;
-+	};
-+
-+	rknpu_reserved: rknpu {
-+		compatible = "shared-dma-pool";
-+		inactive;
-+		reusable;
-+		size = <0x0 0x20000000>;
-+		alignment = <0x0 0x1000>;
-+	};
-+};
-+
 +&i2c0 {
 +	status = "okay";
 +
@@ -493,12 +424,12 @@ index 00000000000..319236efc25
 +		interrupts = <RK_PA3 IRQ_TYPE_LEVEL_LOW>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&pmic_int_l>;
-+		rockchip,system-power-controller;
-+		wakeup-source;
 +		#clock-cells = <1>;
 +		clock-output-names = "rk808-clkout1", "rk808-clkout2";
 +		not-save-power-en = <1>;
 +		#sound-dai-cells = <0>;
++		rockchip,system-power-controller;
++		wakeup-source;
 +
 +		vcc1-supply = <&vcc3v3_sys>;
 +		vcc2-supply = <&vcc3v3_sys>;
@@ -826,7 +757,7 @@ index 00000000000..319236efc25
 +        pmuio1-supply = <&vcc3v3_pmu>;
 +        pmuio2-supply = <&vcc3v3_pmu>;
 +        vccio1-supply = <&vcc_3v3>;
-+		vccio2-supply = <&vcc_1v8>;
++        vccio2-supply = <&vcc_1v8>;
 +        vccio3-supply = <&vccio_sd>;
 +        vccio4-supply = <&vcc_1v8>;
 +        vccio5-supply = <&vcc_3v3>;
@@ -969,7 +900,7 @@ new file mode 100644
 index 00000000000..5557d983f31
 --- /dev/null
 +++ b/configs/h96max-v56-rk3566_defconfig
-@@ -0,0 +1,153 @@
+@@ -0,0 +1,137 @@
 +CONFIG_ARM=y
 +CONFIG_SKIP_LOWLEVEL_INIT=y
 +CONFIG_COUNTER_FREQUENCY=24000000
@@ -1084,22 +1015,6 @@ index 00000000000..5557d983f31
 +CONFIG_USB_DWC3=y
 +CONFIG_USB_DWC3_GENERIC=y
 +CONFIG_ERRNO_STR=y
-+CONFIG_ARM64_WORKAROUND_CLEAN_CACHE=y
-+CONFIG_ARM64_ERRATUM_826319=y
-+CONFIG_ARM64_ERRATUM_827319=y
-+CONFIG_ARM64_ERRATUM_824069=y
-+CONFIG_ARM64_ERRATUM_819472=y
-+CONFIG_ARM64_ERRATUM_832075=y
-+CONFIG_ARM64_ERRATUM_2051678=y
-+CONFIG_CAVIUM_ERRATUM_23154=y
-+CONFIG_CAVIUM_ERRATUM_22375=y
-+CONFIG_ROCKCHIP_ERRATUM_3588001=y
-+CONFIG_NUMA=y
-+CONFIG_NODES_SHIFT=2
-+CONFIG_PARAVIRT=y
-+CONFIG_CPUFREQ_DT=m
-+CONFIG_CPUFREQ_DT_PLATDEV=y
-+CONFIG_ARM_SCPI_CPUFREQ=y
 +CONFIG_BT_MTKUART=m
 +CONFIG_BT_VIRTIO=m
 +CONFIG_BT_HCIUART_LL=y
