@@ -25,6 +25,13 @@ function config_image_hook__roc-rk3588s-pc() {
 
         # Install the rockchip camera engine
         chroot "${rootfs}" apt-get -y install camera-engine-rkaiq-rk3588
+
+        # Fix and configure audio device
+        mkdir -p "${rootfs}/usr/lib/scripts"
+        cp "${overlay}/usr/lib/scripts/alsa-audio-config" "${rootfs}/usr/lib/scripts/alsa-audio-config"
+        cp "${overlay}/usr/lib/systemd/system/alsa-audio-config.service" "${rootfs}/usr/lib/systemd/system/alsa-audio-config.service"
+        chroot "${rootfs}" systemctl enable alsa-audio-config
+
     fi
     return 0
 }
