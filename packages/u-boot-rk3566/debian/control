@@ -1,0 +1,41 @@
+Source: u-boot-rk3566
+Section: admin
+Priority: optional
+Maintainer: Joshua Riek <jjriek@verizon.net>
+Build-Depends: 
+ debhelper-compat (= 12),
+ parted,
+ gcc,
+ make,
+ bc,
+ bison,
+ flex,
+ device-tree-compiler,
+ udev,
+ python3,
+ libpython3-dev,
+ python3-pyelftools,
+ python3-setuptools,
+ python3-distutils,
+ python3-pkg-resources,
+ swig,
+ libfdt-dev,
+ libssl-dev,
+Standards-Version: 4.6.0
+Homepage: https://www.denx.de/wiki/U-Boot/
+Vcs-Browser: https://salsa.debian.org/debian/u-boot
+Vcs-Git: https://salsa.debian.org/debian/u-boot.git
+
+Package: u-boot-h96max-v56
+Architecture: arm64
+Priority: optional
+Depends: mtd-utils
+Provides: u-boot
+Replaces: u-boot
+Conflicts: u-boot
+Description: A U-Boot for H96Max V56.
+ Das U-Boot is a cross-platform bootloader for embedded systems,
+ used as the default boot loader by several board vendors.  It is
+ intended to be easy to port and to debug, and runs on many
+ supported architectures, including PPC, ARM, MIPS, x86, m68k,
+ NIOS, and Microblaze.

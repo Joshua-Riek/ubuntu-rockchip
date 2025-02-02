@@ -1,0 +1,3 @@
+u-boot-rk3566 (2025.01) jammy; urgency=medium
+
+  * Update ddr and spl blobs
