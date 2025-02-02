@@ -38,13 +38,13 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update && apt-get purge needrestart -y && sudo apt-get upgrade -y
-          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
+          sudo apt-get install -y build-essential gnutls-dev gcc-aarch64-linux-gnu bison \
           qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
           debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
-          udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
-          python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
+          udev dosfstools uuid-runtime git-lfs libgnutls28-dev device-tree-compiler python2 python3 \
+          python-is-python3 fdisk bc debhelper libgnutls30 python3-pyelftools python3-setuptools \
           python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
-
+          
       - name: Build
         shell: bash
         run: sudo ./build.sh --suite=${{ matrix.suite }} --flavor=${{ matrix.flavor }} --rootfs-only
@@ -85,12 +85,12 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update && apt-get purge needrestart -y && sudo apt-get upgrade -y
-          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
+          sudo apt-get install -y build-essential gnutls-dev gcc-aarch64-linux-gnu bison \
           qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
           debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
-          udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
-          python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
-          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+          udev dosfstools uuid-runtime git-lfs libgnutls28-dev device-tree-compiler python2 python3 \
+          python-is-python3 fdisk bc debhelper libgnutls30 python3-pyelftools python3-setuptools \
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
       - name: Build
         shell: bash
@@ -160,11 +160,11 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update && apt-get purge needrestart -y && sudo apt-get upgrade -y
-          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
+          sudo apt-get install -y build-essential gnutls-dev gcc-aarch64-linux-gnu bison \
           qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
           debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
-          udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
-          python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
+          udev dosfstools uuid-runtime git-lfs libgnutls28-dev device-tree-compiler python2 python3 \
+          python-is-python3 fdisk bc debhelper libgnutls30 python3-pyelftools python3-setuptools \
           python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
       - name: Checkout rootfs
