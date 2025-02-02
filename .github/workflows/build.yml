@@ -7,7 +7,7 @@ run-name: Build
 
 jobs:
   rootfs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Build rootfs 
     strategy:
         matrix:
@@ -58,7 +58,7 @@ jobs:
             if-no-files-found: error
 
   kernel:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Build kernel 
     strategy:
         matrix:
@@ -106,7 +106,7 @@ jobs:
             if-no-files-found: error
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [rootfs, kernel]
     name: Build image 
 
