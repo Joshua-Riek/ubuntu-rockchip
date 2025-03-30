@@ -130,6 +130,7 @@ jobs:
           - orangepi-5-max
           - orangepi-5-plus
           - orangepi-5-pro
+          - orangepi-5-ultra
           - orangepi-5b
           - orangepi-cm5
           - radxa-cm5-io
