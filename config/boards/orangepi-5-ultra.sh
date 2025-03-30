@@ -1,15 +1,15 @@
 # shellcheck shell=bash
 
-export BOARD_NAME="Orange Pi 5 Plus"
+export BOARD_NAME="Orange Pi 5 Ultra"
 export BOARD_MAKER="Xulong"
 export BOARD_SOC="Rockchip RK3588"
 export BOARD_CPU="ARM Cortex A76 / A55"
 export UBOOT_PACKAGE="u-boot-radxa-rk3588"
-export UBOOT_RULES_TARGET="orangepi-5-plus-rk3588"
+export UBOOT_RULES_TARGET="orangepi-5-ultra-rk3588"
 export COMPATIBLE_SUITES=("jammy" "noble" "oracular" "plucky")
 export COMPATIBLE_FLAVORS=("server" "desktop")
 
-function config_image_hook__orangepi-5-plus() {
+function config_image_hook__orangepi-5-ultra() {
     local rootfs="$1"
     local overlay="$2"
     local suite="$3"
@@ -35,7 +35,7 @@ function config_image_hook__orangepi-5-plus() {
 
         # Install wiring orangepi package 
         chroot "${rootfs}" apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev
-        echo "BOARD=orangepi5plus" > "${rootfs}/etc/orangepi-release"
+        echo "BOARD=orangepi5ultra" > "${rootfs}/etc/orangepi-release"
     fi
 
     return 0
