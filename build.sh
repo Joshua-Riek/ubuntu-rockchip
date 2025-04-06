@@ -1,39 +1,90 @@
 #!/bin/bash
 
-set -eE 
-trap 'echo Error: in $0 on line $LINENO' ERR
+set -eE
+trap 'echo "Error: in $0 on line $LINENO"' ERR
 
+# Change to the script's directory only once
 cd "$(dirname -- "$(readlink -f -- "$0")")"
 
+#######################################
+# Display script usage.
+#######################################
 usage() {
-cat << HEREDOC
+    cat << HEREDOC
 Usage: $0 --board=[orangepi-5] --suite=[jammy|noble] --flavor=[server|desktop]
 
 Required arguments:
-  -b, --board=BOARD      target board 
-  -s, --suite=SUITE      ubuntu suite 
-  -f, --flavor=FLAVOR    ubuntu flavor
+  -b, --board=BOARD      Target board 
+  -s, --suite=SUITE      Ubuntu suite 
+  -f, --flavor=FLAVOR    Ubuntu flavor
 
 Optional arguments:
-  -h,  --help            show this help message and exit
-  -c,  --clean           clean the build directory
-  -ko, --kernel-only     only compile the kernel
-  -uo, --uboot-only      only compile uboot
-  -ro, --rootfs-only     only build rootfs
-  -l,  --launchpad       use kernel and uboot from launchpad repo
-  -v,  --verbose         increase the verbosity of the bash script
+  -h,  --help            Show this help message and exit
+  -c,  --clean           Clean the build directory
+  -ko, --kernel-only     Only compile the kernel
+  -uo, --uboot-only      Only compile u-boot
+  -ro, --rootfs-only     Only build the root filesystem
+  -l,  --launchpad       Use kernel and u-boot from Launchpad repository
+  -v,  --verbose         Increase verbosity of the bash script
 HEREDOC
 }
 
-if [ "$(id -u)" -ne 0 ]; then 
+#######################################
+# Helper function to load suite, flavor, or board
+# configurations and handle "help".
+# Globals:
+#   None
+# Arguments:
+#   1) config_type: (suite|flavor|board)
+#   2) config_value: e.g. jammy, server, orangepi-5
+#######################################
+load_config() {
+    local config_type="$1"
+    local config_value="$2"
+    local config_path=""
+
+    case "$config_type" in
+        suite)  config_path="config/suites"  ;;
+        flavor) config_path="config/flavors" ;;
+        board)  config_path="config/boards"  ;;
+        *)      echo "Internal Error: Unknown config_type $config_type" >&2; exit 1 ;;
+    esac
+
+    if [[ "$config_value" == "help" ]]; then
+        for file in "$config_path"/*; do
+            basename "${file%.sh}"
+        done
+        exit 0
+    fi
+
+    if [[ -n "$config_value" ]]; then
+        while :; do
+            for file in "$config_path"/*; do
+                if [[ "$config_value" == "$(basename "${file%.sh}")" ]]; then
+                    # shellcheck source=/dev/null
+                    source "$file"
+                    break 2
+                fi
+            done
+            echo "Error: \"${config_value}\" is an unsupported ${config_type}"
+            exit 1
+        done
+    fi
+}
+
+#######################################
+# Check for root privileges.
+#######################################
+if [[ "$(id -u)" -ne 0 ]]; then
     echo "Please run as root"
     exit 1
 fi
 
-cd "$(dirname -- "$(readlink -f -- "$0")")"
-
-while [ "$#" -gt 0 ]; do
-    case "${1}" in
+#######################################
+# Parse command line arguments.
+#######################################
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
         -h|--help)
             usage
             exit 0
@@ -43,7 +94,7 @@ while [ "$#" -gt 0 ]; do
             shift
             ;;
         -b|--board)
-            export BOARD="${2}"
+            export BOARD="$2"
             shift 2
             ;;
         -s=*|--suite=*)
@@ -51,7 +102,7 @@ while [ "$#" -gt 0 ]; do
             shift
             ;;
         -s|--suite)
-            export SUITE="${2}"
+            export SUITE="$2"
             shift 2
             ;;
         -f=*|--flavor=*)
@@ -59,7 +110,7 @@ while [ "$#" -gt 0 ]; do
             shift
             ;;
         -f|--flavor)
-            export FLAVOR="${2}"
+            export FLAVOR="$2"
             shift 2
             ;;
         -ko|--kernel-only)
@@ -96,81 +147,36 @@ while [ "$#" -gt 0 ]; do
     esac
 done
 
-if [ "${SUITE}" == "help" ]; then
-    for file in config/suites/*; do
-        basename "${file%.sh}"
-    done
-    exit 0
-fi
+#######################################
+# Load suite, flavor, and board configs
+# (handles the "help" subcommands)
+#######################################
+load_config "suite"  "${SUITE}"
+load_config "flavor" "${FLAVOR}"
+load_config "board"  "${BOARD}"
 
-if [ -n "${SUITE}" ]; then
-    while :; do
-        for file in config/suites/*; do
-            if [ "${SUITE}" == "$(basename "${file%.sh}")" ]; then
-                # shellcheck source=/dev/null
-                source "${file}"
-                break 2
-            fi
-        done
-        echo "Error: \"${SUITE}\" is an unsupported suite"
-        exit 1
-    done
-fi
-
-if [ "${FLAVOR}" == "help" ]; then
-    for file in config/flavors/*; do
-        basename "${file%.sh}"
-    done
-    exit 0
-fi
-
-if [ -n "${FLAVOR}" ]; then
-    while :; do
-        for file in config/flavors/*; do
-            if [ "${FLAVOR}" == "$(basename "${file%.sh}")" ]; then
-                # shellcheck source=/dev/null
-                source "${file}"
-                break 2
-            fi
-        done
-        echo "Error: \"${FLAVOR}\" is an unsupported flavor"
-        exit 1
-    done
-fi
-
-if [ "${BOARD}" == "help" ]; then
-    for file in config/boards/*; do
-        basename "${file%.sh}"
-    done
-    exit 0
-fi
-
-if [ -n "${BOARD}" ]; then
-    while :; do
-        for file in config/boards/*; do
-            if [ "${BOARD}" == "$(basename "${file%.sh}")" ]; then
-                # shellcheck source=/dev/null
-                source "${file}"
-                break 2
-            fi
-        done
-        echo "Error: \"${BOARD}\" is an unsupported board"
-        exit 1
-    done
-fi
-
-if [ "${CLEAN}" == "Y" ]; then
-    if [ -d build/rootfs ]; then
-        umount -lf build/rootfs/dev/pts 2> /dev/null || true
-        umount -lf build/rootfs/* 2> /dev/null || true
+#######################################
+# Clean build directory, if requested.
+#######################################
+if [[ "${CLEAN}" == "Y" ]]; then
+    if [[ -d build/rootfs ]]; then
+        umount -lf build/rootfs/dev/pts 2>/dev/null || true
+        umount -lf build/rootfs/* 2>/dev/null || true
     fi
     rm -rf build
 fi
 
-mkdir -p build/logs && exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
+#######################################
+# Redirect all script output to a log file.
+#######################################
+mkdir -p build/logs
+exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
 
-if [ "${KERNEL_ONLY}" == "Y" ]; then
-    if [ -z "${SUITE}" ]; then
+#######################################
+# Early-exit scenarios for partial builds.
+#######################################
+if [[ "${KERNEL_ONLY}" == "Y" ]]; then
+    if [[ -z "${SUITE}" ]]; then
         usage
         exit 1
     fi
@@ -178,8 +184,8 @@ if [ "${KERNEL_ONLY}" == "Y" ]; then
     exit 0
 fi
 
-if [ "${ROOTFS_ONLY}" == "Y" ]; then
-    if [ -z "${SUITE}" ] || [ -z "${FLAVOR}" ]; then
+if [[ "${ROOTFS_ONLY}" == "Y" ]]; then
+    if [[ -z "${SUITE}" || -z "${FLAVOR}" ]]; then
         usage
         exit 1
     fi
@@ -187,8 +193,8 @@ if [ "${ROOTFS_ONLY}" == "Y" ]; then
     exit 0
 fi
 
-if [ "${UBOOT_ONLY}" == "Y" ]; then
-    if [ -z "${BOARD}" ]; then
+if [[ "${UBOOT_ONLY}" == "Y" ]]; then
+    if [[ -z "${BOARD}" ]]; then
         usage
         exit 1
     fi
@@ -196,30 +202,43 @@ if [ "${UBOOT_ONLY}" == "Y" ]; then
     exit 0
 fi
 
-# No board param passed
-if [ -z "${BOARD}" ] || [ -z "${SUITE}" ] || [ -z "${FLAVOR}" ]; then
+#######################################
+# Require board, suite, and flavor for full build.
+#######################################
+if [[ -z "${BOARD}" || -z "${SUITE}" || -z "${FLAVOR}" ]]; then
     usage
     exit 1
 fi
 
-# Build the Linux kernel if not found
-if [[ ${LAUNCHPAD} != "Y" ]]; then
-    if [[ ! -e "$(find build/linux-image-*.deb | sort | tail -n1)" || ! -e "$(find build/linux-headers-*.deb | sort | tail -n1)" ]]; then
+#######################################
+# Build Kernel if not found (and if not using Launchpad).
+#######################################
+if [[ "${LAUNCHPAD}" != "Y" ]]; then
+    # Check if we already have kernel .deb files
+    if [[ ! -e "$(find build/linux-image-*.deb 2>/dev/null | sort | tail -n1)" ||
+          ! -e "$(find build/linux-headers-*.deb 2>/dev/null | sort | tail -n1)" ]]; then
         ./scripts/build-kernel.sh
     fi
 fi
 
-# Build U-Boot if not found
-if [[ ${LAUNCHPAD} != "Y" ]]; then
-    if [[ ! -e "$(find build/u-boot-"${BOARD}"_*.deb | sort | tail -n1)" ]]; then
+#######################################
+# Build U-Boot if not found (and if not using Launchpad).
+#######################################
+if [[ "${LAUNCHPAD}" != "Y" ]]; then
+    # Check if we already have the correct U-Boot .deb
+    if [[ ! -e "$(find build/u-boot-${BOARD}_*.deb 2>/dev/null | sort | tail -n1)" ]]; then
         ./scripts/build-u-boot.sh
     fi
 fi
 
-# Create the root filesystem
+#######################################
+# Create the root filesystem.
+#######################################
 ./scripts/build-rootfs.sh
 
-# Create the disk image
+#######################################
+# Create the disk image.
+#######################################
 ./scripts/config-image.sh
 
 exit 0
