@@ -167,12 +167,6 @@ if [[ "${CLEAN}" == "Y" ]]; then
 fi
 
 #######################################
-# Redirect all script output to a log file.
-#######################################
-mkdir -p build/logs
-exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log") 2>&1
-
-#######################################
 # Early-exit scenarios for partial builds.
 #######################################
 if [[ "${KERNEL_ONLY}" == "Y" ]]; then
@@ -209,6 +203,12 @@ if [[ -z "${BOARD}" || -z "${SUITE}" || -z "${FLAVOR}" ]]; then
     usage
     exit 1
 fi
+
+#######################################
+# Redirect all script output to a log file.
+#######################################
+mkdir -p build/logs
+exec > >(tee "build/logs/build-$(date +"%Y%m%d%H%M%S").log" || true) 2>&1
 
 #######################################
 # Build Kernel if not found (and if not using Launchpad).
