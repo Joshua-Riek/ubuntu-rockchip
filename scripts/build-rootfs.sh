@@ -112,12 +112,26 @@ if [ "${SUITE}" == "noble" ]; then
     ) > config/archives/extra-ppas-ignore.pref.chroot
 fi
 
+if [ "${SUITE}" == "oracular" ]; then
+    # Ignore custom ubiquity package (mistake i made, uploaded to wrong ppa)
+    (
+    echo "snapd/classic=stable"
+    echo "snap-store/classic=stable"
+    echo "firefox/latest=stable"
+    echo "thunderbird/latest=stable"
+    echo "snap-store/classic=stable"
+    echo "core22/classic=stable"
+    echo "lxd/classic=stable"
+    ) > config/seeded-snaps
+else
 # Snap packages to install
 (
     echo "snapd/classic=stable"
     echo "core22/classic=stable"
     echo "lxd/classic=stable"
 ) > config/seeded-snaps
+
+fi
 
 # Generic packages to install
 echo "software-properties-common" > config/package-lists/my.list.chroot
