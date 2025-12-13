@@ -1,0 +1,4 @@
+# 4K@120Hz Support Patches
+# Only the essential DCLK rate increase
+0001-drm-rockchip-vop2-increase-max-dclk-rate-for-4k120hz.patch
+0002-drm-rockchip-vop2-increase-vp1-vp2-dclk-max-for-4k120hz.patch

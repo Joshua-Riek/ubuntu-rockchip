@@ -1,0 +1,44 @@
+From: Ubuntu Rockchip Custom <custom@ubuntu-rockchip.local>
+Date: Thu, 12 Dec 2025 00:00:00 +0000
+Subject: [PATCH 1/2] drm/rockchip: vop2: Increase VOP2_MAX_DCLK_RATE for 4K@120Hz support
+
+The RK3588 HDMI 2.1 controller supports 4K@120Hz output, but the VOP2 driver
+limits the maximum display clock rate to 600MHz (VOP2_MAX_DCLK_RATE = 600000).
+
+4K@120Hz requires approximately 1188 MHz pixel clock. This patch increases
+the limit to 1200 MHz to enable 4K@120Hz modes to be offered to userspace.
+
+Note: When using pixel clocks above 600 MHz, the driver should use the
+System CRU as the clock source instead of the HDMI PHY PLL. The existing
+driver logic in vop2_clk_set_parent_extend() already handles this by
+falling back to vp->dclk_parent when adjusted_mode->crtc_clock exceeds
+VOP2_MAX_DCLK_RATE.
+
+This change benefits all RK3588-based boards with HDMI 2.1 output:
+- Orange Pi 5 Max
+- Orange Pi 5 Plus
+- Rock 5B
+- NanoPC-T6
+- And others
+
+Signed-off-by: Ubuntu Rockchip Custom <custom@ubuntu-rockchip.local>
+---
+ drivers/gpu/drm/rockchip/rockchip_drm_vop2.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
+index 1234567..abcdefg 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
+@@ -85,8 +85,8 @@
+ #define VOP2_WB_JOB_MAX      2
+ #define VOP2_SYS_AXI_BUS_NUM 2
+ 
+ #define VOP2_MAX_VP_OUTPUT_WIDTH	4096
+-/* KHZ */
+-#define VOP2_MAX_DCLK_RATE		600000
++/* KHZ - Increased from 600000 to 1200000 for 4K@120Hz support */
++#define VOP2_MAX_DCLK_RATE		1200000
+ 
+ enum vop2_data_format {
+ 	VOP2_FMT_ARGB8888 = 0,
