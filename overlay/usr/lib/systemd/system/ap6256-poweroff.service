@@ -1,0 +1,14 @@
+[Unit]
+Description=Power down AP6256 SDIO Wi-Fi before shutdown/reboot
+DefaultDependencies=no
+Before=shutdown.target reboot.target poweroff.target halt.target kexec.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'modprobe -r bcmdhd_sdio dhd_static_buf_sdio >/dev/null 2>&1 || true; echo 0 > /sys/class/rkwifi/wifi_power >/dev/null 2>&1 || true; echo 0 > /sys/class/rkwifi/wifi_set_carddetect >/dev/null 2>&1 || true'
+
+[Install]
+WantedBy=reboot.target
+WantedBy=poweroff.target
+WantedBy=halt.target
+WantedBy=kexec.target
