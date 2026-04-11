@@ -15,6 +15,18 @@ function config_image_hook__orangepi-5-pro() {
     local suite="$3"
 
     if [ "${suite}" == "jammy" ] || [ "${suite}" == "noble" ]; then
+        # Use the Broadcom BCMDHD SDIO driver for the AP6256 module
+        chroot "${rootfs}" apt-get -y install dkms bcmdhd-sdio-dkms
+
+        cat <<'EOF' > "${rootfs}/etc/modprobe.d/ap6256-bcmdhd.conf"
+options bcmdhd_sdio firmware_path=/lib/firmware/fw_bcm43456c5_ag.bin nvram_path=/lib/firmware/nvram_ap6256.txt config_path=/lib/firmware/config.txt op_mode=0 iface_name=wlan0
+EOF
+
+        cat <<'EOF' > "${rootfs}/etc/modprobe.d/ap6256-brcmfmac-blacklist.conf"
+blacklist brcmfmac
+blacklist brcmutil
+EOF
+
         # Install panfork
         chroot "${rootfs}" add-apt-repository -y ppa:jjriek/panfork-mesa
         chroot "${rootfs}" apt-get update
@@ -32,9 +44,9 @@ function config_image_hook__orangepi-5-pro() {
         cp "${overlay}/usr/lib/systemd/system/ap6256s-bluetooth.service" "${rootfs}/usr/lib/systemd/system/ap6256s-bluetooth.service"
         chroot "${rootfs}" systemctl enable ap6256s-bluetooth
 
-        # Unbind SDIO device before reboot
-        cp "${overlay}/usr/lib/systemd/system/ap6256-reboot.service" "${rootfs}/usr/lib/systemd/system/ap6256-reboot.service"
-        chroot "${rootfs}" systemctl enable ap6256-reboot.service
+        # Ensure the SDIO Wi-Fi module is powered down cleanly before shutdown/reboot
+        cp "${overlay}/usr/lib/systemd/system/ap6256-poweroff.service" "${rootfs}/usr/lib/systemd/system/ap6256-poweroff.service"
+        chroot "${rootfs}" systemctl enable ap6256-poweroff.service
 
         # Install wiring orangepi package 
         chroot "${rootfs}" apt-get -y install wiringpi-opi libwiringpi2-opi libwiringpi-opi-dev
